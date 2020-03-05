@@ -12,9 +12,9 @@ pop_town_age[, CODGEO := str_pad(CODGEO, 5, pad = "0")]
 pop_town_age_arm[, CODGEO := str_pad(CODGEO, 5, pad = "0")]
 pop_town_2017[, DEPCOM := str_pad(DEPCOM, 5, pad = "0")]
 town_gps[, Code_commune_INSEE := str_pad(Code_commune_INSEE, 5, pad = "0")]
-town_gps[, lat := unlist(strsplit(coordonnees_gps, ","))[1],
+town_gps[, lat := as.numeric(unlist(strsplit(coordonnees_gps, ","))[1]),
          by = 1:town_gps[,.N]] # Latitude
-town_gps[, lng := unlist(strsplit(coordonnees_gps, ","))[2],
+town_gps[, lng := as.numeric(unlist(strsplit(coordonnees_gps, ","))[2]),
          by = 1:town_gps[,.N]] # Longitude
 
 #### Data anagement on population ####
