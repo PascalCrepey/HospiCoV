@@ -31,7 +31,7 @@ class SARSCoVMod{
   
 public:
   //number of compartments
-  static const int ncol=8;
+  static const int ncol=4;
   // Constructors
   SARSCoVMod(){}
   SARSCoVMod(List parameters){
@@ -40,22 +40,26 @@ public:
   int nage;
   arma::vec f_S_E, f_E_I, f_I_R;
   arma::vec newI, N;
-  arma::mat gamma;
-  arma::vec phi, xi;
-  double sigma, alpha, b, nu;
+  arma::mat contact;
+  //arma::vec susceptibility;
+  double progression, removal, beta;
   
 
   void init(List parameters){
     cpt_run=0;
+    //number of age-groups
     nage=parameters["nage"];
-    sigma=parameters["sigma"];
-    alpha=parameters["alpha"];
-    nu=parameters["nu"];
-    b=parameters["b"];
-    phi=as<arma::colvec>(parameters["phi"]);
-    xi=as<arma::colvec>(parameters["xi"]);
+    // progression from E to I
+    progression = parameters["progression"];
+    // removal from I to R
+    removal = parameters["removal"];
+    // probability of transmission
+    beta = parameters["beta"];
+    // susceptibility
+    //susceptibility=as<arma::colvec>(parameters["susceptibility"]);
 
-    gamma=as<arma::mat>(parameters["gamma"]);
+    //contact matrix
+    contact=as<arma::mat>(parameters["contact"]);
 
     f_S_E=arma::vec(nage);
     f_E_I=arma::vec(nage);
@@ -90,19 +94,17 @@ public:
     arma::vec dR(dstates.colptr(3), nage, false, true);
     
     N=S+E+I+R;
-    
-    arma::vec lambda=(sigma*gamma*(I)/N)%phi%xi;
 
     
-    f_S_E = lambda % S;
+    f_S_E = beta * S * (contact % ( I / N));
     
     dS = -f_S_E ;
     
-    f_E_I = E*nu;
+    f_E_I = E * progression;
     
     dE = f_S_E - f_E_I ; 
     
-    f_I_R = I * alpha;
+    f_I_R = I * removal;
     dI = f_E_I - f_I_R;
     
     dR = f_I_R;
