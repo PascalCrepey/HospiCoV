@@ -38,4 +38,14 @@ vorPolyHosp %>%
                    radius = 2, 
                    color = "red")
   
+# Identification of the towns in each Voronoi polygon #
+data_towns <- readRDS("./Data/Population.rds")
+towns <- SpatialPointsDataFrame(data_towns[,.(lng,lat)], 
+                                data = data_towns)
+data_towns[, FINESS_Voronoi := over(towns, vorPolyHosp)[, "FINESS_GEO"]]
+
+# Compute the population per age per sex per Voronoi polygon #
+pop_Voronoi <- data_towns[, lapply(.SD, sum),
+                          .SDcols = grep("SEXE", names(data_towns)),
+                          by = "FINESS_Voronoi"]
 
