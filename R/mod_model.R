@@ -36,6 +36,7 @@ mod_model_ui <- function(id){
     
 mod_model_server <- function(input, output, session){
     ns <- session$ns
+    library(R6)
     source("R/Parameters.R")
 
     params = Parameters$new()

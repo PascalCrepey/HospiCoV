@@ -10,26 +10,29 @@
 #'
 #' @rdname mod_map
 #'
+#' @import leaflet
+#'
 #' @keywords internal
 #' @export 
 #' @importFrom shiny NS tagList 
 mod_map_ui <- function(id){
   ns <- NS(id)
   tagList(
-          leafletOutput(ns("map"), height = 900)
+          leaflet::leafletOutput(ns("map"), height = 900)
   )
 }
     
 # Module Server
     
 #' @rdname mod_map
+#' @import leaflet
 #' @export
 #' @keywords internal
     
 mod_map_server <- function(input, output, session){
     ns <- session$ns
     source("R/TestVoronoi.R")
-    output$map = renderLeaflet({ voronoi_map() })
+    output$map = leaflet::renderLeaflet({ voronoi_map() })
 }
     
 ## To be copied in the UI
