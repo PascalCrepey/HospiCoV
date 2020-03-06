@@ -8,5 +8,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     shiny, 
-    golem
+    golem,
+    Rcpp (>= 0.11.0)
 RoxygenNote: 7.0.2
+Depends: RcppGSL
+LinkingTo: Rcpp, RcppArmadillo
