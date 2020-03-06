@@ -25,6 +25,15 @@ population_melt <- population_melt[order(CODGEO,variable)]
 population_melt[, sex := as.numeric(substr(variable,5,5))]
 population_melt[, age := as.numeric(substr(variable,14,16))]
 
+## Adding population per age (no difference according to gender) ##
+population_age <- population_melt[, sum(value),
+                                  by = c("CODGEO", "LIBGEO", "age")]
+setnames(population_age, "V1", "value")
+
+population_melt <- rbind(population_melt,
+                         population_age,
+                         fill = TRUE)
+
 ## Identification of age class ##
 population_melt[age %in% 0:4, class := "04"]
 population_melt[age %in% 5:9, class := "59"]
@@ -45,7 +54,10 @@ population_melt[age %in% 75:79, class := "7579"]
 population_melt[age >= 80, class := "80P"]
 
 ## Dcast data ##
-population_melt[, name := paste0("SEX", sex, "_AGE", class)]
+population_melt[!is.na(variable), 
+                name := paste0("SEX", sex, "_AGE", class)]
+population_melt[is.na(variable), 
+                name := paste0("AGE", class)]
 population_contact <- dcast(population_melt, 
                           formula = CODGEO + LIBGEO ~ name, 
                           value.var = "value", 
