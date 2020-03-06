@@ -1,23 +1,42 @@
 ## define a parameter object
-library(R6)
 
-
+#' R6 Class representing a set of Parameters
+#' 
+#' Parameters contains all the parameters related to the population and the epidemic
 Parameters <- R6Class("Parameters",
   public = list(
+    #' @field nage number of age groups
     nage = 0,
+    #' @field preImmune the proportion of immune individuals at the beginning of the epidemic
     preImmune = NULL,
+    #' @field preExposed the proportion of exposed individuals at the beginning of the epidemic
     preExposed = NULL,
+    #' @field preInfected the proportion of exposed individuals at the beginning of the epidemic
     preInfected = NULL,
+    #' @field symptomatic the proportion of symptomatic infection
     symptomatic = NULL,
+    #' @field progression the rate of transfer from E to I
     progression = NULL,
+    #' @field removal the rate of transfer from I to R
+    removal = NULL,
+    #' @field susceptibility A vector of size *nage* for susceptibility adjustment
     susceptibility = NULL,
+    #' @field beta the transmission probability upon contact with an infected (retro computed from R0)
     beta = NULL,
+    #' @field R0 the basic reproduction number
     R0 = NULL,
+    #' @field contact the contact matrix
     contact = NULL,
+    #' @description
+    #' Create a new `Parameters` object.
+    #' @param R0 R0 (=3)
+    #' @return A new `Parameters` object.
     initialize = function(R0 = 3){
       self$preImmune = 0
       self$preExposed = 0
-      self$preInfected = 0
+      #if preInfected >1 then it's the number of infected individuals (seeds)
+      #if it's <1 then it's the proportion of infected
+      self$preInfected = 10
       self$symptomatic = 1
       #number of age-groups
       self$nage = 18
@@ -36,7 +55,7 @@ Parameters <- R6Class("Parameters",
       eig = eigen(self$contact)
       
       #retro compute the beta
-      self$beta = R0 * removal/max(Re(eig$values))
+      self$beta = R0 * self$removal/max(Re(eig$values))
       
       self$susceptibility = rep(1, self$nage)
       
@@ -44,24 +63,3 @@ Parameters <- R6Class("Parameters",
   )
 )
 
-# gamma = 1/3        # recovery period of influenza in days^{-1}
-# R0    = 1.5        # R0 of a hypothetical pandemic strain of influenza
-# 
-# C = matrix(0,nrow=nage,ncol=nage)
-# C[1,1] = 18   # number contacts per day kids make with kids
-# C[1,2] = 6    # number contacts per day kids make with adults (all kids have an adult in the home)
-# C[2,1] = 3    # number contacts per day adults make with kids (not all adults have kids)
-# C[2,2] = 12   # number contacts per day adults make with adults
-# if (lcalculate_transmission_probability==1){
-#   M = C
-#   M[1,1] = C[1,1]*f[1]/f[1]
-#   M[1,2] = C[1,2]*f[1]/f[2]
-#   M[2,1] = C[2,1]*f[2]/f[1]
-#   M[2,2] = C[2,2]*f[2]/f[2]
-#   eig = eigen(M)
-#   # reverse engineer beta from the R0 and gamma 
-#   beta = R0*gamma/max(Re(eig$values))  
-#   beta = beta
-# }else{
-#   beta = 0.05
-# }
