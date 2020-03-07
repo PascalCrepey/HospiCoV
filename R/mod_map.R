@@ -31,8 +31,8 @@ mod_map_ui <- function(id){
     
 mod_map_server <- function(input, output, session){
     ns <- session$ns
-    source("R/TestVoronoi.R")
-    output$map = leaflet::renderLeaflet({ voronoi_map() })
+    polyHosp = PolyHosp$new()
+    output$map = leaflet::renderLeaflet({ polyHosp$getMap() })
 }
     
 ## To be copied in the UI

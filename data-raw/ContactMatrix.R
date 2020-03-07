@@ -3,6 +3,7 @@
 ########################
 library(data.table)
 library(openxlsx)
+library(stringi)
 
 #### Getting the data ####
 ## Contact data ##
@@ -68,10 +69,11 @@ population_contact <- merge(population_contact,
                             population[, .(CODGEO, POP_TOT2017, lat, lng)],
                             by = "CODGEO")
 
+population_contact[, LIBGEO := stringi::stri_trans_general(LIBGEO, "latin-ASCII")]
 #### Saving results ####
 # saveRDS(list(contact_matrix,        
 #              population_contact),
 #         file = "./Data/Contacts.rds")
 
 usethis::use_data(contact_matrix)
-usethis::use_data(population_contact)
+usethis::use_data(population_contact, overwrite = TRUE)

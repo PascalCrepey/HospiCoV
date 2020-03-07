@@ -3,10 +3,10 @@ library(openxlsx)
 library(stringr)
 
 #### Loading data ####
-pop_town_age <- fread("./Data/population_allage_INSEE_2016.csv", dec = ",") # Last census in France in 2016
-pop_town_age_arm <- fread("./Data/population_allage_INSEE_2016_arm.csv", dec = ",") # Arrondissement - Last census in France in 2016
-pop_town_2017 <- fread("./Data/population_INSEE_2017.csv") # Use PMUN for town population in 2017 (population to use in 2020)
-town_gps <- fread("./Data/town_GPS.csv") # GPS coordinates of each town
+pop_town_age <- fread("./data-raw/population_allage_INSEE_2016.csv", dec = ",") # Last census in France in 2016
+pop_town_age_arm <- fread("./data-raw/population_allage_INSEE_2016_arm.csv", dec = ",") # Arrondissement - Last census in France in 2016
+pop_town_2017 <- fread("./data-raw/population_INSEE_2017.csv") # Use PMUN for town population in 2017 (population to use in 2020)
+town_gps <- fread("./data-raw/town_GPS.csv") # GPS coordinates of each town
 
 pop_town_age[, CODGEO := str_pad(CODGEO, 5, pad = "0")]
 pop_town_age_arm[, CODGEO := str_pad(CODGEO, 5, pad = "0")]
@@ -48,7 +48,8 @@ pop_town <- unique(merge(pop_town,
                 by.y = "Code_commune_INSEE",
                 all.x = TRUE))
 # Deletion of the town no longer existing #
-pop_town <- pop_town[!is.na(lat),]
+Population <- pop_town[!is.na(lat),]
 
 #### Save of the results ####
-saveRDS(pop_town, file = "./Data/Population.rds")
+#saveRDS(pop_town, file = "./Data/Population.rds")
+usethis::use_data(Population)

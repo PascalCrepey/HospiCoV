@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 engine_run <- function(params, init) {
-    .Call('_shinyCov_engine_run', PACKAGE = 'shinyCov', params, init)
+    .Call('_HospiCov_engine_run', PACKAGE = 'HospiCov', params, init)
 }
 

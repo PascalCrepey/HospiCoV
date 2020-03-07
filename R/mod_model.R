@@ -4,7 +4,7 @@
 #' @description  A shiny Module.
 #'
 #' @param id shiny id
-#' @param input internal
+#' @param input internal 
 #' @param output internal
 #' @param session internal
 #'
@@ -33,14 +33,9 @@ mod_model_ui <- function(id){
 #' @rdname mod_model
 #' @export
 #' @keywords internal
-    
 mod_model_server <- function(input, output, session){
     ns <- session$ns
-    library(R6)
-    source("R/Parameters.R")
-
     params = Parameters$new()
-
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
     output$paramsUI = renderUI({

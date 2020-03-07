@@ -1,7 +1,11 @@
-Package: shinyCov
+Package: HospiCov
 Title: HospiCov
 Version: 0.0.0.9000
-Authors@R: person('Clement', 'MASSONNAUD', email = 'clement.massonnaud@gmail.com', role = c('cre', 'aut'))
+Authors@R: c(
+  person("Pascal", "Crépey", email = "pascal.crepey@ehesp.fr", role = c("aut", "cre")),
+  person('Clément', 'Massonnaud', email = 'clement.massonnaud@gmail.com', role = c('aut')),
+  person("Jonathan", "Roux", email = "jonathan.roux@ehesp.fr", role = c("aut"))
+  )
 Description: COVID-19 French national metapopulation model.
 License: What license is it under?
 Encoding: UTF-8
@@ -11,12 +15,15 @@ Imports:
     golem,
     Rcpp (>= 0.11.0),
     R6,
-    ggplot2,
     ggvoronoi,
     openxlsx,
-    data.table,
     stringr,
-    leaflet
+    leaflet,
+    foreign,
+    maptools,
+    RcppGSL,
+    ggplot2,
+    sp
 RoxygenNote: 7.0.2
-Depends: RcppGSL
+Depends: R (>= 3.0), data.table
 LinkingTo: Rcpp, RcppArmadillo

@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // engine_run
 arma::mat engine_run(List params, arma::mat init);
-RcppExport SEXP _shinyCov_engine_run(SEXP paramsSEXP, SEXP initSEXP) {
+RcppExport SEXP _HospiCov_engine_run(SEXP paramsSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,11 +20,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_shinyCov_engine_run", (DL_FUNC) &_shinyCov_engine_run, 2},
+    {"_HospiCov_engine_run", (DL_FUNC) &_HospiCov_engine_run, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_shinyCov(DllInfo *dll) {
+RcppExport void R_init_HospiCov(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

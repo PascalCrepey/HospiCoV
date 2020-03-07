@@ -1,7 +1,7 @@
 ## Wrapper function running the C++ model
-library(Rcpp)
-sourceCpp("./src/SARSCoVModel.cpp")
 
+#' @import data.table
+#' @export
 runMod <- function(params, startyear, sname, 
                    population) {
 
