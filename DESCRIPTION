@@ -7,9 +7,16 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    shiny, 
+    shiny,
     golem,
-    Rcpp (>= 0.11.0)
+    Rcpp (>= 0.11.0),
+    R6,
+    ggplot2,
+    ggvoronoi,
+    openxlsx,
+    data.table,
+    stringr,
+    leaflet
 RoxygenNote: 7.0.2
 Depends: RcppGSL
 LinkingTo: Rcpp, RcppArmadillo

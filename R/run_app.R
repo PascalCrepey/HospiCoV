@@ -7,8 +7,6 @@
 ##   with_golem_options(
 
 
-library(shiny)
-
 ## Source ui and server
 source("R/app_ui.R")
 source("R/app_server.R")

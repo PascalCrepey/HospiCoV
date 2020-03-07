@@ -3,7 +3,7 @@
 #' R6 Class representing a set of Parameters
 #' 
 #' Parameters contains all the parameters related to the population and the epidemic
-Parameters <- R6Class("Parameters",
+Parameters <- R6::R6Class("Parameters",
   public = list(
     #' @field nage number of age groups
     nage = 0,
