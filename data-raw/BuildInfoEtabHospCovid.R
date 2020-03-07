@@ -11,5 +11,5 @@ usethis::use_data(info_etab, overwrite = TRUE)
 hospCovid = data.table(read.xlsx("data-raw/Hopitaux_covid.xlsx"))
 hospCovid[, FINESS_GEO := as.character(FINESS_GEO)]
 hospCovid[, FINESS_GEO := str_pad(FINESS_GEO, 9 , pad = "0")]
-
+hospCovid <- hospCovid[!is.na(Ligne),]
 usethis::use_data(hospCovid, overwrite = TRUE)
