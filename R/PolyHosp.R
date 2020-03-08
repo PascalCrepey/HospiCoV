@@ -72,15 +72,15 @@ PolyHosp <- R6::R6Class("PolyHosp",
   private = list(
     voronoi_pop = function(vorPolyHosp) {
       # Identification of the towns in each Voronoi polygon #
-      data_towns <- copy(Population)
+      data_towns <- copy(population_contact)
       towns <- SpatialPointsDataFrame(data_towns[,.(lng,lat)], 
                                       data = data_towns)
-      data_towns[, FINESS_Voronoi := over(towns, vorPolyHosp)[, "FINESS_GEO"]]
+      data_towns[, c("FINESS_Voronoi","Region") := over(towns, vorPolyHosp)[, c("FINESS_GEO","Region")]]
       
       # Compute the population per age per sex per Voronoi polygon #
       pop_Voronoi <- data_towns[, lapply(.SD, sum),
-                                .SDcols = grep("SEXE", names(data_towns)),
-                                by = "FINESS_Voronoi"]
+                                .SDcols = grep("^AGE", names(data_towns)),
+                                by = c("Region","FINESS_Voronoi")]
       return(pop_Voronoi)
     },
     # finess_to_merge : vector of tessels' FINESS to be merged
