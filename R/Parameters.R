@@ -49,8 +49,7 @@ Parameters <- R6::R6Class("Parameters",
       #if it's <1 then it's the proportion of infected
       self$preInfected = 10
       self$symptomatic = 1
-      #number of age-groups
-      self$nage = 18
+
       
       #model parameters
       #from E to I -> 6 days
@@ -62,6 +61,9 @@ Parameters <- R6::R6Class("Parameters",
       
       #to be updated with true values
       self$contact = contact_matrix
+      
+      #number of age-groups
+      self$nage = nrow(contact_matrix)
       
       eig = eigen(self$contact)
       

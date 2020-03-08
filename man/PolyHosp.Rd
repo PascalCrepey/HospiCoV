@@ -29,7 +29,9 @@ pop = PolyHosp$new()
 
 \item{\code{vorPolyHosp}}{the voronoi polygons}
 
-\item{\code{vorPop}}{the population inside each polygons}
+\item{\code{vorPopFiness}}{the population inside each polygons}
+
+\item{\code{vorPopRegion}}{the population inside each Region}
 }
 \if{html}{\out{</div>}}
 }
@@ -38,6 +40,8 @@ pop = PolyHosp$new()
 \itemize{
 \item \href{#method-new}{\code{PolyHosp$new()}}
 \item \href{#method-getMap}{\code{PolyHosp$getMap()}}
+\item \href{#method-getPopFiness}{\code{PolyHosp$getPopFiness()}}
+\item \href{#method-getPopRegion}{\code{PolyHosp$getPopRegion()}}
 \item \href{#method-clone}{\code{PolyHosp$clone()}}
 }
 }
@@ -70,6 +74,38 @@ get the leaflet map
 
 \subsection{Returns}{
 a leaflet map with the polygons
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getPopFiness"></a>}}
+\subsection{Method \code{getPopFiness()}}{
+get the population from a specific polygon by Finess
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PolyHosp$getPopFiness(finess)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{finess}}{the finess of the specific polygon}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getPopRegion"></a>}}
+\subsection{Method \code{getPopRegion()}}{
+get the population from a specific Region by name
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PolyHosp$getPopRegion(region)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{region}}{the finess of the specific polygon}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

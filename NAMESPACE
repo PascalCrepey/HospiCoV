@@ -2,6 +2,7 @@
 
 export(Parameters)
 export(PolyHosp)
+export(engine_run)
 export(mod_map_server)
 export(mod_map_ui)
 export(mod_model_server)
@@ -21,3 +22,4 @@ importFrom(shiny,shinyApp)
 importFrom(shiny,tagList)
 importFrom(sp,SpatialPointsDataFrame)
 importFrom(sp,over)
+useDynLib(HospiCov, .registration = TRUE)

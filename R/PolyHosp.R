@@ -22,8 +22,10 @@ PolyHosp <- R6::R6Class("PolyHosp",
     vorHBase = NULL,
     #' @field vorPolyHosp the voronoi polygons
     vorPolyHosp = NULL,
-    #' @field vorPop the population inside each polygons
-    vorPop = NULL,
+    #' @field vorPopFiness the population inside each polygons
+    vorPopFiness = NULL,
+    #' @field vorPopRegion the population inside each Region
+    vorPopRegion = NULL,
     #' @description
     #' Create a new `PolyHosp` object.
     #' @param hospitals list of hospitals on which we build the voronoi diagram
@@ -42,7 +44,8 @@ PolyHosp <- R6::R6Class("PolyHosp",
       self$vorPolyHosp = ggvoronoi::voronoi_polygon(self$vorHBase, x = "lng", y = "lat", outline = outlineFr)
       
       #now we build the population inside each polygons
-      self$vorPop = private$voronoi_pop(self$vorPolyHosp)
+      #and within the regions
+      private$build_voronoi_pop(self$vorPolyHosp)
     }, 
     
     #' @description 
@@ -67,21 +70,42 @@ PolyHosp <- R6::R6Class("PolyHosp",
                            Region)
                          )
       return(map)
+    }, 
+    
+    #' @description 
+    #' get the population from a specific polygon by Finess
+    #' @param finess the finess of the specific polygon
+    getPopFiness = function(finess){
+      if (!any(self$vorPopFiness[,FINESS_Voronoi == finess]))
+        stop("finess not found !")
+      return(self$vorPopFiness[FINESS_Voronoi == finess])
+    },
+    #' @description 
+    #' get the population from a specific Region by name
+    #' @param region the finess of the specific polygon
+    getPopRegion = function(region){
+      if (!any(self$vorPopRegion[,Region == region]))
+        stop("Region not found !")
+      return(self$vorPopRegion[Region == region])
     }
   ),
   private = list(
-    voronoi_pop = function(vorPolyHosp) {
+    #build the population for each polygon (FINESS) and Region
+    build_voronoi_pop = function(vorPolyHosp) {
       # Identification of the towns in each Voronoi polygon #
       data_towns <- copy(population_contact)
       towns <- SpatialPointsDataFrame(data_towns[,.(lng,lat)], 
                                       data = data_towns)
       data_towns[, c("FINESS_Voronoi","Region") := over(towns, vorPolyHosp)[, c("FINESS_GEO","Region")]]
       
-      # Compute the population per age per sex per Voronoi polygon #
-      pop_Voronoi <- data_towns[, lapply(.SD, sum),
+      # Compute the population per age per Voronoi polygon #
+      self$vorPopFiness <- data_towns[, lapply(.SD, sum),
                                 .SDcols = grep("^AGE", names(data_towns)),
-                                by = c("Region","FINESS_Voronoi")]
-      return(pop_Voronoi)
+                                by = c("FINESS_Voronoi")]
+      # Compute the population per age per Region #
+      self$vorPopRegion <- data_towns[, lapply(.SD, sum),
+                                .SDcols = grep("^AGE", names(data_towns)),
+                                by = c("Region")]
     },
     # finess_to_merge : vector of tessels' FINESS to be merged
     voronoi_tessel_merge = function(vorPolyHosp, finess_to_merge, name_merge) {

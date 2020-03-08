@@ -1,11 +1,13 @@
 #' Wrapper function running the C++ model
 #' @param params parameter object
 #' @param sname name of the scenario
-#' @param population population vector
+#' @param population population vector containing in the first cell the localization of the population
 #' @import data.table
 #' @export
 runMod <- function(params, sname, 
                    population) {
+  
+  #fix the starting date for cosmetic purposes
   startyear = 2020
   month = 2
   interval = 1
@@ -17,13 +19,21 @@ runMod <- function(params, sname,
     dates <- c(dates, latest.date)
     latest.date <- latest.date + interval
   }
+  
+  #fix the scenario name
+  loc = population[[1]]
+  sname = paste0(sname," - ",loc)
 
+  #get the population vector
+  pop = unlist(population[,-1])
   ## set the initial state
+  if (params$preInfected > 1) preInf = params$preInfected / sum(pop)
+  else preInf = params$preInfected
   #set the vaccination coverage into the initial state
-  initS = population * (1 - params$preImmune - params$preExposed - params$preInfected)
-  initE = population * params$preExposed
-  initI = population * params$preInfected
-  initR = population * params$preImmune
+  initS = pop * (1 - params$preImmune - params$preExposed - preInf)
+  initE = pop * params$preExposed
+  initI = pop * preInf
+  initR = pop * params$preImmune
   init = matrix(c(S = initS, 
                   E = initE, 
                   I = initI, 
@@ -41,7 +51,11 @@ runMod <- function(params, sname,
   res[, Time := dates[1:.N]]
   res[, Scenario := sname]
   
-  return(res)
+  finalRes = melt(res, id.vars = "Time", 
+                  measure.vars = patterns(c("^newC.*", "^N.*")),
+                  variable.name = "AgeGroup", value.name = c("Cases", "N"))
+  
+  return(finalRes)
 }
 
 

@@ -11,7 +11,7 @@ runMod(params, sname, population)
 
 \item{sname}{name of the scenario}
 
-\item{population}{population vector}
+\item{population}{population vector containing in the first cell the localization of the population}
 }
 \description{
 Wrapper function running the C++ model

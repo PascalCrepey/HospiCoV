@@ -96,7 +96,7 @@ public:
     N=S+E+I+R;
 
     
-    f_S_E = beta * S * (contact % ( I / N));
+    f_S_E =  ((beta * contact * I) / N) % S;
     
     dS = -f_S_E ;
     
@@ -214,10 +214,13 @@ void integrate_model(SARSCoVMod &F, arma::mat init, arma::mat &res, int start, i
     
 }
 
-// #
-// #Function that initialize (or reinitialize) the initial state of the model
-// #
 
+//' Function that initialize (or reinitialize) the initial state of the model
+//' @param params list of various model parameters
+//' @param init initial state of the model
+//'
+//' @return a matrix of the result
+//' @export
 // [[Rcpp::export]] 
 arma::mat engine_run(List params, arma::mat init){
 
@@ -229,7 +232,7 @@ arma::mat engine_run(List params, arma::mat init){
 
   int tend1 = days_in_year;
 
-  arma::mat res=arma::zeros<arma::mat>(init.n_elem+3*F.nage+1, days_in_year);
+  arma::mat res=arma::zeros<arma::mat>(init.n_elem+2*F.nage+1, days_in_year);
 //cout<<"bouh go for integration"<<endl;
   integrate_model(F, init, res, tstart1, tend1);
 
