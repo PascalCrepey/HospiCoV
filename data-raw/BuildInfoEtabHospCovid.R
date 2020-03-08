@@ -1,5 +1,7 @@
 library(data.table)
 library(stringi)
+library(stringr)
+library(openxlsx)
 
 info_etab = fread("data-raw/info_etab.csv")
 info_etab[ , RS := stri_enc_toascii(RS)]

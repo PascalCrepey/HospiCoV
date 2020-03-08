@@ -3,9 +3,17 @@
 #' R6 Class representing a set of Parameters
 #' 
 #' Parameters contains all the parameters related to the population and the epidemic
+#' @importFrom R6 R6Class
 #' @importFrom ggvoronoi voronoi_polygon
 #' @import leaflet
 #' @importFrom sp SpatialPointsDataFrame over
+#' @docType class
+#' @export
+#' @keywords population
+#' @return Object of \code{\link{R6Class}} with all the population data.
+#' @format \code{\link{R6Class}} object.
+#' @examples
+#' pop = PolyHosp$new()
 PolyHosp <- R6::R6Class("PolyHosp",
   public = list(
     #' @field nage number of age groups
@@ -45,11 +53,19 @@ PolyHosp <- R6::R6Class("PolyHosp",
         leaflet() %>%
         addTiles() %>%
         addPolylines() %>%
-        addCircleMarkers(lng = self$vorHBase$lng, 
-                         lat = self$vorHBase$lat, 
+        addCircleMarkers(lng = ~lng, 
+                         lat = ~lat, 
                          opacity = 0.8, 
                          radius = 2, 
-                         color = "red")
+                         color = "red",
+                         popup = ~ paste(
+                           RS,
+                           "<br>",
+                           FINESS_GEO,
+                           "<br>",
+                           "Region:",
+                           Region)
+                         )
       return(map)
     }
   ),

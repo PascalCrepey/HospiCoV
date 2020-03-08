@@ -2,7 +2,18 @@
 
 #' R6 Class representing a set of Parameters
 #' 
-#' Parameters contains all the parameters related to the population and the epidemic
+#' Parameters contains all the parameters related to the epidemic
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @import ggplot2
+#' @export
+#' @keywords parameter
+#' @return Object of \code{\link{R6Class}} with all the parameters related to the population and the epidemic.
+#' @format \code{\link{R6Class}} object.
+#' @examples
+#' params = Parameters$new()
+#'   
 Parameters <- R6::R6Class("Parameters",
   public = list(
     #' @field nage number of age groups
@@ -50,7 +61,7 @@ Parameters <- R6::R6Class("Parameters",
       self$R0 = R0
       
       #to be updated with true values
-      self$contact = diag(1, nrow = self$nage, ncol = self$nage)
+      self$contact = contact_matrix
       
       eig = eigen(self$contact)
       

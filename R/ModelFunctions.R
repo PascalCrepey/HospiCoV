@@ -1,11 +1,13 @@
-## Wrapper function running the C++ model
-
+#' Wrapper function running the C++ model
+#' @param params parameter object
+#' @param sname name of the scenario
+#' @param population population vector
 #' @import data.table
 #' @export
-runMod <- function(params, startyear, sname, 
+runMod <- function(params, sname, 
                    population) {
-
-  month = 1
+  startyear = 2020
+  month = 2
   interval = 1
   start.date <- as.Date(paste0(startyear, "-", month, "-01"))
   dates <- c(start.date)

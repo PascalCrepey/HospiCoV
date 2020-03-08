@@ -1,13 +1,11 @@
 ## Test run the model
-library(R6)
-
-source("R/DefaultParameters.R")
-source("R/ModelFunctions.R")
-source("R/Parameters.R")
+library(HospiCov)
 
 
 #build parameter object
 params = Parameters$new()
+
+population = PolyHosp$new()
 
 #run the model
 

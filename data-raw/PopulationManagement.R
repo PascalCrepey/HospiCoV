@@ -17,7 +17,7 @@ town_gps[, lat := as.numeric(unlist(strsplit(coordonnees_gps, ","))[1]),
 town_gps[, lng := as.numeric(unlist(strsplit(coordonnees_gps, ","))[2]),
          by = 1:town_gps[,.N]] # Longitude
 
-#### Data anagement on population ####
+#### Data Management on population ####
 ## Merge of pop_town_age and pop_town_age_arm to include arrondissement of Paris, Marseille and Lyon ##
 pop_town_age <- pop_town_age[!CODGEO %in% c(13055, 69123, 75056), ] # Codes of Paris, Marseille and Lyon as a whole city
 pop_town_age <- rbind(pop_town_age, 
