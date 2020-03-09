@@ -30,14 +30,12 @@ Parameters <- R6::R6Class("Parameters",
     progression = NULL,
     #' @field removal the rate of transfer from I to R
     removal = NULL,
-    #' @field susceptibility A vector of size *nage* for susceptibility adjustment
-    susceptibility = NULL,
     #' @field beta the transmission probability upon contact with an infected (retro computed from R0)
     beta = NULL,
-    #' @field R0 the basic reproduction number
-    R0 = NULL,
     #' @field contact the contact matrix
     contact = NULL,
+    #' @field agegroupnames the name of the agegroups
+    agegroupnames = NULL,
     #' @description
     #' Create a new `Parameters` object.
     #' @param R0 R0 (=3)
@@ -57,22 +55,113 @@ Parameters <- R6::R6Class("Parameters",
       #from I to R -> 6 days
       self$removal = 1/6
       
-      self$R0 = R0
+      private$.R0 = R0
+      
+      #change calibrated susceptibility value
+      if (R0 > 3) rsus = 3
+      else if (R0 < 1.5 ) rsus = 1.5
+      else rsus = round(R0, digits = 1)
+      x = CalibSusceptibility[R0 == rsus, susceptibility]
+      private$.susceptibility = c(x[1],x[1], 
+                                  x[2],x[2],
+                                  x[3],x[3],
+                                  x[4],x[4],
+                                  x[5],x[5],
+                                  x[6],x[6],
+                                  x[7],x[7],
+                                  x[8],x[8],
+                                  x[9])
       
       #to be updated with true values
       self$contact = contact_matrix
       
       #number of age-groups
       self$nage = nrow(contact_matrix)
+      self$agegroupnames = colnames(contact_matrix)
       
-      eig = eigen(self$contact)
+      eig = eigen(private$.susceptibility * self$contact)
       
       #retro compute the beta
       self$beta = R0 * self$removal/max(Re(eig$values))
       
-      self$susceptibility = rep(1, self$nage)
       
+      
+    },
+    
+    getList = function(){
+      list(
+        beta = self$beta,
+        nage = self$nage,
+        contact = self$contact,
+        removal = self$removal,
+        progression = self$progression,
+        preInfected = self$preInfected,
+        symptomatic = self$symptomatic,
+        preImmune = self$preImmune,
+        preExposed = self$preExposed, 
+        susceptibility = private$.susceptibility,
+        agegroupnames = self$agegroupnames
+      )
     }
+  ), 
+  active = list(
+    #' @field susceptibility A vector of size *nage* for susceptibility adjustment
+    susceptibility = function(x){
+      if (missing(x)) {
+        private$.susceptibility
+      }else{
+        stopifnot(is.vector(x), length(x) == self$nage || 
+                    (length(x) == 9 && self$nage == 17))
+        if (length(x) == 9) {
+          #convenient since we calibrate on fewer age groups
+          private$.susceptibility = c(x[1],x[1], 
+                                      x[2],x[2],
+                                      x[3],x[3],
+                                      x[4],x[4],
+                                      x[5],x[5],
+                                      x[6],x[6],
+                                      x[7],x[7],
+                                      x[8],x[8],
+                                      x[9])
+        }else {
+          private$.susceptibility = x
+        }
+        
+        #update beta
+        eig = eigen(private$.susceptibility * self$contact)
+        self$beta = private$R0 * self$removal/max(Re(eig$values))
+      }
+    },
+    #' @field R0 the basic reproduction number
+    R0 = function(value) {
+      if (missing(value)) {
+        private$.R0
+      }else{
+        stopifnot(is.numeric(value))
+        private$.R0 = value
+        #change calibrated susceptibility value
+        if (value > 3) rsus = 3
+        else if (value < 1.5 ) rsus = 1.5
+        else rsus = round(value, digits = 1)
+        x = CalibSusceptibility[R0 == rsus, susceptibility]
+        private$.susceptibility = c(x[1],x[1], 
+                                    x[2],x[2],
+                                    x[3],x[3],
+                                    x[4],x[4],
+                                    x[5],x[5],
+                                    x[6],x[6],
+                                    x[7],x[7],
+                                    x[8],x[8],
+                                    x[9])
+        #retro compute the beta
+        eig = eigen(private$.susceptibility * self$contact)
+        self$beta = private$.R0 * self$removal/max(Re(eig$values))
+      }
+    }
+  ), 
+  private = list(
+    .susceptibility = NULL,
+    .R0 = NULL
   )
 )
 

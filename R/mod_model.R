@@ -27,8 +27,7 @@ mod_model_ui <- function(id){
             width = 3
           ),
           mainPanel(
-              h2("Output"),
-              textOutput(ns("R0"))
+            plotOutput(ns("mainPlot"))
           )
       )  
   )
@@ -91,15 +90,22 @@ mod_model_server <- function(input, output, session){
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
-    output$R0 = renderText({ input$R0 })
+
+  output$mainPlot = renderPlot({
+    data = simulation()
+    ggplot(data, aes(x = Time, y = Cases, color = AgeGroup)) +
+      theme_classic() +
+      geom_line()
+  })
   
   simulation = reactive({
     #create Parameter
-    params = Parameters$new()
+    params = Parameters$new(input$R0)
     #create Population
     pHosp = PolyHosp$new()
     #run the simulation
-    
+    pop = vorhosp$getPopRegion("Ile-de-France")
+    finalRes = runMod(params = params$getList(), sname = "test", population = pop)
   })
 }
     

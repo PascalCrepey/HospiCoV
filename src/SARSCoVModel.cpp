@@ -41,7 +41,7 @@ public:
   arma::vec f_S_E, f_E_I, f_I_R;
   arma::vec newI, N;
   arma::mat contact;
-  //arma::vec susceptibility;
+  arma::vec susceptibility;
   double progression, removal, beta;
   
 
@@ -56,7 +56,7 @@ public:
     // probability of transmission
     beta = parameters["beta"];
     // susceptibility
-    //susceptibility=as<arma::colvec>(parameters["susceptibility"]);
+    susceptibility=as<arma::colvec>(parameters["susceptibility"]);
 
     //contact matrix
     contact=as<arma::mat>(parameters["contact"]);
@@ -96,7 +96,7 @@ public:
     N=S+E+I+R;
 
     
-    f_S_E =  ((beta * contact * I) / N) % S;
+    f_S_E =  ((beta * contact * I) / N) % S % susceptibility;
     
     dS = -f_S_E ;
     
@@ -181,8 +181,7 @@ void integrate_model(SARSCoVMod &F, arma::mat init, arma::mat &res, int start, i
     //put the population size
     state_type myinit(const_cast<double*>(y), F.nage, F.ncol, false, true);
     arma::vec popsize=sum(myinit,1);
-    
-    copy(popsize.begin(), popsize.end(), res.colptr(i)+size+1+3*F.nage);
+    copy(popsize.begin(), popsize.end(), res.colptr(i)+size+1+F.nage);
 
     for (t_next = tmin + delta_t; t_next <= tmax; t_next += delta_t)
     { 

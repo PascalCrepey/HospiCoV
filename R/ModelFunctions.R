@@ -54,6 +54,8 @@ runMod <- function(params, sname,
   finalRes = melt(res, id.vars = "Time", 
                   measure.vars = patterns(c("^newC.*", "^N.*")),
                   variable.name = "AgeGroup", value.name = c("Cases", "N"))
+  finalRes[, AgeGroup := factor(params$agegroupnames[AgeGroup], 
+                                levels = params$agegroupnames)]
   
   return(finalRes)
 }
