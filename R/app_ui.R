@@ -5,14 +5,13 @@ app_ui <- function() {
 ##    golem_add_external_resources(),
     # List the first level UI elements here 
       navbarPage("HospiCov", inverse = T,
-                 tabPanel("Map",
-                          mod_map_ui("map_ui_1")
-                          ),
-                 tabPanel("Model",
-                          mod_model_ui("model_ui_1")
-                          )
-                 
-                 )
+         tabPanel("Model",
+                  mod_model_ui("model_ui_1")
+                  ),
+         tabPanel("Map",
+                  mod_map_ui("map_ui_1")
+         )
+      )
   )
 }
 

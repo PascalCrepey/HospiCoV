@@ -20,17 +20,32 @@ mod_model_ui <- function(id){
       sidebarLayout(
           sidebarPanel(
             tabsetPanel(
-              tabPanel("Epidemic parameters", 
+              tabPanel("Epidemic params.", 
                        uiOutput(ns("paramsEpiUI"))),
-              tabPanel("Population parameters",
+              tabPanel("Population params.",
                        uiOutput(ns("paramsPopUI")))
             ), 
             width = 3
           ),
           mainPanel(
-            fluidRow(column(6, selectInput(inputId = ns("selectedAG"), label = NULL,
+            fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
                                            choices = c("All", "Aggregated", 
-                                                       agenames), selected = "All"))),
+                                                       agenames), selected = "All")),
+                     column(4, selectInput(inputId = ns("selectedOutcome"), 
+                                           label = NULL,
+                                           choices = c("Infected", 
+                                                         "Symptomatic cases", 
+                                                         "Mild cases", 
+                                                         "Hospitalized cases", 
+                                                         "ICU cases", 
+                                                         "ICU with O2"), 
+                                          selected = "Infected")),
+                     column(4, selectInput(inputId = ns("selectedDuration"),
+                                           label = NULL,
+                                           choices = c("Week", "Month", "Trimester", 
+                                                       "Semester", "Year"),
+                                           selected = "Trimester"
+                                           ))),
             fluidRow(column(12,
               plotlyOutput(ns("mainPlot"))
             ))
@@ -49,6 +64,11 @@ mod_model_ui <- function(id){
 mod_model_server <- function(input, output, session){
   ns <- session$ns
   params = Parameters$new()
+  SimulationParameters = reactiveValues(
+    R0 = 3, 
+    Duration = "Trimester", 
+    Outcome = "Infected" 
+  )
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
   output$paramsEpiUI = renderUI({
@@ -120,7 +140,7 @@ mod_model_server <- function(input, output, session){
   
   simulation = reactive({
     #create Parameter
-    params = Parameters$new(input$R0)
+    params = Parameters$new(SimulationParameters$R0)
     params$preInfected = 40
     #create Population
     pHosp = PolyHosp$new()
@@ -129,6 +149,10 @@ mod_model_server <- function(input, output, session){
     pop = pHosp$getPopRegion("Bretagne")
 
     finalRes = runMod(params = params$getList(), sname = "test", population = pop)
+  })
+  
+  observeEvent(input$R0, {
+    SimulationParameters$R0 = input$R0
   })
 }
     
