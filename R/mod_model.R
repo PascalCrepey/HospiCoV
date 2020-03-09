@@ -104,7 +104,7 @@ mod_model_server <- function(input, output, session){
     #create Population
     pHosp = PolyHosp$new()
     #run the simulation
-    pop = vorhosp$getPopRegion("Ile-de-France")
+    pop = pHosp$getPopRegion("Ile-de-France")
     finalRes = runMod(params = params$getList(), sname = "test", population = pop)
   })
 }
