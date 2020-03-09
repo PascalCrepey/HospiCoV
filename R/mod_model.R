@@ -15,6 +15,7 @@
 #' @importFrom shiny NS tagList 
 mod_model_ui <- function(id){
   ns <- NS(id)
+  agenames = colnames(contact_matrix)
   tagList(
       sidebarLayout(
           sidebarPanel(
@@ -27,7 +28,13 @@ mod_model_ui <- function(id){
             width = 3
           ),
           mainPanel(
-            plotOutput(ns("mainPlot"))
+            fluidRow(column(6, selectInput(inputId = ns("selectedAG"), label = NULL,
+                                           choices = c("All", "Aggregated", 
+                                                       agenames), selected = "All"))),
+            fluidRow(column(12,
+              plotlyOutput(ns("mainPlot"))
+            ))
+            
           )
       )  
   )
@@ -36,6 +43,7 @@ mod_model_ui <- function(id){
 # Module Server
     
 #' @rdname mod_model
+#' @importFrom plotly renderPlotly
 #' @export
 #' @keywords internal
 mod_model_server <- function(input, output, session){
@@ -91,20 +99,33 @@ mod_model_server <- function(input, output, session){
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
 
-  output$mainPlot = renderPlot({
+  output$mainPlot = renderPlotly({
     data = simulation()
-    ggplot(data, aes(x = Time, y = Cases, color = AgeGroup)) +
-      theme_classic() +
-      geom_line()
+    selectedAG = input$selectedAG
+    if (selectedAG == "All") {
+      p = ggplot(data, aes(x = Time, y = Cases, color = AgeGroup)) +
+        theme_classic() +
+        geom_line()
+    }else if (selectedAG == "Aggregated") {
+      p = ggplot(data[, Cases:=sum(Cases), by = "Time"], aes(x = Time, y = Cases)) +
+        theme_classic() +
+        geom_line()
+    } else{
+      p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Cases, color = AgeGroup)) +
+        theme_classic() +
+        geom_line()
+    }
+    p
   })
   
   simulation = reactive({
     #create Parameter
     params = Parameters$new(input$R0)
+    params$preInfected = 40
     #create Population
     pHosp = PolyHosp$new()
     #run the simulation
-    pop = vorhosp$getPopRegion("Ile-de-France")
+    pop = pHosp$getPopRegion("Bretagne")
     finalRes = runMod(params = params$getList(), sname = "test", population = pop)
   })
 }

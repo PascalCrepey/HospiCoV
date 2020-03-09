@@ -23,7 +23,8 @@ Imports:
     maptools,
     RcppGSL,
     ggplot2,
-    sp
+    sp,
+    plotly
 RoxygenNote: 7.0.2
 Depends: R (>= 3.0), data.table
 LinkingTo: Rcpp, RcppArmadillo

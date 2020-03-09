@@ -4,11 +4,11 @@ library(HospiCov)
 
 #build parameter object
 params = Parameters$new(R0 = 1.5)
-
+params$preInfected = 100
 vorhosp = PolyHosp$new()
 
 #run the model
-pop = vorhosp$getPopRegion("Bretagne")
+pop = vorhosp$getPopRegion("Ile-de-France")
 finalRes = runMod(params = params$getList(), sname = "test", population = pop)
 
 finalRes[, sum(Cases/N), by = AgeGroup]
