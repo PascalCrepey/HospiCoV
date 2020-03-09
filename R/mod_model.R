@@ -125,7 +125,9 @@ mod_model_server <- function(input, output, session){
     #create Population
     pHosp = PolyHosp$new()
     #run the simulation
+
     pop = pHosp$getPopRegion("Bretagne")
+
     finalRes = runMod(params = params$getList(), sname = "test", population = pop)
   })
 }
