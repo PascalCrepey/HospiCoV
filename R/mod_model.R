@@ -67,7 +67,11 @@ mod_model_server <- function(input, output, session){
   SimulationParameters = reactiveValues(
     R0 = 3, 
     Duration = "Trimester", 
-    Outcome = "Infected" 
+    Outcome = "Infected", 
+    Region = "Bretagne",
+    sname = "test",
+    #create Population
+    pHosp = PolyHosp$new()
   )
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
@@ -144,13 +148,13 @@ mod_model_server <- function(input, output, session){
     #create Parameter
     params = Parameters$new(SimulationParameters$R0)
     params$preInfected = 40
-    #create Population
-    pHosp = PolyHosp$new()
+
     #run the simulation
+    pop = SimulationParameters$pHosp$getPopRegion(SimulationParameters$Region)
 
-    pop = pHosp$getPopRegion("Bretagne")
-
-    finalRes = runMod(params = params$getList(), sname = "test", population = pop)
+    finalRes = runMod(params = params$getList(), 
+                      sname = SimulationParameters$sname, 
+                      population = pop)
   })
   
   observeEvent(input$R0, {
