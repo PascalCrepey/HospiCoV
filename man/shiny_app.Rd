@@ -2,10 +2,10 @@
 % Please edit documentation in R/run_app.R
 \name{shiny_app}
 \alias{shiny_app}
-\title{Launch app}
+\title{Launch the shiny application}
 \usage{
 shiny_app()
 }
 \description{
-Launch app
+Launch the shiny application
 }

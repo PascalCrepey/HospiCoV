@@ -38,13 +38,20 @@ params = Parameters$new()
 
 \item{\code{removal}}{the rate of transfer from I to R}
 
-\item{\code{susceptibility}}{A vector of size *nage* for susceptibility adjustment}
-
 \item{\code{beta}}{the transmission probability upon contact with an infected (retro computed from R0)}
 
-\item{\code{R0}}{the basic reproduction number}
-
 \item{\code{contact}}{the contact matrix}
+
+\item{\code{agegroupnames}}{the name of the agegroups}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{susceptibility}}{A vector of size *nage* for susceptibility adjustment}
+
+\item{\code{R0}}{the basic reproduction number}
 }
 \if{html}{\out{</div>}}
 }
@@ -52,6 +59,7 @@ params = Parameters$new()
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Parameters$new()}}
+\item \href{#method-getList}{\code{Parameters$getList()}}
 \item \href{#method-clone}{\code{Parameters$clone()}}
 }
 }
@@ -73,6 +81,14 @@ Create a new `Parameters` object.
 \subsection{Returns}{
 A new `Parameters` object.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getList"></a>}}
+\subsection{Method \code{getList()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Parameters$getList()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
