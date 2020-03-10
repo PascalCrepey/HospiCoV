@@ -50,7 +50,8 @@ mod_model_ui <- function(id){
                     tabPanel(
                         title = "Time series",
                         fluidRow(column(12,
-                                        plotly::plotlyOutput(ns("mainPlot"))
+                                        plotly::plotlyOutput(ns("mainPlot")),
+                                        plotly::plotlyOutput(ns("secondPlot"))
                                         )
                                  )
                     ),
@@ -168,28 +169,22 @@ mod_model_server <- function(input, output, session){
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
+  observe({
+      req(input$selectedOutcome)
+      req(input$selectedAG)
+      if (input$selectedOutcome == "Infected") {
+          curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
+      } else if (input$selectedOutcome != "Infected") {
+          curves = renderCurves(outcome_table(), input$selectedOutcome, input$selectedAG)
+      }
 
-  output$mainPlot = renderPlotly({
-    data = simulation()
-    selectedAG = input$selectedAG
-    if (selectedAG == "All") {
-      p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
-        theme_classic() +
-        geom_line()
-    }else if (selectedAG == "Aggregated") {
-      dataAgg = data[, sum(Infected), by = "Time"]
-      setnames(dataAgg, "V1", "Infected")
-      p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
-        theme_classic() +
-        geom_line()
-    } else{
-      p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
-        theme_classic() +
-        geom_line()
-    }
-    p
+      output$mainPlot   = curves$mainPlot
+      output$secondPlot = curves$secondPlot
+
   })
 
+  
+  
   ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
     #create Parameter
@@ -266,24 +261,28 @@ mod_model_server <- function(input, output, session){
   ##-----------------------------------------------------
 
   ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
-  
-
   observe({
       req(input$selectedOutcome)
-      if (input$selectedOutcome != "Infected"){
-      out = outcome_render(outcome_table(),
-                             start_time = input$dateRange[[1]],
-                             end_time = input$dateRange[[2]],
-                             outcome = input$selectedOutcome)
-  
+      if (input$selectedOutcome == "Infected") {
+          out = outcome_render(simulation(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]],
+                               outcome = input$selectedOutcome)
+      }
+      else if (input$selectedOutcome != "Infected"){
+          out = outcome_render(outcome_table(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]],
+                               outcome = input$selectedOutcome)
+      }
       table = DT::datatable(out$table,
                             fillContainer = F,
                             options = list(pageLength = 17,
                                            fillContainer = F))
-                          
+      
       output$outcomePlot  = plotly::renderPlotly({ out$plot })
       output$outcomeTable = DT::renderDT({ table })
-      }
+       
   })
 
   

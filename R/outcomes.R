@@ -98,7 +98,19 @@ outcome_render = function(outcome_table,
         fig = fig %>% add_trace(y = ~non.invasive, name = 'Non-invasive')
         fig = fig %>% add_trace(y = ~non.ventil, name = 'Non-ventil')
         fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
-    }        
+    }
+    else if (outcome == "Infected") {
+        plot_data = data[, sum(Infected), by = AgeGroup]
+        setnames(plot_data, old = "V1", new = "Infected")
+        fig = plot_ly(plot_data,
+                      x = ~AgeGroup,
+                      y = ~Infected,
+                      type = 'bar',
+                      name = 'New infected cases')
+        fig = fig %>% layout(yaxis = list(title = 'Count'))
+        
+    }
+    
 
     return(list(plot = fig,
                 table = plot_data))
