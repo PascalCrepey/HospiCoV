@@ -127,7 +127,9 @@ mod_model_server <- function(input, output, session){
         theme_classic() +
         geom_line()
     }else if (selectedAG == "Aggregated") {
-      p = ggplot(data[, Cases:=sum(Cases), by = "Time"], aes(x = Time, y = Cases)) +
+      dataAgg = data[, sum(Cases), by = "Time"]
+      setnames(dataAgg, "V1", "Cases")
+      p = ggplot(dataAgg, aes(x = Time, y = Cases)) +
         theme_classic() +
         geom_line()
     } else{
