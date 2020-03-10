@@ -10,6 +10,9 @@ app_ui <- function() {
                   ),
          tabPanel("Map",
                   mod_map_ui("map_ui_1")
+         ),
+         tabPanel("Population",
+                  mod_pop_ui("pop_ui_1")
          )
       )
   )
