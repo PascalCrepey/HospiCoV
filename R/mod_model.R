@@ -267,24 +267,28 @@ mod_model_server <- function(input, output, session){
   ##-----------------------------------------------------
 
   ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
-  
-
   observe({
       req(input$selectedOutcome)
-      if (input$selectedOutcome != "Infected"){
-      out = outcome_render(outcome_table(),
-                             start_time = input$dateRange[[1]],
-                             end_time = input$dateRange[[2]],
-                             outcome = input$selectedOutcome)
-  
+      if (input$selectedOutcome == "Infected") {
+          out = outcome_render(simulation(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]],
+                               outcome = input$selectedOutcome)
+      }
+      else if (input$selectedOutcome != "Infected"){
+          out = outcome_render(outcome_table(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]],
+                               outcome = input$selectedOutcome)
+      }
       table = DT::datatable(out$table,
                             fillContainer = F,
                             options = list(pageLength = 17,
                                            fillContainer = F))
-                          
+      
       output$outcomePlot  = plotly::renderPlotly({ out$plot })
       output$outcomeTable = DT::renderDT({ table })
-      }
+       
   })
 
   
