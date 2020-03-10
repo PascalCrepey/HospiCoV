@@ -49,7 +49,8 @@ outcome_barchart = function(outcome_table,
 
     
     data = outcome_table[Time >= start_time & Time <= end_time,]
-    age_groups = unique(outcome_table$AgeGroup)
+    data[AgeGroup == "0-4", AgeGroup := "00-04"]
+    data[AgeGroup == "5-9", AgeGroup := "05-09"]
     
     if (outcome == "severity") {
         ## Prepare data

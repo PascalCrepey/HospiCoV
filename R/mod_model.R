@@ -18,53 +18,53 @@ mod_model_ui <- function(id){
     
   agenames = colnames(contact_matrix)
     tagList(
-        tabsetPanel(
-            tabPanel(
-                title = "Epidemic curves",
-                sidebarLayout(
-                    sidebarPanel(
-                        h4("Model parameters"),
-                        tabsetPanel(
-                            tabPanel("Epidemic params.", 
-                                     uiOutput(ns("paramsEpiUI"))),
-                            tabPanel("Population params.",
-                                     uiOutput(ns("paramsPopUI")))
-                        )
-                    ),
-                    mainPanel(
-                        fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
-                                                       choices = c("All", "Aggregated", 
-                                                                   agenames), selected = "All")),
-                                 column(4, selectInput(inputId = ns("selectedOutcome"), 
-                                                       label = NULL,
-                                                       choices = c("Infected", 
-                                                                   "Symptomatic cases", 
-                                                                   "Mild cases", 
-                                                                   "Hospitalized cases", 
-                                                                   "ICU cases", 
-                                                                   "ICU with O2"), 
-                                                       selected = "Infected")),
-                                 column(4, selectInput(inputId = ns("selectedDuration"),
-                                                       label = NULL,
-                                                       choices = c("Week", "Month", "Trimester", 
-                                                                   "Semester", "Year"),
-                                                       selected = "Trimester"
-                                                       ))),
+        sidebarLayout(
+            sidebarPanel(
+                h4("Model parameters"),
+                tabsetPanel(
+                    tabPanel("Epidemic params.", 
+                             uiOutput(ns("paramsEpiUI"))),
+                    tabPanel("Population params.",
+                             uiOutput(ns("paramsPopUI")))
+                )
+            ),
+            mainPanel(
+                fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
+                                               choices = c("All", "Aggregated", 
+                                                           agenames), selected = "All")),
+                         column(4, selectInput(inputId = ns("selectedOutcome"), 
+                                               label = NULL,
+                                               choices = c("Infected" = "Infected", 
+                                                           "Symptomatic cases" = "Symptomatic cases",  
+                                                           "Severity" = "severity", 
+                                                           "ICU admissions" = "ICU", 
+                                                           "Ventilation in ICU" = "ventilation"), 
+                                               selected = "Infected")),
+                         column(4, selectInput(inputId = ns("selectedDuration"),
+                                               label = NULL,
+                                               choices = c("Week", "Month", "Trimester", 
+                                                           "Semester", "Year"),
+                                               selected = "Trimester"))
+                         ),
+                tabsetPanel(
+                    tabPanel(
+                        title = "Time series",
                         fluidRow(column(12,
                                         plotly::plotlyOutput(ns("mainPlot"))
                                         )
                                  )
-                    )
-                )
-            ),
-            tabPanel(
-                title = "Outcomes",
-                sidebarLayout(
-                    sidebarPanel(
-                        h4("Outcomes"),
-                        tabsetPanel(
-                            tabPanel(
-                                "Severity",
+                    ),
+                    tabPanel(
+                        title = "Age distribution",
+                        uiOutput(ns("dateRangeInput")),
+                        plotly::plotlyOutput(ns("outcome"))
+                    ),
+                    tabPanel(
+                        title = "Outcomes probabilities",
+                        fluidRow(
+                            column(
+                                4,
+                                h4("Severity"),
                                 HTML(
                                     "Risk of being severe (from 0 to 1), for each age group",
                                     "</br>",
@@ -72,29 +72,27 @@ mod_model_ui <- function(id){
                                 a("Guan et al.", href = "https://www.nejm.org/doi/full/10.1056/NEJMoa2002032", target = "_blank"),
                                 DT::DTOutput(ns("severity_risk"))
                             ),
-                            tabPanel(
-                                "ICU hospit",
+                            column(
+                                4,
+                                h4("ICU admissions"),
                                 HTML(
                                     "Risk of being admitted to ICU (from 0 to 1), for each age group",
                                     "</br>",
                                     "Source:"),
                                 a("Guan et al.", href = "https://www.nejm.org/doi/full/10.1056/NEJMoa2002032", target = "_blank"),
                                 DT::DTOutput(ns("ICU_risk"))
+                            ),
+                            column(
+                                4,
+                                h4("Risk of ventilation when admitted in ICU"),
+                                HTML(
+                                    "Risk of ventilation when admitted to ICU, overall, and for invasive ventilation",
+                                    "</br>",
+                                    "Source:"),
+                                a("Yang et al.", href = "https://www.thelancet.com/journals/lanres/article/PIIS2213-2600(20)30079-5/fulltext", target = "_blank"),
+                                DT::DTOutput(ns("ventil_risks"))
                             )
-                        ),
-                        width = 3
-                    ),
-                    mainPanel(
-                        fluidRow(column(12,
-                                        uiOutput(ns("dateRangeInput")),
-                                        radioButtons(ns("outcomeType"),
-                                                     label = "Outcome",
-                                                     choices = c("Severity"       = "severity",
-                                                                 "ICU admissions" = "ICU",
-                                                                 "Ventilation in ICU" = "ventilation")),                                                     
-                                        plotly::plotlyOutput(ns("outcome"))
-                                        )
-                                 )
+                        )
                     )
                 )
             )
@@ -231,7 +229,8 @@ mod_model_server <- function(input, output, session){
                   label = "Date range",
                   min = min,
                   max = max,
-                  value = c(min, max))
+                  value = c(min, max),
+                  width = "90%")
       )
   })
 
@@ -249,9 +248,16 @@ mod_model_server <- function(input, output, session){
                                  editable  = list(target = "column",
                                                   disable = list(columns = 1))
                                  )
+
+  ventil_risks_table = DT::datatable(ventil_risks,
+                                     selection = list(target = "column", mode = "single"),
+                                     options   = list(pageLength = 1),
+                                     editable  = list(target = "column")
+                                     )
   
   output$severity_risk = DT::renderDT({ severity_risk_table })
   output$ICU_risk = DT::renderDT({ ICU_risk_table })
+  output$ventil_risks = DT::renderDT({ ventil_risks_table })
   ##-----------------------------------------------------
 
   ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
@@ -260,7 +266,7 @@ mod_model_server <- function(input, output, session){
       outcome_barchart(outcome_table(),
                        start_time = input$dateRange[[1]],
                        end_time = input$dateRange[[2]],
-                       outcome = input$outcomeType)
+                       outcome = input$selectedOutcome)
   })
 
 
