@@ -29,6 +29,7 @@ mod_model_ui <- function(id){
                 )
             ),
             mainPanel(
+                h3("Output"),
                 fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
                                                choices = c("All", "Aggregated", 
                                                            agenames), selected = "All")),
@@ -57,7 +58,12 @@ mod_model_ui <- function(id){
                     tabPanel(
                         title = "Age distribution",
                         uiOutput(ns("dateRangeInput")),
-                        plotly::plotlyOutput(ns("outcome"))
+                        fluidRow(column(12,
+                            plotly::plotlyOutput(ns("outcomePlot"))
+                        )),
+                        fluidRow(column(12,
+                            DT::DTOutput(ns("outcomeTable"))
+                        ))
                     ),
                     tabPanel(
                         title = "Outcomes probabilities",
@@ -262,13 +268,26 @@ mod_model_server <- function(input, output, session){
 
   ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
   
-  output$outcome = plotly::renderPlotly({
-      outcome_barchart(outcome_table(),
-                       start_time = input$dateRange[[1]],
-                       end_time = input$dateRange[[2]],
-                       outcome = input$selectedOutcome)
+
+  observe({
+      req(input$selectedOutcome)
+      if (input$selectedOutcome != "Infected"){
+      out = outcome_render(outcome_table(),
+                             start_time = input$dateRange[[1]],
+                             end_time = input$dateRange[[2]],
+                             outcome = input$selectedOutcome)
+  
+      table = DT::datatable(out$table,
+                            fillContainer = F,
+                            options = list(pageLength = 17,
+                                           fillContainer = F))
+                          
+      output$outcomePlot  = plotly::renderPlotly({ out$plot })
+      output$outcomeTable = DT::renderDT({ table })
+      }
   })
 
+  
 
   ## ----- END OF OUTCOMES ----------------------------------------------
   

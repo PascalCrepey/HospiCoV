@@ -35,17 +35,16 @@ compute_outcomes <- function(modelOutput,
     
 }
 
-
-#' Render stacked bar chart by age distribution
+#' Render stacked bar chart and table by age distribution
 #'
 #' @param outcome_table the table returned by function compute_outcomes
 #'
 #' @importFrom plotly plot_ly add_trace layout
 #' @importFrom magrittr %>%
-outcome_barchart = function(outcome_table,
-                            start_time,
-                            end_time,
-                            outcome = "severity") {
+outcome_render = function(outcome_table,
+                          start_time,
+                          end_time,
+                          outcome = "severity") {
 
     
     data = outcome_table[Time >= start_time & Time <= end_time,]
@@ -101,6 +100,7 @@ outcome_barchart = function(outcome_table,
         fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
     }        
 
-    return(fig)
+    return(list(plot = fig,
+                table = plot_data))
 
 }
