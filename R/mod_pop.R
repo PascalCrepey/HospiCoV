@@ -30,6 +30,7 @@ mod_pop_ui <- function(id){
     
 #' @rdname mod_pop
 #' @import leaflet
+#' @importFrom shinyWidgets multiInput updateMultiInput
 #' @export
 #' @keywords internal
     
@@ -51,7 +52,7 @@ mod_pop_server <- function(input, output, session){
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
     output$PopSelectionUI = renderUI({
       tagList(
-        if(input$Selectregion){
+        if (input$Selectregion){
           fluidRow(
             column(6, multiInput(inputId = ns("Region"), 
                                  label = "Select",
