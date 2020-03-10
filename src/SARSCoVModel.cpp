@@ -235,5 +235,6 @@ arma::mat engine_run(List params, arma::mat init){
 //cout<<"bouh go for integration"<<endl;
   integrate_model(F, init, res, tstart1, tend1);
 
-  return(res);
+  //return the transposed matrix
+  return(res.t());
 }
