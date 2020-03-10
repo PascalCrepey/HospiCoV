@@ -13,14 +13,14 @@ library(stringi)
 contact_matrix <- as.matrix(read.xlsx("./data-raw/ContactMatrix.xlsx"))
 rownames(contact_matrix) <- colnames(contact_matrix)
 
-## Population data ##
-population <- readRDS("./data-raw/Population.rds")
+# ## Population data ##
+# population <- readRDS("./data-raw/Population.rds")
 
 
 #### Aggregate population data to match contact matrix ####
 # Reminder : SEXE1 = Men and SEXE2 = Women #
 ## Melt data ##
-population_melt <- melt(population[, -c("POP_TOT2017","lat","lng")], 
+population_melt <- melt(Population[, -c("POP_TOT2017","lat","lng")], 
                         id.vars = c("CODGEO","LIBGEO"))
 population_melt <- population_melt[order(CODGEO,variable)]
 population_melt[, sex := as.numeric(substr(variable,5,5))]
@@ -66,7 +66,7 @@ population_contact <- dcast(population_melt,
 
 ## Merge with GPS coordinates ##
 population_contact <- merge(population_contact,
-                            population[, .(CODGEO, POP_TOT2017, lat, lng)],
+                            Population[, .(CODGEO, POP_TOT2017, lat, lng)],
                             by = "CODGEO")
 
 population_contact[, LIBGEO := stringi::stri_trans_general(LIBGEO, "latin-ASCII")]
