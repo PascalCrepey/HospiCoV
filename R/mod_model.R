@@ -47,7 +47,7 @@ mod_model_ui <- function(id){
                                            selected = "Trimester"
                                            ))),
             fluidRow(column(12,
-              plotlyOutput(ns("mainPlot"))
+              plotly::plotlyOutput(ns("mainPlot"))
             ))
             
           )
