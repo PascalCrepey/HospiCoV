@@ -17,10 +17,11 @@
 #' @importFrom shiny NS tagList 
 mod_pop_ui <- function(id){
   ns <- NS(id)
-  fluidRow(column(12, radioButtons(inputId = ns("Selectregion"), 
+  fluidRow(column(12, radioButtons(inputId = ns("SelectRegion"), 
                                    label = "Selection by ",
-                                   choices = c("FINESS" = FALSE, 
-                                               "Region" = TRUE),
+                                   choices = c("FINESS", 
+                                               "Region"),
+                                   selected = "Region",
                                    inline = TRUE)),
            column(12, uiOutput(ns("PopSelectionUI")))
   )
@@ -31,6 +32,7 @@ mod_pop_ui <- function(id){
 #' @rdname mod_pop
 #' @import leaflet
 #' @importFrom shinyWidgets multiInput updateMultiInput
+#' @importFrom shinyjs hidden show hide
 #' @export
 #' @keywords internal
     
@@ -38,49 +40,70 @@ mod_pop_server <- function(input, output, session){
     ns <- session$ns
     pHosp = PolyHosp$new()
     npoly = length(pHosp$vorPolyHosp@data[,"FINESS_GEO"])
+    nregion = length(pHosp$vorPolyRegion@data$Region)
     PopParameters = reactiveValues(
-      Region = "Bretagne",
+      Region = "Ile-de-France",
       Polygon = "350000741",
-      Selectregion = FALSE,
+      SelectRegion = TRUE,
       #create Population
       pHosp = pHosp,
       SelPolygon = rep(FALSE, npoly),
+      SelRegion = rep(FALSE, nregion),
       colPolygon = rep("blue", npoly),
-      alphaPolygon = rep(0.05, npoly)
+      colRegion = rep("blue", nregion),
+      alphaPolygon = rep(0.05, npoly),
+      alphaRegion = rep(0.05, nregion)
     )
     
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
     output$PopSelectionUI = renderUI({
       tagList(
-        if (input$Selectregion){
+        #if (input$Selectregion){
           fluidRow(
-            column(6, multiInput(inputId = ns("Region"), 
-                                 label = "Select",
-                                 choices = unique(hospCovid[, Region])[order(unique(hospCovid[, Region]))],
-                                 selected = PopParameters$Region,
-                                 width = "100%",
-                                 options = list(enable_search = FALSE,
-                                                non_selected_header = "Non-selected",
-                                                selected_header = "Selected"))),
-            column(6, leaflet::leafletOutput(ns("mapRegion"), height = 800))
+            column(6, 
+             (multiInput(inputId = ns("Region"), 
+                             label = "Select",
+                             choices = unique(hospCovid[, Region])[order(unique(hospCovid[, Region]))],
+                             selected = PopParameters$Region,
+                             width = "100%",
+                             options = list(enable_search = FALSE,
+                                            non_selected_header = "Non-selected",
+                                            selected_header = "Selected"))),
+             shinyjs::hidden(multiInput(inputId = ns("Polygon"), 
+                         label = "Select",
+                         choiceNames = hospCovid[, paste(FINESS_GEO, 
+                                                         Libelle, 
+                                                         sep = "-")],
+                         choiceValues = hospCovid[, FINESS_GEO],
+                         selected = NULL,
+                         width = "100%",
+                         options = list(enable_search = TRUE,
+                                        non_selected_header = "Non-selected",
+                                        selected_header = "Selected"))) 
+              
+            ),
+            column(6, 
+                   shinyjs::hidden(leaflet::leafletOutput(ns("mapPolygon"), height = 800)),
+                   (leaflet::leafletOutput(ns("mapRegion"), height = 800))
+                   )
           )
-        }
-        else{
-          fluidRow(
-            column(6, multiInput(inputId = ns("Polygon"), 
-                                 label = "Select",
-                                 choiceNames = hospCovid[, paste(FINESS_GEO, 
-                                                                 Libelle, 
-                                                                 sep = "-")],
-                                 choiceValues = hospCovid[, FINESS_GEO],
-                                 selected = NULL,
-                                 width = "100%",
-                                 options = list(enable_search = TRUE,
-                                                non_selected_header = "Non-selected",
-                                                selected_header = "Selected"))),
-            column(6, leaflet::leafletOutput(ns("mapPolygon"), height = 700))
-          )
-        }
+        #}
+        # else{
+        #   fluidRow(
+        #     column(6, multiInput(inputId = ns("Polygon"), 
+        #                          label = "Select",
+        #                          choiceNames = hospCovid[, paste(FINESS_GEO, 
+        #                                                          Libelle, 
+        #                                                          sep = "-")],
+        #                          choiceValues = hospCovid[, FINESS_GEO],
+        #                          selected = NULL,
+        #                          width = "100%",
+        #                          options = list(enable_search = TRUE,
+        #                                         non_selected_header = "Non-selected",
+        #                                         selected_header = "Selected"))),
+        #     column(6, leaflet::leafletOutput(ns("mapPolygon"), height = 700))
+        #   )
+        # }
       )
     })
     
@@ -97,22 +120,63 @@ mod_pop_server <- function(input, output, session){
                          opacity = 0.8, 
                          radius = 2, 
                          color = "red") %>% 
-        addPolygons(stroke = TRUE, smoothFactor = 0.3, fillOpacity = PopParameters$alphaPolygon,
-                    fillColor = PopParameters$colPolygon,
+        addPolygons(stroke = TRUE, smoothFactor = 0.3, fillOpacity = isolate(PopParameters$alphaPolygon),
+                    fillColor = isolate(PopParameters$colPolygon),
                     label = ~paste(FINESS_GEO,RS,sep="-"), layerId = ~FINESS_GEO)
       })
+    output$mapRegion = leaflet::renderLeaflet({
+      #browser()
+      PopParameters$pHosp$vorPolyRegion %>%
+        leaflet() %>%
+        clearShapes() %>% 
+        addTiles() %>%
+        addPolylines() %>%
+        # addCircleMarkers(lng = ~lng, 
+        #                  lat = ~lat, 
+        #                  opacity = 0.8, 
+        #                  radius = 2, 
+        #                  color = "red") %>% 
+        addPolygons(stroke = TRUE, smoothFactor = 0.3, fillOpacity = isolate(PopParameters$alphaRegion),
+                    fillColor = isolate(PopParameters$colRegion),
+                    label = ~Region, layerId = ~Region)
+    })
+    
+    observeEvent(PopParameters$colPolygon,{
+        leafletProxy(mapId = ns("mapPolygon"), data = isolate(PopParameters$pHosp$vorPolyHosp) ) %>%
+        addPolygons(stroke = TRUE, smoothFactor = 0.3, fillOpacity = PopParameters$alphaPolygon,
+                    fillColor = isolate(PopParameters$colPolygon),
+                    label = ~paste(FINESS_GEO,RS,sep="-"), layerId = ~FINESS_GEO)
+
+    })
+    observeEvent(PopParameters$colRegion,{
+      leafletProxy(mapId = ns("mapRegion"), data = isolate(PopParameters$pHosp$vorPolyRegion) ) %>%
+        addPolygons(stroke = TRUE, smoothFactor = 0.3, fillOpacity = PopParameters$alphaRegion,
+                    fillColor = isolate(PopParameters$colRegion),
+                    label = ~Region, layerId = ~Region)
+      
+    })
     
     observeEvent(input$Polygon,{
-      ns <- session$ns
-      
       id <- which(PopParameters$pHosp$vorPolyHosp@data[,"FINESS_GEO"] %in% input$Polygon)
       PopParameters$SelPolygon = rep(FALSE, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
       PopParameters$colPolygon = rep("blue", length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
       PopParameters$alphaPolygon = rep(0.05, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
-      if(length(id) > 0){
+      if (length(id) > 0){
         PopParameters$SelPolygon[id] <- TRUE
         PopParameters$colPolygon[id] <- "orange"
         PopParameters$alphaPolygon[id] <- 0.4
+      }
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+    
+    observeEvent(input$Region,{
+      id <- which(PopParameters$pHosp$vorPolyRegion@data[,Region] %in% input$Region)
+      PopParameters$SelRegion = rep(FALSE, length(pHosp$vorPolyRegion@data$Region))
+      PopParameters$colRegion = rep("blue", length(pHosp$vorPolyRegion@data$Region))
+      PopParameters$alphaRegion = rep(0.05, length(pHosp$vorPolyRegion@data$Region))
+      if (length(id) > 0){
+        PopParameters$SelRegion[id] <- TRUE
+        PopParameters$colRegion[id] <- "orange"
+        PopParameters$alphaRegion[id] <- 0.4
       }
     }, ignoreInit = FALSE, ignoreNULL = FALSE)
 
@@ -141,6 +205,48 @@ mod_pop_server <- function(input, output, session){
           "Polygon",
           selected = PopParameters$pHosp$vorPolyHosp@data[PopParameters$SelPolygon, "FINESS_GEO"])
     }, ignoreInit = TRUE)
+    
+    observeEvent(input$mapRegion_shape_click,{
+      #browser()
+      ns <- session$ns
+      # Polygon
+      id <- grep(input$mapRegion_shape_click$id,
+                 PopParameters$pHosp$vorPolyRegion@data$Region)
+      
+      if (length(id) > 0){
+        if (PopParameters$SelRegion[id]){
+          PopParameters$SelRegion[id] <- FALSE
+          PopParameters$colRegion[id] <- "blue"
+          PopParameters$alphaRegion[id] <- 0.05
+        }
+        else{
+          PopParameters$SelRegion[id] <- TRUE
+          PopParameters$colRegion[id] <- "orange"
+          PopParameters$alphaRegion[id] <- 0.4
+        }
+      }
+      
+      updateMultiInput(
+        session,
+        "Region",
+        selected = PopParameters$pHosp$vorPolyRegion@data[PopParameters$SelRegion, Region])
+    }, ignoreInit = TRUE)
+    
+    observeEvent(input$SelectRegion, {
+      if (input$SelectRegion == "FINESS"){
+        shinyjs::show("Polygon")
+        shinyjs::show("mapPolygon")
+        shinyjs::hide("Region")
+        shinyjs::hide("mapRegion")
+        PopParameters$SelectRegion = FALSE
+      } else if (input$SelectRegion == "Region"){
+        shinyjs::show("Region")
+        shinyjs::show("mapRegion")
+        shinyjs::hide("Polygon")
+        shinyjs::hide("mapPolygon")
+        PopParameters$SelectRegion = TRUE
+      }
+    })
 }
     
 ## To be copied in the UI

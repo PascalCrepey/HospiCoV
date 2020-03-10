@@ -7,6 +7,7 @@
 #' @importFrom ggvoronoi voronoi_polygon
 #' @import leaflet
 #' @importFrom sp SpatialPointsDataFrame over
+#' @importFrom maptools unionSpatialPolygons
 #' @docType class
 #' @export
 #' @keywords population
@@ -22,6 +23,8 @@ PolyHosp <- R6::R6Class("PolyHosp",
     vorHBase = NULL,
     #' @field vorPolyHosp the voronoi polygons
     vorPolyHosp = NULL,
+    #' @field vorPolyRegion the voronoi polygons
+    vorPolyRegion = NULL,
     #' @field vorPopFiness the population inside each polygons
     vorPopFiness = NULL,
     #' @field vorPopRegion the population inside each Region
@@ -43,6 +46,14 @@ PolyHosp <- R6::R6Class("PolyHosp",
       
       self$vorPolyHosp = ggvoronoi::voronoi_polygon(self$vorHBase, x = "lng", y = "lat", outline = outlineFr)
       
+      #create a region database for the region polygons
+      region_data = self$vorHBase[,lapply(.SD, sum, na.rm = TRUE), .SDcols = 14:53, by = "Region"]
+      #merge tessels by region 
+      self$vorPolyRegion = SpatialPolygonsDataFrame(
+        unionSpatialPolygons(self$vorPolyHosp, self$vorHBase$Region), 
+        data = region_data, 
+        match.ID = "Region")
+
       #now we build the population inside each polygons
       #and within the regions
       private$build_voronoi_pop(self$vorPolyHosp)
@@ -140,8 +151,48 @@ PolyHosp <- R6::R6Class("PolyHosp",
                                                   match.ID = "ID")
       
       return(new_vorPolyHosp)
+    },
+    voronoi_region_merge = function(vorPolyHosp) {
+      
+      vorPolyReg = copy(vorPolyHosp)
+      ## get list of Region
+      listRegions = unique(vorPolyReg@data$Region)
+      
+      original_data <- as.data.table(vorPolyReg@data)
+      original_data[, ID := .I]
+      vec_ids <- original_data[, ID]
+      
+      for (reg in listRegions) {
+        # Identification of the tessels to unite in the SpatialPolygonDataframe #
+        index <- which(original_data[,Region] == reg)
+        new_index <- max(vec_ids) + 1
+        vec_ids[index] <- new_index
+        # Update of the data frame #
+        new_data <- original_data[-index,]
+        modified_data <- original_data[index,
+                                       lapply(.SD, sum),
+                                       .SDcols = c(grep("LIT", names(original_data)),
+                                                   grep("SEJHC", names(original_data)),
+                                                   grep("JOU", names(original_data)),
+                                                   grep("PLA", names(original_data)),
+                                                   grep("SEJHP", names(original_data)))]
+        modified_data <- cbind(modified_data, 
+                               original_data[index,.(lat = mean(lat), lng = mean(lng))]
+                               )
+        modified_data[, ":="("Libelle" = reg,
+                              "ID" = new_index,
+                              "FINESS_GEO" = new_index)]
+        
+        original_data = rbind(new_data, modified_data, fill = TRUE)
+        # Merge the tessels #
+        vorPolyReg <- SpatialPolygonsDataFrame(unionSpatialPolygons(vorPolyReg, vec_ids),
+                                                    data = original_data,
+                                                    match.ID = "ID")
+        
+      }
+      return(vorPolyReg)
     }
   )
 )
     
-  
+

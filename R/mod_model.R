@@ -29,7 +29,6 @@ mod_model_ui <- function(id){
                 )
             ),
             mainPanel(
-                h3("Output"),
                 fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
                                                choices = c("All", "Aggregated", 
                                                            agenames), selected = "All")),

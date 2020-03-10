@@ -29,6 +29,8 @@ pop = PolyHosp$new()
 
 \item{\code{vorPolyHosp}}{the voronoi polygons}
 
+\item{\code{vorPolyRegion}}{the voronoi polygons}
+
 \item{\code{vorPopFiness}}{the population inside each polygons}
 
 \item{\code{vorPopRegion}}{the population inside each Region}
