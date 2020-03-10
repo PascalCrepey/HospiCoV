@@ -229,9 +229,9 @@ arma::mat engine_run(List params, arma::mat init){
   
   int tstart1 = 1;
 
-  int tend1 = days_in_year;
+  int tend1 = params["nbDays"];
 
-  arma::mat res=arma::zeros<arma::mat>(init.n_elem+2*F.nage+1, days_in_year);
+  arma::mat res=arma::zeros<arma::mat>(init.n_elem+2*F.nage+1, tend1);
 //cout<<"bouh go for integration"<<endl;
   integrate_model(F, init, res, tstart1, tend1);
 
