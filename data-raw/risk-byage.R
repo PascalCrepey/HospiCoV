@@ -67,3 +67,12 @@ ICU_risk = data.table("AgeGroup" = age_groups,
                       "risk" = ICU_risks)
 
 usethis::use_data(ICU_risk, overwrite = TRUE)
+
+
+## Ventilation risk, WHEN ADMITTED IN ICU
+## From Yang et al.
+
+ventil_risks = data.table("overall"  = 0.711,
+                          "invasive" = 0.423)
+
+usethis::use_data(ventil_risks, overwrite = TRUE)

@@ -90,7 +90,8 @@ mod_model_ui <- function(id){
                                         radioButtons(ns("outcomeType"),
                                                      label = "Outcome",
                                                      choices = c("Severity"       = "severity",
-                                                                 "ICU admissions" = "ICU")),                                                     
+                                                                 "ICU admissions" = "ICU",
+                                                                 "Ventilation in ICU" = "ventilation")),                                                     
                                         plotly::plotlyOutput(ns("outcome"))
                                         )
                                  )
@@ -185,7 +186,8 @@ mod_model_server <- function(input, output, session){
     }
     p
   })
-  
+
+  ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
     #create Parameter
     params = Parameters$new(SimulationParameters$R0)
@@ -201,6 +203,14 @@ mod_model_server <- function(input, output, session){
                       sname = SimulationParameters$sname, 
                       population = pop)
   })
+  ## ----- COMPUTE OUTCOMES ---------------------------------------------------
+  outcome_table = reactive({
+      compute_outcomes(simulation(),
+                       severity_risk,
+                       ICU_risk,
+                       ventil_risks)
+  })
+  ## -------------------------------------------------------------------------
   
   observeEvent(input$R0, {
     SimulationParameters$R0 = input$R0
@@ -245,31 +255,14 @@ mod_model_server <- function(input, output, session){
   ##-----------------------------------------------------
 
   ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
-  observeEvent(input$outcomeType, {
-      if (input$outcomeType == "severity") {
-          severity_table = reactive({
-              severity_byage(simulation(), severity_risk)
-          })
-          output$outcome = plotly::renderPlotly({
-              req(input$dateRange)
-              outcome_barchart(severity_table(),
-                               start_time = input$dateRange[[1]],
-                               end_time = input$dateRange[[2]])
-          })
-      }
-      else if (input$outcomeType == "ICU") {
-          ICU_table = reactive({
-              ICU_byage(simulation(), ICU_risk)
-          })
-          
-          output$outcome = plotly::renderPlotly({
-              req(input$dateRange)
-              outcome_barchart(ICU_table(),
-                               start_time = input$dateRange[[1]],
-                               end_time = input$dateRange[[2]])
-          })
-      }
+  
+  output$outcome = plotly::renderPlotly({
+      outcome_barchart(outcome_table(),
+                       start_time = input$dateRange[[1]],
+                       end_time = input$dateRange[[2]],
+                       outcome = input$outcomeType)
   })
+
 
   ## ----- END OF OUTCOMES ----------------------------------------------
   
