@@ -30,7 +30,9 @@ pop_town <- merge(pop_town_age,
                   pop_town_2017[, .(DEPCOM, POP_TOT2017 = PMUN)],
                   by.x = "CODGEO",
                   by.y = "DEPCOM")
-# Coefficient of population evolution #
+## Deletion of towns with 0 inhabitants ##
+pop_town <- pop_town[POP_TOT2016 != 0,]
+## Coefficient of population evolution ##
 pop_town[,EVO_COEF := POP_TOT2017/POP_TOT2016]
 pop_town <- cbind(pop_town[, .(CODGEO, LIBGEO)],
                 sweep(pop_town[,.SD, 
@@ -52,4 +54,4 @@ Population <- pop_town[!is.na(lat),]
 
 #### Save of the results ####
 #saveRDS(pop_town, file = "./Data/Population.rds")
-usethis::use_data(Population)
+usethis::use_data(Population, overwrite = TRUE)
