@@ -22,6 +22,39 @@ severity_byage = function(modelOutput, risk_byage) {
                    "80P")
 
     risks = data.table("AgeGroup" = age_groups,
-                       "risk" = severity_risk)
+                       "risk" = risk_byage)
+    
+
+    severity_table = merge(modelOutput[, .(Time, AgeGroup, Infected)],
+                           risks,
+                           by = "AgeGroup")
+
+    severity_table[, severe := Infected*risk]
+    severity_table[, non.severe := Infected-severe]
+        
+
+    return(severity_table)
+    
                    
+}
+
+#' Render stacked bar chart for severity distribution
+#'
+#' @param severity_table the table returned by function severity_byage
+#'
+#' @importFrom plotly plot_ly add_trace layout
+#' @importFrom magrittr %>%
+severity_barchart = function(severity_table, start_time, end_time) {
+    
+
+    fig = plot_ly(severity_table[Time >= start_time & Time <= end_time,],
+                  x = ~AgeGroup,
+                  y = ~severe,
+                  type = 'bar',
+                  name = 'Severe')
+    fig = fig %>% add_trace(y = ~non.severe, name = 'Non-severe')
+    fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+    
+return(fig)
+
 }
