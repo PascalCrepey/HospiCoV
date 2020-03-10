@@ -14,18 +14,49 @@
 #' @export 
 #' @importFrom shiny NS tagList 
 mod_model_ui <- function(id){
-  ns <- NS(id)
+    ns <- NS(id)
+
+    input_byage = function() {
+        tagList(
+            numericInput(ns("0-4"), label = "0-4", value = 0),
+            numericInput(ns("5-9"), label = "5-9", value = 0),
+            numericInput(ns("10-14"), label = "10-14", value = 0),
+            numericInput(ns("15-19"), label = "15-19", value = 0),
+            numericInput(ns("20-24"), label = "20-24", value = 0),
+            numericInput(ns("25-29"), label = "25-29", value = 0),
+            numericInput(ns("30-34"), label = "30-34", value = 0),
+            numericInput(ns("35-39"), label = "35-39", value = 0),
+            numericInput(ns("40-44"), label = "40-44", value = 0),
+            numericInput(ns("45-49"), label = "45-49", value = 0),
+            numericInput(ns("50-54"), label = "50-54", value = 0),
+            numericInput(ns("55-59"), label = "55-59", value = 0),
+            numericInput(ns("60-64"), label = "60-64", value = 0),
+            numericInput(ns("65-69"), label = "65-69", value = 0),
+            numericInput(ns("70-74"), label = "70-74", value = 0),
+            numericInput(ns("75-79"), label = "75-79", value = 0),
+            numericInput(ns("80P"), label = "80P", value = 0)
+        )
+    }
+    
+    
   agenames = colnames(contact_matrix)
   tagList(
       sidebarLayout(
           sidebarPanel(
-            tabsetPanel(
-              tabPanel("Epidemic params.", 
-                       uiOutput(ns("paramsEpiUI"))),
-              tabPanel("Population params.",
-                       uiOutput(ns("paramsPopUI")))
-            ), 
-            width = 3
+              h4("Model parameters"),
+              tabsetPanel(
+                  tabPanel("Epidemic params.", 
+                           uiOutput(ns("paramsEpiUI"))),
+                  tabPanel("Population params.",
+                           uiOutput(ns("paramsPopUI")))
+              ),
+              h4("Outcomes"),
+              tabsetPanel(
+                  tabPanel("Severity",
+                           "Input risk of being severe (from 0 to 1), for each age group",
+                           input_byage())
+              ),                         
+              width = 3
           ),
           mainPanel(
             fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
