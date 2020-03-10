@@ -172,78 +172,18 @@ mod_model_server <- function(input, output, session){
     
   observe({
       req(input$selectedOutcome)
+      req(input$selectedAG)
       if (input$selectedOutcome == "Infected") {
-          output$mainPlot = renderPlotly({
-              data = simulation()
-              selectedAG = input$selectedAG
-              if (selectedAG == "All") {
-                  p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
-                      theme_classic() +
-                      geom_line()
-               }else if (selectedAG == "Aggregated") {
-                  dataAgg = data[, sum(Infected), by = "Time"]
-                  setnames(dataAgg, "V1", "Infected")
-                  p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
-                      theme_classic() +
-                      geom_line()
-              } else{
-                  p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
-                      theme_classic() +
-                      geom_line()
-              }
-              return(p)
-          })
-          output$secondPlot = NULL
+          curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
       } else if (input$selectedOutcome != "Infected") {
-          curves = renderCurves(outcome_table(), input$selectedOutcome)
-          output$mainPlot = curves$mainPlot
-          output$secondPlot = curves$secondPlot
+          curves = renderCurves(outcome_table(), input$selectedOutcome, input$selectedAG)
       }
+
+      output$mainPlot   = curves$mainPlot
+      output$secondPlot = curves$secondPlot
 
   })
 
-  renderCurves <- function(data, outcome) {
-      if (outcome == "severity") {
-          mainPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = severe, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line()
-              return(p)
-          })
-          secondPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = non.severe, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line() 
-          })
-      } else if (outcome == "ICU") {
-          mainPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = ICU, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line()
-              return(p)
-          })
-          secondPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = non.ICU, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line() 
-          })
-      } else if (outcome == "ventilation") {
-          mainPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = invasive.ventil, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line()
-              return(p)
-          })
-          secondPlot = renderPlotly({
-              p = ggplot(data, aes(x = Time, y = non.invasive.ventil, color = AgeGroup)) +
-                  theme_classic() +
-                  geom_line() 
-          })
-      }
-      return(list(mainPlot = mainPlot,
-                  secondPlot = secondPlot))
-      
-  }
   
   
   ## ------ RUN MODEL ----------------------------------------------------------
