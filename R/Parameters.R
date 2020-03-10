@@ -100,7 +100,8 @@ Parameters <- R6::R6Class("Parameters",
         preImmune = self$preImmune,
         preExposed = self$preExposed, 
         susceptibility = private$.susceptibility,
-        agegroupnames = self$agegroupnames
+        agegroupnames = self$agegroupnames, 
+        nbDays = private$.nbDays
       )
     }
   ), 
@@ -157,11 +158,44 @@ Parameters <- R6::R6Class("Parameters",
         eig = eigen(private$.susceptibility * self$contact)
         self$beta = private$.R0 * self$removal/max(Re(eig$values))
       }
+    }, 
+    duration = function(x){
+      if (missing(x)) {
+        private$.duration
+      }else{
+        if (!any(x %in% c("Week", "Month", "Trimester", "Semester", "Year")))
+          stop("Allowed values are Week, Month, Trimester, Semester, and Year.")
+        private$.nbDays = switch(x,
+                                 "Week" = 7, 
+                                 "Month" = 30, 
+                                 "Trimester" = 90,
+                                 "Semester" = 180, 
+                                 "Year" = 364
+        )
+      }
+    }, 
+    nbDays = function(x){
+      if (missing(x)) {
+        private$.nbDays
+      }else{
+        stopifnot(is.numeric(x))
+        private$.nbDays = x
+        private$.duration = switch(as.character(x),
+                                 "7" = "Week", 
+                                 "30" = "Month", 
+                                 "90" = "Trimester",
+                                 "180" = "Semester", 
+                                 "364" = "Year",
+                                 "Custom"
+        )
+      }
     }
   ), 
   private = list(
     .susceptibility = NULL,
-    .R0 = NULL
+    .R0 = NULL, 
+    .duration = "Trimester",
+    .nbDays = 90
   )
 )
 

@@ -80,8 +80,8 @@ mod_model_server <- function(input, output, session){
       sliderInput(ns("R0"),
                   label = "R0",
                   min   = 0,
-                  max   = 5,
-                  step  = 0.01, 
+                  max   = 3,
+                  step  = 0.1, 
                   value = params$R0),
       # sliderInput(ns("beta"),
       #             label = "Beta",
@@ -96,11 +96,7 @@ mod_model_server <- function(input, output, session){
       sliderInput(ns("removal"),
                   label = "Transfer rate from I to R",
                   min = 0, max = 10, step = 0.001,
-                  value = params$removal),
-      sliderInput(ns("symptomatic"),
-                  label = "Proportion of symptomatic infections",
-                  min = 0, max = 100, step = 0.01,
-                  value = params$symptomatic)
+                  value = params$removal)
     )
   })
   output$paramsPopUI = renderUI({
@@ -127,17 +123,17 @@ mod_model_server <- function(input, output, session){
     data = simulation()
     selectedAG = input$selectedAG
     if (selectedAG == "All") {
-      p = ggplot(data, aes(x = Time, y = Cases, color = AgeGroup)) +
+      p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
         theme_classic() +
         geom_line()
     }else if (selectedAG == "Aggregated") {
-      dataAgg = data[, sum(Cases), by = "Time"]
-      setnames(dataAgg, "V1", "Cases")
-      p = ggplot(dataAgg, aes(x = Time, y = Cases)) +
+      dataAgg = data[, sum(Infected), by = "Time"]
+      setnames(dataAgg, "V1", "Infected")
+      p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
         theme_classic() +
         geom_line()
     } else{
-      p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Cases, color = AgeGroup)) +
+      p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
         theme_classic() +
         geom_line()
     }
@@ -148,6 +144,9 @@ mod_model_server <- function(input, output, session){
     #create Parameter
     params = Parameters$new(SimulationParameters$R0)
     params$preInfected = 40
+    
+    #set duration
+    params$duration = SimulationParameters$Duration
 
     #run the simulation
     pop = SimulationParameters$pHosp$getPopRegion(SimulationParameters$Region)
@@ -159,6 +158,10 @@ mod_model_server <- function(input, output, session){
   
   observeEvent(input$R0, {
     SimulationParameters$R0 = input$R0
+  })
+  observeEvent(input$selectedDuration, {
+    SimulationParameters$Duration = input$selectedDuration
+    #print(SimulationParameters$Duration)
   })
 }
     
