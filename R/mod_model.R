@@ -66,7 +66,7 @@ mod_model_ui <- function(id){
                             tabPanel(
                                 "Severity",
                                 HTML(
-                                    "Input risk of being severe (from 0 to 1), for each age group",
+                                    "Risk of being severe (from 0 to 1), for each age group",
                                     "</br>",
                                     "Source:"),
                                 a("Guan et al.", href = "https://www.nejm.org/doi/full/10.1056/NEJMoa2002032", target = "_blank"),
@@ -74,23 +74,24 @@ mod_model_ui <- function(id){
                             ),
                             tabPanel(
                                 "ICU hospit",
-                                "Input risk of being admitted to ICU (from 0 to 1), for each age group",
-                                        #                           input_byage("ICU"))
-                                )
+                                HTML(
+                                    "Risk of being admitted to ICU (from 0 to 1), for each age group",
+                                    "</br>",
+                                    "Source:"),
+                                a("Guan et al.", href = "https://www.nejm.org/doi/full/10.1056/NEJMoa2002032", target = "_blank"),
+                                DT::DTOutput(ns("ICU_risk"))
+                            )
                         ),
                         width = 3
                     ),
                     mainPanel(
-                        fluidRow(column(10,
+                        fluidRow(column(12,
                                         uiOutput(ns("dateRangeInput")),
-                                        plotly::plotlyOutput(ns("outcome"))
-                                        ),
-                                 column(2,
                                         radioButtons(ns("outcomeType"),
                                                      label = "Outcome",
                                                      choices = c("Severity"       = "severity",
-                                                                 "ICU admissions" = "ICU")
-                                                     )
+                                                                 "ICU admissions" = "ICU")),                                                     
+                                        plotly::plotlyOutput(ns("outcome"))
                                         )
                                  )
                     )
@@ -224,6 +225,7 @@ mod_model_server <- function(input, output, session){
       )
   })
 
+  ## ---- TABLES OF OUTCOME RISKS------------------------------------------
   severity_risk_table = DT::datatable(severity_risk,
                                       selection = list(target = "column", mode = "single"),
                                       options   = list(pageLength = 17),
@@ -231,17 +233,42 @@ mod_model_server <- function(input, output, session){
                                                       disable = list(columns = 1))
                                       )
 
-  output$severity_risk = DT::renderDT({ severity_risk_table })
+  ICU_risk_table = DT::datatable(ICU_risk,
+                                 selection = list(target = "column", mode = "single"),
+                                 options   = list(pageLength = 17),
+                                 editable  = list(target = "column",
+                                                  disable = list(columns = 1))
+                                 )
   
-  severity_table = reactive({
-      severity_byage(simulation(), severity_risk)
-  })
+  output$severity_risk = DT::renderDT({ severity_risk_table })
+  output$ICU_risk = DT::renderDT({ ICU_risk_table })
+  ##-----------------------------------------------------
 
-  output$outcome = plotly::renderPlotly({
-      req(input$dateRange)
-      outcome_barchart(severity_table(),
-                       start_time = input$dateRange[[1]],
-                       end_time = input$dateRange[[2]])
+  ## ---- OBSERVER TO RENDER BAR CHARTS -----------------
+  observeEvent(input$outcomeType, {
+      if (input$outcomeType == "severity") {
+          severity_table = reactive({
+              severity_byage(simulation(), severity_risk)
+          })
+          output$outcome = plotly::renderPlotly({
+              req(input$dateRange)
+              outcome_barchart(severity_table(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]])
+          })
+      }
+      else if (input$outcomeType == "ICU") {
+          ICU_table = reactive({
+              ICU_byage(simulation(), ICU_risk)
+          })
+          
+          output$outcome = plotly::renderPlotly({
+              req(input$dateRange)
+              outcome_barchart(ICU_table(),
+                               start_time = input$dateRange[[1]],
+                               end_time = input$dateRange[[2]])
+          })
+      }
   })
 
   ## ----- END OF OUTCOMES ----------------------------------------------
@@ -254,4 +281,4 @@ mod_model_server <- function(input, output, session){
 ## To be copied in the server
 # callModule(mod_model_server, "model_ui_1")
  
-## TODO OUTCOME ICU
+
