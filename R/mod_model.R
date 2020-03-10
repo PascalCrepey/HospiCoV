@@ -51,7 +51,8 @@ mod_model_ui <- function(id){
                     tabPanel(
                         title = "Time series",
                         fluidRow(column(12,
-                                        plotly::plotlyOutput(ns("mainPlot"))
+                                        plotly::plotlyOutput(ns("mainPlot")),
+                                        plotly::plotlyOutput(ns("secondPlot"))
                                         )
                                  )
                     ),
@@ -169,28 +170,82 @@ mod_model_server <- function(input, output, session){
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
+  observe({
+      req(input$selectedOutcome)
+      if (input$selectedOutcome == "Infected") {
+          output$mainPlot = renderPlotly({
+              data = simulation()
+              selectedAG = input$selectedAG
+              if (selectedAG == "All") {
+                  p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+                      theme_classic() +
+                      geom_line()
+               }else if (selectedAG == "Aggregated") {
+                  dataAgg = data[, sum(Infected), by = "Time"]
+                  setnames(dataAgg, "V1", "Infected")
+                  p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
+                      theme_classic() +
+                      geom_line()
+              } else{
+                  p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
+                      theme_classic() +
+                      geom_line()
+              }
+              return(p)
+          })
+          output$secondPlot = NULL
+      } else if (input$selectedOutcome != "Infected") {
+          curves = renderCurves(outcome_table(), input$selectedOutcome)
+          output$mainPlot = curves$mainPlot
+          output$secondPlot = curves$secondPlot
+      }
 
-  output$mainPlot = renderPlotly({
-    data = simulation()
-    selectedAG = input$selectedAG
-    if (selectedAG == "All") {
-      p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
-        theme_classic() +
-        geom_line()
-    }else if (selectedAG == "Aggregated") {
-      dataAgg = data[, sum(Infected), by = "Time"]
-      setnames(dataAgg, "V1", "Infected")
-      p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
-        theme_classic() +
-        geom_line()
-    } else{
-      p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
-        theme_classic() +
-        geom_line()
-    }
-    p
   })
 
+  renderCurves <- function(data, outcome) {
+      if (outcome == "severity") {
+          mainPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = severe, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line()
+              return(p)
+          })
+          secondPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = non.severe, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line() 
+          })
+      } else if (outcome == "ICU") {
+          mainPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = ICU, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line()
+              return(p)
+          })
+          secondPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = non.ICU, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line() 
+          })
+      } else if (outcome == "ventilation") {
+          mainPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = invasive.ventil, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line()
+              return(p)
+          })
+          secondPlot = renderPlotly({
+              p = ggplot(data, aes(x = Time, y = non.invasive.ventil, color = AgeGroup)) +
+                  theme_classic() +
+                  geom_line() 
+          })
+      }
+      return(list(mainPlot = mainPlot,
+                  secondPlot = secondPlot))
+      
+  }
+  
+  
   ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
     #create Parameter
