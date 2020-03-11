@@ -40,9 +40,7 @@ mod_model_ui <- function(id){
                                                            #"Symptomatic cases" = "symptomatic",  
                                                            "Severity" = "severity", 
                                                            "ICU admissions" = "ICU", 
-                                                           "Ventilation in ICU" = "ventilation",
-                                                           "Number hospital beds" = "bedhosp",
-                                                           "Number ICU beds" = "bedICU"), 
+                                                           "Ventilation in ICU" = "ventilation"), 
                                                selected = "Infected")),
                          column(4, selectInput(inputId = ns("selectedDuration"),
                                                label = NULL,
@@ -69,6 +67,21 @@ mod_model_ui <- function(id){
                             DT::DTOutput(ns("outcomeTable"))
                         ))
                     ),
+                    tabPanel(
+                      title = "Hosp. requirements",
+                      fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
+                                                     label = NULL,
+                                                     choices = c("Number hospital beds" = "bedhosp",
+                                                                 "Number ICU beds" = "bedICU"), 
+                                                     selected = "bedhosp")),
+                               column(8, uiOutput(ns("dateHospInput"))),
+                               column(12,
+                                      plotly::plotlyOutput(ns("outcomePlotHosp"))
+                                      ),
+                               column(12,                                                 
+                                      DT::DTOutput(ns("outcomeTableHosp"))
+                                      ))
+                      ),
                     tabPanel(
                         title = "Outcomes probabilities",
                         fluidRow(
@@ -223,14 +236,6 @@ mod_model_server <- function(input, output, session){
                       population = pop)
   })
   ## ----- COMPUTE OUTCOMES ---------------------------------------------------
-  observeEvent(input$DaysHosp,{
-    SimulationParameters$DaysHosp <- input$DaysHosp
-  })
-  
-  observeEvent(input$DaysICU,{
-    SimulationParameters$DaysICU <- input$DaysICU
-  })
-  
   outcome_table = reactive({
     compute_outcomes(simulation(),
                      severity_risk,
@@ -263,6 +268,20 @@ mod_model_server <- function(input, output, session){
                   value = c(min, max),
                   width = "90%")
       )
+  })
+  
+  output$dateHospInput = renderUI({
+    min = simulation()[, min(Time)]
+    max = simulation()[, max(Time)]
+    
+    return(
+      sliderInput(ns("dateHosp"),
+                  label = "Select date: ",
+                  min = min,
+                  max = max,
+                  value = min,
+                  width = "90%")
+    )
   })
 
   ## ---- TABLES OF OUTCOME RISKS------------------------------------------
@@ -327,6 +346,35 @@ mod_model_server <- function(input, output, session){
       output$outcomePlot  = plotly::renderPlotly({ out$plot })
       output$outcomeTable = DT::renderDT({ table })
        
+  })
+
+  ## ---- HOSPITAL REQUIREMENTS -------------------------
+  observeEvent(input$DaysHosp,{
+    SimulationParameters$DaysHosp <- input$DaysHosp
+  })
+  
+  observeEvent(input$DaysICU,{
+    SimulationParameters$DaysICU <- input$DaysICU
+  })
+  
+  observe({
+    req(input$selectedHospOutcome)
+    out = outcome_render(outcome_table(),
+                         start_time = input$dateHosp,
+                         end_time = input$dateHosp,
+                         outcome = input$selectedHospOutcome)
+    table = DT::datatable(out$table,
+                          fillContainer = F,
+                          rownames = NULL,
+                          extensions = 'Buttons',
+                          options = list(fillContainer = F,
+                                         dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
+                                         buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>% 
+      DT::formatRound(columns = 2:4, digits = 0)
+    
+    output$outcomePlotHosp  = plotly::renderPlotly({ out$plot })
+    output$outcomeTableHosp = DT::renderDT({ table })
+    
   })
 
   

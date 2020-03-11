@@ -148,9 +148,8 @@ outcome_render = function(outcome_table,
                                       Infected = plot_data[,sum(Infected)]))
     }
     else if (outcome == "bedhosp") {
-        plot_data = data[, sum(BedHosp), by = AgeGroup]
-        setnames(plot_data, old = "V1", new = "Number.hosp.beds")
-        plot_data[, Number.hosp.beds := round(Number.hosp.beds,0)] 
+        plot_data = data[, .(AgeGroup,Number.hosp.beds = round(BedHosp,0))]
+        plot_data <- plot_data[order(AgeGroup)]
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
                       y = ~Number.hosp.beds,
@@ -162,9 +161,8 @@ outcome_render = function(outcome_table,
                                       Number.hosp.beds = plot_data[,sum(Number.hosp.beds)]))
     }
     else if (outcome == "bedICU") {
-        plot_data = data[, sum(BedICU), by = AgeGroup]
-        setnames(plot_data, old = "V1", new = "Number.ICU.beds")
-        plot_data[, Number.ICU.beds := round(Number.ICU.beds,0)] 
+        plot_data = data[, .(AgeGroup, Number.ICU.beds = round(BedICU,0))]
+        plot_data <- plot_data[order(AgeGroup)]
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
                       y = ~Number.ICU.beds,
