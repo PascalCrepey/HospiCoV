@@ -75,13 +75,22 @@ mod_model_ui <- function(id){
                                                                  "Number ICU beds" = "bedICU",
                                                                  "Number invasive ventilations" = "bedventil"), 
                                                      selected = "bedhosp")),
-                               column(8, uiOutput(ns("dateHospInput"))),
+                               column(8, uiOutput(ns("dateHospInput")))),
+                      fluidRow(
+                        column(12,
+                               plotOutput(ns("outcomePlotHosp"), height = "200px")
+                        )
+                      ),
+                      fluidRow(
                                column(12,
-                                      plotly::plotlyOutput(ns("outcomePlotHosp"))
-                                      ),
+                                      plotly::plotlyOutput(ns("outcomePlotHospAge"))
+                                      )
+                               ),
+                      fluidRow(
                                column(12,                                                 
                                       DT::DTOutput(ns("outcomeTableHosp"))
-                                      ))
+                                      )
+                               )
                       ),
                     tabPanel(
                         title = "Outcomes probabilities",
@@ -144,7 +153,8 @@ mod_model_server <- function(input, output, session){
     DaysICU = 15,
     DaysVentil = 15,
     #create Population
-    pHosp = PolyHosp$new()
+    pHosp = PolyHosp$new(),
+    currDateHosp = as.Date("01/02/2020")
   )
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
@@ -164,12 +174,12 @@ mod_model_server <- function(input, output, session){
       #             value = params$beta),
       sliderInput(ns("progression"),
                   label = "Incubation period",
-                  min = 1, max = 10, step = 0.1, post = " days",
-                  value = 1/params$progression),       
+                  min = 4, max = 10, step = 0.1, post = " days",
+                  value = round(1/params$progression)),       
       sliderInput(ns("removal"),
                   label = "Contagious period",
-                  min = 1, max = 10, step = 0.1, post = "days",
-                  value = 1/params$removal)
+                  min = 6, max = 15, step = 0.1, post = " days",
+                  value = round(1/params$removal, 1))
     )
   })
   output$paramsPopUI = renderUI({
@@ -281,14 +291,20 @@ mod_model_server <- function(input, output, session){
     min = simulation()[, min(Time)]
     max = simulation()[, max(Time)]
     
+    if (SimulationParameters$currDateHosp < min) val = min
+    else val = SimulationParameters$currDateHosp
     return(
       sliderInput(ns("dateHosp"),
                   label = NULL,
                   min = min,
                   max = max,
-                  value = min,
+                  value = val,
                   width = "90%")
     )
+  })
+  
+  observeEvent(input$dateHosp,{
+    SimulationParameters$currDateHosp = input$dateHosp
   })
 
   ## ---- TABLES OF OUTCOME RISKS------------------------------------------
@@ -370,11 +386,15 @@ mod_model_server <- function(input, output, session){
   
   observe({
     req(input$selectedHospOutcome)
-    out = outcome_render(outcome_table(),
+    req(input$dateHosp)
+    #outCurve = NULL
+    outCurve = outcome_render_instant_curve(outcome_table(),
+                                       instant_time = input$dateHosp, outcome = input$selectedHospOutcome)
+    outAge = outcome_render(outcome_table(),
                          start_time = input$dateHosp,
                          end_time = input$dateHosp,
                          outcome = input$selectedHospOutcome)
-    table = DT::datatable(out$table,
+    table = DT::datatable(outAge$table,
                           fillContainer = F,
                           rownames = NULL,
                           extensions = 'Buttons',
@@ -383,7 +403,8 @@ mod_model_server <- function(input, output, session){
                                          buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>% 
       DT::formatRound(columns = 2:4, digits = 0)
     
-    output$outcomePlotHosp  = plotly::renderPlotly({ out$plot })
+    output$outcomePlotHosp  = renderPlot({ outCurve }, height = 200)
+    output$outcomePlotHospAge  = plotly::renderPlotly({ outAge$plot })
     output$outcomeTableHosp = DT::renderDT({ table })
     
   })

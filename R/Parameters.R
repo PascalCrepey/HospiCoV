@@ -50,10 +50,10 @@ Parameters <- R6::R6Class("Parameters",
 
       
       #model parameters
-      #from E to I -> 6 days
-      self$progression = 1/6
-      #from I to R -> 6 days
-      self$removal = 1/6
+      #from E to I -> 5 days
+      self$progression = 1/5.33
+      #from I to R -> 11 days
+      self$removal = 1/10.9
       
       private$.R0 = R0
       
