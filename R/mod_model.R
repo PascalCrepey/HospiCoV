@@ -35,7 +35,7 @@ mod_model_ui <- function(id){
                          column(4, selectInput(inputId = ns("selectedOutcome"), 
                                                label = NULL,
                                                choices = c("Infected" = "Infected", 
-                                                           "Symptomatic cases" = "Symptomatic cases",  
+                                                           #"Symptomatic cases" = "symptomatic",  
                                                            "Severity" = "severity", 
                                                            "ICU admissions" = "ICU", 
                                                            "Ventilation in ICU" = "ventilation"), 
@@ -110,6 +110,7 @@ mod_model_ui <- function(id){
     
 #' @rdname mod_model
 #' @importFrom plotly renderPlotly
+#' @importFrom DT formatRound datatable
 #' @export
 #' @keywords internal
 mod_model_server <- function(input, output, session){
@@ -237,23 +238,32 @@ mod_model_server <- function(input, output, session){
   ## ---- TABLES OF OUTCOME RISKS------------------------------------------
   severity_risk_table = DT::datatable(severity_risk,
                                       selection = list(target = "column", mode = "single"),
-                                      options   = list(pageLength = 17),
+                                      rownames = NULL,
+                                      extensions = 'Buttons',
                                       editable  = list(target = "column",
-                                                      disable = list(columns = 1))
-                                      )
+                                                      disable = list(columns = 1)),
+                                      options = list(dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
+                                                     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))
+                                      ) %>% DT::formatRound(columns = 2, digits = 3)
 
   ICU_risk_table = DT::datatable(ICU_risk,
                                  selection = list(target = "column", mode = "single"),
-                                 options   = list(pageLength = 17),
+                                 rownames = NULL,
+                                 extensions = 'Buttons',
                                  editable  = list(target = "column",
-                                                  disable = list(columns = 1))
-                                 )
+                                                  disable = list(columns = 1)),
+                                 options = list(dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
+                                                buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))
+                                 ) %>% DT::formatRound(columns = 2, digits = 3)
 
   ventil_risks_table = DT::datatable(ventil_risks,
                                      selection = list(target = "column", mode = "single"),
-                                     options   = list(pageLength = 1),
-                                     editable  = list(target = "column")
-                                     )
+                                     rownames = NULL,
+                                     extensions = 'Buttons',
+                                     editable  = list(target = "column"),
+                                     options = list(dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
+                                                    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))
+                                     ) %>% DT::formatRound(columns = 2, digits = 3)
   
   output$severity_risk = DT::renderDT({ severity_risk_table })
   output$ICU_risk = DT::renderDT({ ICU_risk_table })
@@ -277,8 +287,12 @@ mod_model_server <- function(input, output, session){
       }
       table = DT::datatable(out$table,
                             fillContainer = F,
-                            options = list(pageLength = 17,
-                                           fillContainer = F))
+                            rownames = NULL,
+                            extensions = 'Buttons',
+                            options = list(fillContainer = F,
+                                           dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
+                                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>% 
+        DT::formatRound(columns = 2:4, digits = 0)
       
       output$outcomePlot  = plotly::renderPlotly({ out$plot })
       output$outcomeTable = DT::renderDT({ table })

@@ -22,6 +22,27 @@ renderCurves <- function(data, outcome, selectedAG) {
             return(p)
         })
         secondPlot = NULL
+    } else if (outcome == "symptomatic") {
+        #to be updated
+        mainPlot = renderPlotly({
+            if (selectedAG == "All") {
+                p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+                    theme_classic() +
+                    geom_line()
+            } else if (selectedAG == "Aggregated") {
+                dataAgg = data[, sum(Infected), by = "Time"]
+                setnames(dataAgg, "V1", "Infected")
+                p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
+                    theme_classic() +
+                    geom_line()
+            } else{
+                p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Infected, color = AgeGroup)) +
+                    theme_classic() +
+                    geom_line()
+            }
+            return(p)
+        })
+    
         ## --- SEVERITY CURVES ---------------------------------------------------
     } else if (outcome == "severity") {
         
