@@ -18,7 +18,7 @@
 mod_pop_ui <- function(id){
   ns <- NS(id)
   fluidRow(column(12, radioButtons(inputId = ns("SelectRegion"), 
-                                   label = "Selection by ",
+                                   label = "Select the area where you want to run the model: ",
                                    choices = c("FINESS", 
                                                "Region"),
                                    selected = "Region",

@@ -148,13 +148,13 @@ mod_model_server <- function(input, output, session){
       #             step  = 0.001, 
       #             value = params$beta),
       sliderInput(ns("progression"),
-                  label = "Transfer rate from E to I",
-                  min = 0, max = 10, step = 0.001,
-                  value = params$progression),       
+                  label = "Incubation period",
+                  min = 1, max = 10, step = 0.1, post = " days",
+                  value = 1/params$progression),       
       sliderInput(ns("removal"),
-                  label = "Transfer rate from I to R",
-                  min = 0, max = 10, step = 0.001,
-                  value = params$removal)
+                  label = "Contagious period",
+                  min = 1, max = 10, step = 0.1, post = "days",
+                  value = 1/params$removal)
     )
   })
   output$paramsPopUI = renderUI({
@@ -191,6 +191,7 @@ mod_model_server <- function(input, output, session){
   observe({
       req(input$selectedOutcome)
       req(input$selectedAG)
+      req(SimulationParameters$Duration)
       if (input$selectedOutcome == "Infected") {
           curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
       } else if (input$selectedOutcome != "Infected") {

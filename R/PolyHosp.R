@@ -6,7 +6,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom ggvoronoi voronoi_polygon
 #' @import leaflet
-#' @importFrom sp SpatialPointsDataFrame over
+#' @importFrom sp SpatialPointsDataFrame over SpatialPolygonsDataFrame
 #' @importFrom maptools unionSpatialPolygons
 #' @docType class
 #' @export
@@ -49,7 +49,7 @@ PolyHosp <- R6::R6Class("PolyHosp",
       #create a region database for the region polygons
       region_data = self$vorHBase[,lapply(.SD, sum, na.rm = TRUE), .SDcols = 14:53, by = "Region"]
       #merge tessels by region 
-      self$vorPolyRegion = SpatialPolygonsDataFrame(
+      self$vorPolyRegion = sp::SpatialPolygonsDataFrame(
         unionSpatialPolygons(self$vorPolyHosp, self$vorHBase$Region), 
         data = region_data, 
         match.ID = "Region")
@@ -144,7 +144,7 @@ PolyHosp <- R6::R6Class("PolyHosp",
                             "FINESS_GEO" = new_index)]
       
       # Merge the tessels #
-      new_vorPolyHosp <- SpatialPolygonsDataFrame(unionSpatialPolygons(vorPolyHosp, vec_ids),
+      new_vorPolyHosp <- sp::SpatialPolygonsDataFrame(unionSpatialPolygons(vorPolyHosp, vec_ids),
                                                   data = rbind(new_data, 
                                                                modified_data,
                                                                fill = TRUE),
@@ -185,7 +185,7 @@ PolyHosp <- R6::R6Class("PolyHosp",
         
         original_data = rbind(new_data, modified_data, fill = TRUE)
         # Merge the tessels #
-        vorPolyReg <- SpatialPolygonsDataFrame(unionSpatialPolygons(vorPolyReg, vec_ids),
+        vorPolyReg <- sp::SpatialPolygonsDataFrame(unionSpatialPolygons(vorPolyReg, vec_ids),
                                                     data = original_data,
                                                     match.ID = "ID")
         
