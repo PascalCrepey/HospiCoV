@@ -25,7 +25,9 @@ mod_model_ui <- function(id){
                     tabPanel("Epidemic params.", 
                              uiOutput(ns("paramsEpiUI"))),
                     tabPanel("Population params.",
-                             uiOutput(ns("paramsPopUI")))
+                             uiOutput(ns("paramsPopUI"))),
+                    tabPanel("Hospital params.",
+                             uiOutput(ns("paramsHospUI")))
                 )
             ),
             mainPanel(
@@ -38,7 +40,9 @@ mod_model_ui <- function(id){
                                                            #"Symptomatic cases" = "symptomatic",  
                                                            "Severity" = "severity", 
                                                            "ICU admissions" = "ICU", 
-                                                           "Ventilation in ICU" = "ventilation"), 
+                                                           "Ventilation in ICU" = "ventilation",
+                                                           "Number hospital beds" = "bedhosp",
+                                                           "Number ICU beds" = "bedICU"), 
                                                selected = "Infected")),
                          column(4, selectInput(inputId = ns("selectedDuration"),
                                                label = NULL,
@@ -122,6 +126,8 @@ mod_model_server <- function(input, output, session){
     Outcome = "Infected", 
     Region = "Bretagne",
     sname = "test",
+    DaysHosp = 15,
+    DaysICU = 15,
     #create Population
     pHosp = PolyHosp$new()
   )
@@ -167,6 +173,18 @@ mod_model_server <- function(input, output, session){
                   value = params$preInfected)
     )
   })
+  output$paramsHospUI = renderUI({
+    tagList(
+      sliderInput(ns("DaysHosp"),
+                  label = "Number of hospital days",
+                  min = 0, max = 21, step = 1,
+                  value = SimulationParameters$DaysHosp),
+      sliderInput(ns("DaysICU"),
+                  label = "Number of days in ICU",
+                  min = 0, max = 21, step = 1,
+                  value = SimulationParameters$DaysICU)
+    )
+  })
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
@@ -203,11 +221,21 @@ mod_model_server <- function(input, output, session){
                       population = pop)
   })
   ## ----- COMPUTE OUTCOMES ---------------------------------------------------
+  observeEvent(input$DaysHosp,{
+    SimulationParameters$DaysHosp <- input$DaysHosp
+  })
+  
+  observeEvent(input$DaysICU,{
+    SimulationParameters$DaysICU <- input$DaysICU
+  })
+  
   outcome_table = reactive({
-      compute_outcomes(simulation(),
-                       severity_risk,
-                       ICU_risk,
-                       ventil_risks)
+    compute_outcomes(simulation(),
+                     severity_risk,
+                     ICU_risk,
+                     ventil_risks,
+                     DaysHosp = SimulationParameters$DaysHosp,
+                     DaysICU = SimulationParameters$DaysICU)
   })
   ## -------------------------------------------------------------------------
   

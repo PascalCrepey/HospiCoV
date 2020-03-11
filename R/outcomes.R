@@ -3,12 +3,16 @@
 #' @param modelOutput output returned by a model run
 #' @param severity_risk vector of dimension 17, corresponding to the risk (proportion) of being a severe case, for each age group
 #' @param ICU_risk vector of dimension 17, corresponding to the risk (proportion) of being a severe case, for each age group
+#' @param DaysHosp single value, corresponding to the length of stay in hospital for severe cases
+#' @param DaysICU single value, corresponding to the length of stay in ICU for severe cases
 #'
 #' 
 compute_outcomes <- function(modelOutput,
                              severity_risk,
                              ICU_risk,
-                             ventil_risks) {
+                             ventil_risks,
+                             DaysHosp,
+                             DaysICU) {
 
     data = modelOutput[, .(Time, AgeGroup, Infected)]
 
@@ -31,6 +35,16 @@ compute_outcomes <- function(modelOutput,
     outcome_table[, invasive.ventil := ICU * ventil_risks$invasive]
     outcome_table[, non.invasive.ventil := overall.ventil - invasive.ventil]
 
+    ## Compute hospital-related information
+    outcome_table[, BedHosp := sapply(Time, 
+                                     function(parameter) 
+                                         sum(severe[between(Time, parameter-DaysHosp+1, parameter)])),
+                  by = c("AgeGroup")]
+    outcome_table[, BedICU := sapply(Time, 
+                                      function(parameter) 
+                                          sum(ICU[between(Time, parameter-DaysICU+1, parameter)])),
+                  by = c("AgeGroup")]
+    
     return(outcome_table)
     
 }
@@ -57,6 +71,8 @@ outcome_render = function(outcome_table,
         non_severe = data[, sum(non.severe), by = AgeGroup]
         plot_data = merge(severe, non_severe, by = "AgeGroup")
         setnames(plot_data, c("AgeGroup","severe", "non.severe"))
+        plot_data[, ":=" (severe = round(severe,0),
+                          non.severe = round(non.severe,0))] 
         ## Plot
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
@@ -65,6 +81,10 @@ outcome_render = function(outcome_table,
                       name = 'Severe')
         fig = fig %>% add_trace(y = ~non.severe, name = 'Non-severe')
         fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      severe = plot_data[,sum(severe)],
+                                      non.severe = plot_data[,sum(non.severe)]))
     }
     else if (outcome == "ICU") {
         ## Prepare data
@@ -72,6 +92,8 @@ outcome_render = function(outcome_table,
         non_ICU = data[, sum(non.ICU), by = AgeGroup]
         plot_data = merge(ICU, non_ICU, by = "AgeGroup")
         setnames(plot_data, c("AgeGroup","ICU", "non.ICU"))
+        plot_data[, ":=" (ICU = round(ICU,0),
+                          non.ICU = round(non.ICU,0))] 
         ## Plot
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
@@ -80,6 +102,10 @@ outcome_render = function(outcome_table,
                       name = 'ICU')
         fig = fig %>% add_trace(y = ~non.ICU, name = 'Non-ICU')
         fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      ICU = plot_data[,sum(ICU)],
+                                      non.ICU = plot_data[,sum(non.ICU)]))
     }
     else if (outcome == "ventilation") {
         ## Prepare data
@@ -89,6 +115,9 @@ outcome_render = function(outcome_table,
         plot_data = merge(invasive, non_invasive, by = "AgeGroup")
         plot_data = merge(plot_data, non_ventil, by = "AgeGroup")
         setnames(plot_data, c("AgeGroup", "invasive", "non.invasive", "non.ventil"))
+        plot_data[, ":=" (invasive = round(invasive,0),
+                          non.invasive = round(non.invasive,0),
+                          non.ventil = round(non.ventil,0))] 
         ## Plot
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
@@ -98,19 +127,54 @@ outcome_render = function(outcome_table,
         fig = fig %>% add_trace(y = ~non.invasive, name = 'Non-invasive')
         fig = fig %>% add_trace(y = ~non.ventil, name = 'Non-ventil')
         fig = fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      invasive = plot_data[,sum(invasive)],
+                                      non.invasive = plot_data[,sum(non.invasive)],
+                                      non.ventil = plot_data[,sum(non.ventil)]))
     }
     else if (outcome == "Infected") {
         plot_data = data[, sum(Infected), by = AgeGroup]
         setnames(plot_data, old = "V1", new = "Infected")
+        plot_data[, Infected := round(Infected,0)] 
         fig = plot_ly(plot_data,
                       x = ~AgeGroup,
                       y = ~Infected,
                       type = 'bar',
                       name = 'New infected cases')
         fig = fig %>% layout(yaxis = list(title = 'Count'))
-        
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      Infected = plot_data[,sum(Infected)]))
     }
-    
+    else if (outcome == "bedhosp") {
+        plot_data = data[, sum(BedHosp), by = AgeGroup]
+        setnames(plot_data, old = "V1", new = "Number.hosp.beds")
+        plot_data[, Number.hosp.beds := round(Number.hosp.beds,0)] 
+        fig = plot_ly(plot_data,
+                      x = ~AgeGroup,
+                      y = ~Number.hosp.beds,
+                      type = 'bar',
+                      name = 'Number of hospital beds')
+        fig = fig %>% layout(yaxis = list(title = 'Count'))
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      Number.hosp.beds = plot_data[,sum(Number.hosp.beds)]))
+    }
+    else if (outcome == "bedICU") {
+        plot_data = data[, sum(BedICU), by = AgeGroup]
+        setnames(plot_data, old = "V1", new = "Number.ICU.beds")
+        plot_data[, Number.ICU.beds := round(Number.ICU.beds,0)] 
+        fig = plot_ly(plot_data,
+                      x = ~AgeGroup,
+                      y = ~Number.ICU.beds,
+                      type = 'bar',
+                      name = 'Number of ICU beds')
+        fig = fig %>% layout(yaxis = list(title = 'Count'))
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      Number.ICU.beds = plot_data[,sum(Number.ICU.beds)]))
+    }
 
     return(list(plot = fig,
                 table = plot_data))
