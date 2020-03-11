@@ -165,47 +165,7 @@ renderCurves <- function(data, outcome, selectedAG) {
             }
             return(p)
         })
-    } else if (outcome == "bedhosp") {
-        mainPlot = renderPlotly({
-            if (selectedAG == "All") {
-                p = ggplot(data, aes(x = Time, y = BedHosp, color = AgeGroup)) +
-                    theme_classic() +
-                    geom_line()
-            } else if (selectedAG == "Aggregated") {
-                dataAgg = data[, sum(BedHosp), by = "Time"]
-                setnames(dataAgg, "V1", "Number.hosp.beds")
-                p = ggplot(dataAgg, aes(x = Time, y = Number.hosp.beds)) +
-                    theme_classic() +
-                    geom_line()
-            } else{
-                p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Number.hosp.beds, color = AgeGroup)) +
-                    theme_classic() +
-                    geom_line()
-            }
-            return(p)
-        })
-        secondPlot = NULL
-    } else if (outcome == "bedICU") {
-        mainPlot = renderPlotly({
-            if (selectedAG == "All") {
-                p = ggplot(data, aes(x = Time, y = BedICU, color = AgeGroup)) +
-                    theme_classic() +
-                    geom_line()
-            } else if (selectedAG == "Aggregated") {
-                dataAgg = data[, sum(BedICU), by = "Time"]
-                setnames(dataAgg, "V1", "Number.ICU.beds")
-                p = ggplot(dataAgg, aes(x = Time, y = Number.ICU.beds)) +
-                    theme_classic() +
-                    geom_line()
-            } else{
-                p = ggplot(data[AgeGroup == selectedAG,], aes(x = Time, y = Number.ICU.beds, color = AgeGroup)) +
-                    theme_classic() +
-                    geom_line()
-            }
-            return(p)
-        })
-        secondPlot = NULL
-    }
+    } 
     return(list(mainPlot = mainPlot,
                 secondPlot = secondPlot))
     

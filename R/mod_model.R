@@ -72,7 +72,8 @@ mod_model_ui <- function(id){
                       fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
                                                      label = NULL,
                                                      choices = c("Number hospital beds" = "bedhosp",
-                                                                 "Number ICU beds" = "bedICU"), 
+                                                                 "Number ICU beds" = "bedICU",
+                                                                 "Number invasive ventilations" = "bedventil"), 
                                                      selected = "bedhosp")),
                                column(8, uiOutput(ns("dateHospInput"))),
                                column(12,
@@ -141,6 +142,7 @@ mod_model_server <- function(input, output, session){
     sname = "test",
     DaysHosp = 15,
     DaysICU = 15,
+    DaysVentil = 15,
     #create Population
     pHosp = PolyHosp$new()
   )
@@ -195,7 +197,11 @@ mod_model_server <- function(input, output, session){
       sliderInput(ns("DaysICU"),
                   label = "Number of days in ICU",
                   min = 0, max = 21, step = 1,
-                  value = SimulationParameters$DaysICU)
+                  value = SimulationParameters$DaysICU),
+      sliderInput(ns("DaysVentil"),
+                  label = "Number of days of invasive ventilation",
+                  min = 0, max = 21, step = 1,
+                  value = SimulationParameters$DaysVentil)
     )
   })
     
@@ -242,7 +248,8 @@ mod_model_server <- function(input, output, session){
                      ICU_risk,
                      ventil_risks,
                      DaysHosp = SimulationParameters$DaysHosp,
-                     DaysICU = SimulationParameters$DaysICU)
+                     DaysICU = SimulationParameters$DaysICU,
+                     DaysVentil = SimulationParameters$DaysVentil)
   })
   ## -------------------------------------------------------------------------
   
@@ -276,7 +283,7 @@ mod_model_server <- function(input, output, session){
     
     return(
       sliderInput(ns("dateHosp"),
-                  label = "Select date: ",
+                  label = NULL,
                   min = min,
                   max = max,
                   value = min,
@@ -355,6 +362,10 @@ mod_model_server <- function(input, output, session){
   
   observeEvent(input$DaysICU,{
     SimulationParameters$DaysICU <- input$DaysICU
+  })
+  
+  observeEvent(input$DaysVentil,{
+    SimulationParameters$DaysVentil <- input$DaysVentil
   })
   
   observe({

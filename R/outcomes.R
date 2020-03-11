@@ -12,7 +12,8 @@ compute_outcomes <- function(modelOutput,
                              ICU_risk,
                              ventil_risks,
                              DaysHosp,
-                             DaysICU) {
+                             DaysICU,
+                             DaysVentil) {
 
     data = modelOutput[, .(Time, AgeGroup, Infected)]
 
@@ -43,6 +44,10 @@ compute_outcomes <- function(modelOutput,
     outcome_table[, BedICU := sapply(Time, 
                                       function(parameter) 
                                           sum(ICU[between(Time, parameter-DaysICU+1, parameter)])),
+                  by = c("AgeGroup")]
+    outcome_table[, Bedinvasive.ventil := sapply(Time, 
+                                     function(parameter) 
+                                         sum(invasive.ventil[between(Time, parameter-DaysVentil+1, parameter)])),
                   by = c("AgeGroup")]
     
     return(outcome_table)
@@ -173,7 +178,20 @@ outcome_render = function(outcome_table,
                            data.table(AgeGroup = "Total",
                                       Number.ICU.beds = plot_data[,sum(Number.ICU.beds)]))
     }
-
+    else if (outcome == "bedventil") {
+        plot_data = data[, .(AgeGroup, Number.invasive.ventil = round(Bedinvasive.ventil,0))]
+        plot_data <- plot_data[order(AgeGroup)]
+        fig = plot_ly(plot_data,
+                      x = ~AgeGroup,
+                      y = ~Number.invasive.ventil,
+                      type = 'bar',
+                      name = 'Number of invasive ventilations')
+        fig = fig %>% layout(yaxis = list(title = 'Count'))
+        plot_data <- rbind(plot_data,
+                           data.table(AgeGroup = "Total",
+                                      Number.invasive.ventil = plot_data[,sum(Number.invasive.ventil)]))
+    }
+    
     return(list(plot = fig,
                 table = plot_data))
 
