@@ -79,8 +79,7 @@ mod_pop_server <- function(input, output, session){
                          width = "100%",
                          options = list(enable_search = TRUE,
                                         non_selected_header = "Non-selected",
-                                        selected_header = "Selected"))) 
-              
+                                        selected_header = "Selected")))
             ),
             column(6, 
                    shinyjs::hidden(leaflet::leafletOutput(ns("mapPolygon"), height = 800)),
@@ -247,6 +246,15 @@ mod_pop_server <- function(input, output, session){
         PopParameters$SelectRegion = TRUE
       }
     })
+
+    ## Get selected regions
+    selectedRegions = reactive({
+        x = input$Region
+        y = input$mapPolygon_shape_click$id
+        return(union(x,y))
+    })
+
+    return(selectedRegions)
 }
     
 ## To be copied in the UI

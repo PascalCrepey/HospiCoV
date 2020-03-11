@@ -31,10 +31,11 @@ mod_model_ui <- function(id){
                 )
             ),
             mainPanel(
-                fluidRow(column(4, selectInput(inputId = ns("selectedAG"), label = NULL,
+                fluidRow(column(3, uiOutput(ns("regionsSimulated"))),
+                         column(3, selectInput(inputId = ns("selectedAG"), label = NULL,
                                                choices = c("All", "Aggregated", 
                                                            agenames), selected = "All")),
-                         column(4, selectInput(inputId = ns("selectedOutcome"), 
+                         column(3, selectInput(inputId = ns("selectedOutcome"), 
                                                label = NULL,
                                                choices = c("Infected" = "Infected", 
                                                            #"Symptomatic cases" = "symptomatic",  
@@ -42,7 +43,7 @@ mod_model_ui <- function(id){
                                                            "ICU admissions" = "ICU", 
                                                            "Ventilation in ICU" = "ventilation"), 
                                                selected = "Infected")),
-                         column(4, selectInput(inputId = ns("selectedDuration"),
+                         column(3, selectInput(inputId = ns("selectedDuration"),
                                                label = NULL,
                                                choices = c("Week", "Month", "Trimester", 
                                                            "Semester", "Year"),
@@ -140,14 +141,14 @@ mod_model_ui <- function(id){
 #' @importFrom DT formatRound datatable
 #' @export
 #' @keywords internal
-mod_model_server <- function(input, output, session){
+mod_model_server <- function(input, output, session, selectedRegions) {
   ns <- session$ns
   params = Parameters$new()
   SimulationParameters = reactiveValues(
     R0 = 3, 
     Duration = "Trimester", 
     Outcome = "Infected", 
-    Region = "Bretagne",
+#    Region = selectedRegions(),
     sname = "test",
     DaysHosp = 15,
     DaysICU = 15,
@@ -214,6 +215,13 @@ mod_model_server <- function(input, output, session){
                   value = SimulationParameters$DaysVentil)
     )
   })
+
+  output$regionsSimulated = renderUI({
+      selectInput(ns("selectedRegionsUI"),
+                  label = "Region",
+                  choices = c("All", selectedRegions()))
+  })
+                  
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
     
@@ -222,10 +230,11 @@ mod_model_server <- function(input, output, session){
       req(input$selectedAG)
       req(SimulationParameters$Duration)
       req(SimulationParameters$R0)
+      req(input$selectedRegionsUI)
       # if (input$selectedOutcome == "Infected") {
       #     curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
       # } else if (input$selectedOutcome != "Infected") {
-          curves = renderCurves(outcome_table(), input$selectedOutcome, input$selectedAG)
+          curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], input$selectedOutcome, input$selectedAG)
       # }
 
       output$mainPlot   = curves$mainPlot
@@ -237,20 +246,28 @@ mod_model_server <- function(input, output, session){
   
   ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
-    #create Parameter
-    params = Parameters$new(SimulationParameters$R0)
-    params$preInfected = 40
+      req(selectedRegions())
+      all_res = lapply(selectedRegions(), function(region) {
+          #create Parameter
+          params = Parameters$new(SimulationParameters$R0)
+          params$preInfected = pre_infected[Region == region, preInfected]
     
-    #set duration
-    params$duration = SimulationParameters$Duration
+          #set duration
+          params$duration = SimulationParameters$Duration
 
-    #run the simulation
-    pop = SimulationParameters$pHosp$getPopRegion(SimulationParameters$Region)
+          #run the simulation
+          pop = SimulationParameters$pHosp$getPopRegion(region)
 
-    finalRes = runMod(params = params$getList(), 
-                      sname = SimulationParameters$sname, 
-                      population = pop)
+          finalRes = runMod(params = params$getList(), 
+                            sname = SimulationParameters$sname, 
+                            population = pop)
+          finalRes[, Region := region]
+          finalRes[, All := "All"]
+      })
+      out = rbindlist(all_res)
+      return(out)
   })
+  
   ## ----- COMPUTE OUTCOMES ---------------------------------------------------
   outcome_table = reactive({
     compute_outcomes(simulation(),
@@ -274,8 +291,8 @@ mod_model_server <- function(input, output, session){
 
   ## ----- OUTCOMES -----------------------------------------------------
   output$dateRangeInput = renderUI({
-      min = simulation()[, min(Time)]
-      max = simulation()[, max(Time)]
+      min = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, min(Time)]
+      max = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, max(Time)]
 
       return(
       sliderInput(ns("dateRange"),
@@ -288,8 +305,8 @@ mod_model_server <- function(input, output, session){
   })
   
   output$dateHospInput = renderUI({
-    min = simulation()[, min(Time)]
-    max = simulation()[, max(Time)]
+    min = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, min(Time)]
+    max = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, max(Time)]
     
     if (SimulationParameters$currDateHosp < min) val = min
     else val = SimulationParameters$currDateHosp
@@ -346,13 +363,13 @@ mod_model_server <- function(input, output, session){
   observe({
       req(input$selectedOutcome)
       if (input$selectedOutcome == "Infected") {
-          out = outcome_render(simulation(),
+          out = outcome_render(simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                                start_time = input$dateRange[[1]],
                                end_time = input$dateRange[[2]],
                                outcome = input$selectedOutcome)
       }
       else if (input$selectedOutcome != "Infected"){
-          out = outcome_render(outcome_table(),
+          out = outcome_render(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                                start_time = input$dateRange[[1]],
                                end_time = input$dateRange[[2]],
                                outcome = input$selectedOutcome)
@@ -388,9 +405,9 @@ mod_model_server <- function(input, output, session){
     req(input$selectedHospOutcome)
     req(input$dateHosp)
     #outCurve = NULL
-    outCurve = outcome_render_instant_curve(outcome_table(),
+    outCurve = outcome_render_instant_curve(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                                        instant_time = input$dateHosp, outcome = input$selectedHospOutcome)
-    outAge = outcome_render(outcome_table(),
+    outAge = outcome_render(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                          start_time = input$dateHosp,
                          end_time = input$dateHosp,
                          outcome = input$selectedHospOutcome)
