@@ -33,7 +33,7 @@ fitness = function(x, pop, params){
   return(sum(sumC10$squerr))
 }
 
-
+#mainCalib = lapply(2.8, function(r){
 mainCalib = lapply(seq(1.5, 3, 0.1), function(r){
   params = Parameters$new(R0 = r)
   resCalib = nloptr(x0 = susceptibilityVector, 
@@ -55,7 +55,7 @@ mainCalib = lapply(seq(1.5, 3, 0.1), function(r){
 
 CalibSusceptibility = rbindlist(mainCalib)
 
-usethis::use_data(CalibSusceptibility)
+usethis::use_data(CalibSusceptibility, overwrite = TRUE)
 # resCalib15$solution
 # resCalib$solution
 # params$susceptibility = resCalib$solution

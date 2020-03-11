@@ -192,11 +192,12 @@ mod_model_server <- function(input, output, session){
       req(input$selectedOutcome)
       req(input$selectedAG)
       req(SimulationParameters$Duration)
-      if (input$selectedOutcome == "Infected") {
-          curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
-      } else if (input$selectedOutcome != "Infected") {
+      req(SimulationParameters$R0)
+      # if (input$selectedOutcome == "Infected") {
+      #     curves = renderCurves(simulation(), input$selectedOutcome, input$selectedAG)
+      # } else if (input$selectedOutcome != "Infected") {
           curves = renderCurves(outcome_table(), input$selectedOutcome, input$selectedAG)
-      }
+      # }
 
       output$mainPlot   = curves$mainPlot
       output$secondPlot = curves$secondPlot
