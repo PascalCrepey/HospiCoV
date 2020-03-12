@@ -50,6 +50,31 @@ mod_model_ui <- function(id){
                                                selected = "Trimester"))
                          ),
                 tabsetPanel(
+                  tabPanel(
+                    title = "Hosp. requirements",
+                    fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
+                                                   label = NULL,
+                                                   choices = c("Number hospital beds" = "bedhosp",
+                                                               "Number ICU beds" = "bedICU",
+                                                               "Number invasive ventilations" = "bedventil"), 
+                                                   selected = "bedhosp")),
+                             column(8, uiOutput(ns("dateHospInput")))),
+                    fluidRow(
+                      column(12,
+                             plotOutput(ns("outcomePlotHosp"), height = "200px")
+                      )
+                    ),
+                    fluidRow(
+                      column(12,
+                             plotly::plotlyOutput(ns("outcomePlotHospAge"))
+                      )
+                    ),
+                    fluidRow(
+                      column(12,                                                 
+                             DT::DTOutput(ns("outcomeTableHosp"))
+                      )
+                    )
+                  ),
                     tabPanel(
                         title = "Time series",
                         fluidRow(column(12,
@@ -68,31 +93,7 @@ mod_model_ui <- function(id){
                             DT::DTOutput(ns("outcomeTable"))
                         ))
                     ),
-                    tabPanel(
-                      title = "Hosp. requirements",
-                      fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
-                                                     label = NULL,
-                                                     choices = c("Number hospital beds" = "bedhosp",
-                                                                 "Number ICU beds" = "bedICU",
-                                                                 "Number invasive ventilations" = "bedventil"), 
-                                                     selected = "bedhosp")),
-                               column(8, uiOutput(ns("dateHospInput")))),
-                      fluidRow(
-                        column(12,
-                               plotOutput(ns("outcomePlotHosp"), height = "200px")
-                        )
-                      ),
-                      fluidRow(
-                               column(12,
-                                      plotly::plotlyOutput(ns("outcomePlotHospAge"))
-                                      )
-                               ),
-                      fluidRow(
-                               column(12,                                                 
-                                      DT::DTOutput(ns("outcomeTableHosp"))
-                                      )
-                               )
-                      ),
+                    
                     tabPanel(
                         title = "Outcomes probabilities",
                         fluidRow(

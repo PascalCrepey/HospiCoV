@@ -40,7 +40,7 @@ Parameters <- R6::R6Class("Parameters",
     #' Create a new `Parameters` object.
     #' @param R0 R0 (=3)
     #' @return A new `Parameters` object.
-    initialize = function(R0 = 3){
+    initialize = function(R0 = 2.2){
       self$preImmune = 0
       self$preExposed = 0
       #if preInfected >1 then it's the number of infected individuals (seeds)
