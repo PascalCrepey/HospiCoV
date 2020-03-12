@@ -4,7 +4,15 @@
 \alias{compute_outcomes}
 \title{Compute outcomes from modelOutput}
 \usage{
-compute_outcomes(modelOutput, severity_risk, ICU_risk, ventil_risks)
+compute_outcomes(
+  modelOutput,
+  severity_risk,
+  ICU_risk,
+  ventil_risks,
+  DaysHosp,
+  DaysICU,
+  DaysVentil
+)
 }
 \arguments{
 \item{modelOutput}{output returned by a model run}
@@ -12,6 +20,10 @@ compute_outcomes(modelOutput, severity_risk, ICU_risk, ventil_risks)
 \item{severity_risk}{vector of dimension 17, corresponding to the risk (proportion) of being a severe case, for each age group}
 
 \item{ICU_risk}{vector of dimension 17, corresponding to the risk (proportion) of being a severe case, for each age group}
+
+\item{DaysHosp}{single value, corresponding to the length of stay in hospital for severe cases}
+
+\item{DaysICU}{single value, corresponding to the length of stay in ICU for severe cases}
 }
 \description{
 Compute outcomes from modelOutput

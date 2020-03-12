@@ -20,7 +20,7 @@ mod_model_ui <- function(id){
     tagList(
         sidebarLayout(
             sidebarPanel(
-                h4("Model parameters"),
+              uiOutput(ns("regionsSimulated")),
                 tabsetPanel(
                     tabPanel("Epidemic params.", 
                              uiOutput(ns("paramsEpiUI"))),
@@ -31,7 +31,7 @@ mod_model_ui <- function(id){
                 )
             ),
             mainPanel(
-                fluidRow(column(3, uiOutput(ns("regionsSimulated"))),
+                fluidRow(
                          column(3, selectInput(inputId = ns("selectedAG"), label = NULL,
                                                choices = c("All", "Aggregated", 
                                                            agenames), selected = "All")),
@@ -217,9 +217,9 @@ mod_model_server <- function(input, output, session, selectedRegions) {
   })
 
   output$regionsSimulated = renderUI({
-      selectInput(ns("selectedRegionsUI"),
-                  label = "Region",
-                  choices = c("All", selectedRegions()))
+    selectInput(ns("selectedRegionsUI"),
+                label = NULL,
+                choices = c("All", selectedRegions()$zones))
   })
                   
     
@@ -247,16 +247,24 @@ mod_model_server <- function(input, output, session, selectedRegions) {
   ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
       req(selectedRegions())
-      all_res = lapply(selectedRegions(), function(region) {
+    
+      all_res = lapply(selectedRegions()$zones, function(region) {
           #create Parameter
           params = Parameters$new(SimulationParameters$R0)
-          params$preInfected = pre_infected[Region == region, preInfected]
+          if (selectedRegions()$isRegion) {
+            params$preInfected = pre_infected[Region == region, preInfected]
+            pop = SimulationParameters$pHosp$getPopRegion(region)
+          } else {
+            params$preInfected = 10
+            pop = SimulationParameters$pHosp$getPopFiness(region)
+          }
+          
     
           #set duration
           params$duration = SimulationParameters$Duration
 
           #run the simulation
-          pop = SimulationParameters$pHosp$getPopRegion(region)
+          
 
           finalRes = runMod(params = params$getList(), 
                             sname = SimulationParameters$sname, 
@@ -404,7 +412,8 @@ mod_model_server <- function(input, output, session, selectedRegions) {
   observe({
     req(input$selectedHospOutcome)
     req(input$dateHosp)
-    #outCurve = NULL
+    req(input$selectedRegionsUI)
+    #browser()
     outCurve = outcome_render_instant_curve(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                                        instant_time = input$dateHosp, outcome = input$selectedHospOutcome)
     outAge = outcome_render(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],

@@ -14,4 +14,5 @@ hospCovid = data.table(read.xlsx("data-raw/Hopitaux_covid.xlsx"))
 hospCovid[, FINESS_GEO := as.character(FINESS_GEO)]
 hospCovid[, FINESS_GEO := str_pad(FINESS_GEO, 9 , pad = "0")]
 hospCovid <- hospCovid[!is.na(Ligne),]
+setorder(hospCovid, "Region", "FINESS_GEO")
 usethis::use_data(hospCovid, overwrite = TRUE)

@@ -39,16 +39,16 @@ compute_outcomes <- function(modelOutput,
     ## Compute hospital-related information
     outcome_table[, BedHosp := sapply(Time, 
                                      function(parameter) 
-                                         sum(severe[between(Time, parameter-DaysHosp+1, parameter)])),
-                  by = c("AgeGroup")]
+                                         sum(severe[between(Time, parameter - DaysHosp + 1, parameter)])),
+                  by = c("AgeGroup", "Region")]
     outcome_table[, BedICU := sapply(Time, 
                                       function(parameter) 
-                                          sum(ICU[between(Time, parameter-DaysICU+1, parameter)])),
-                  by = c("AgeGroup")]
+                                          sum(ICU[between(Time, parameter - DaysICU + 1, parameter)])),
+                  by = c("AgeGroup", "Region")]
     outcome_table[, Bedinvasive.ventil := sapply(Time, 
                                      function(parameter) 
-                                         sum(invasive.ventil[between(Time, parameter-DaysVentil+1, parameter)])),
-                  by = c("AgeGroup")]
+                                         sum(invasive.ventil[between(Time, parameter - DaysVentil + 1, parameter)])),
+                  by = c("AgeGroup","Region")]
     
     return(outcome_table)
     

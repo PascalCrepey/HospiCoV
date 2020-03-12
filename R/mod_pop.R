@@ -38,21 +38,23 @@ mod_pop_ui <- function(id){
     
 mod_pop_server <- function(input, output, session){
     ns <- session$ns
+    ListRegions = unique(hospCovid[, Region])[order(unique(hospCovid[, Region]))]
+
     pHosp = PolyHosp$new()
     npoly = length(pHosp$vorPolyHosp@data[,"FINESS_GEO"])
-    nregion = length(pHosp$vorPolyRegion@data$Region)
+    nregion = length(ListRegions)
     PopParameters = reactiveValues(
       Region = "Ile-de-France",
       Polygon = "350000741",
       SelectRegion = TRUE,
       #create Population
       pHosp = pHosp,
-      SelPolygon = rep(FALSE, npoly),
-      SelRegion = rep(FALSE, nregion),
-      colPolygon = rep("blue", npoly),
-      colRegion = rep("blue", nregion),
-      alphaPolygon = rep(0.05, npoly),
-      alphaRegion = rep(0.05, nregion)
+      SelPolygon = hospCovid[, FINESS_GEO == "350000741"] ,
+      SelRegion = ListRegions == "Ile-de-France",
+      colPolygon = ifelse(hospCovid[, FINESS_GEO == "350000741"], "orange", "blue"),
+      colRegion = ifelse(ListRegions == "Ile-de-France", "orange", "blue"),
+      alphaPolygon = ifelse(hospCovid[, FINESS_GEO == "350000741"], 0.4, 0.05),
+      alphaRegion = ifelse(ListRegions == "Ile-de-France", 0.4, 0.05)
     )
     
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
@@ -63,7 +65,7 @@ mod_pop_server <- function(input, output, session){
             column(6, 
              (multiInput(inputId = ns("Region"), 
                              label = "Select",
-                             choices = unique(hospCovid[, Region])[order(unique(hospCovid[, Region]))],
+                             choices = ListRegions,
                              selected = PopParameters$Region,
                              width = "100%",
                              options = list(enable_search = FALSE,
@@ -75,7 +77,7 @@ mod_pop_server <- function(input, output, session){
                                                          Libelle, 
                                                          sep = "-")],
                          choiceValues = hospCovid[, FINESS_GEO],
-                         selected = NULL,
+                         selected = PopParameters$Polygon,
                          width = "100%",
                          options = list(enable_search = TRUE,
                                         non_selected_header = "Non-selected",
@@ -157,10 +159,11 @@ mod_pop_server <- function(input, output, session){
     
     observeEvent(input$Polygon,{
       id <- which(PopParameters$pHosp$vorPolyHosp@data[,"FINESS_GEO"] %in% input$Polygon)
-      PopParameters$SelPolygon = rep(FALSE, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
-      PopParameters$colPolygon = rep("blue", length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
-      PopParameters$alphaPolygon = rep(0.05, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
+      
       if (length(id) > 0){
+        PopParameters$SelPolygon = rep(FALSE, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
+        PopParameters$colPolygon = rep("blue", length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
+        PopParameters$alphaPolygon = rep(0.05, length(pHosp$vorPolyHosp@data[,"FINESS_GEO"]))
         PopParameters$SelPolygon[id] <- TRUE
         PopParameters$colPolygon[id] <- "orange"
         PopParameters$alphaPolygon[id] <- 0.4
@@ -169,10 +172,11 @@ mod_pop_server <- function(input, output, session){
     
     observeEvent(input$Region,{
       id <- which(PopParameters$pHosp$vorPolyRegion@data[,Region] %in% input$Region)
-      PopParameters$SelRegion = rep(FALSE, length(pHosp$vorPolyRegion@data$Region))
-      PopParameters$colRegion = rep("blue", length(pHosp$vorPolyRegion@data$Region))
-      PopParameters$alphaRegion = rep(0.05, length(pHosp$vorPolyRegion@data$Region))
+      
       if (length(id) > 0){
+        PopParameters$SelRegion = rep(FALSE, length(pHosp$vorPolyRegion@data$Region))
+        PopParameters$colRegion = rep("blue", length(pHosp$vorPolyRegion@data$Region))
+        PopParameters$alphaRegion = rep(0.05, length(pHosp$vorPolyRegion@data$Region))
         PopParameters$SelRegion[id] <- TRUE
         PopParameters$colRegion[id] <- "orange"
         PopParameters$alphaRegion[id] <- 0.4
@@ -187,7 +191,7 @@ mod_pop_server <- function(input, output, session){
                    PopParameters$pHosp$vorPolyHosp@data[,"FINESS_GEO"])
 
         if(length(id) > 0){
-          if(PopParameters$SelPolygon[id]){
+          if(PopParameters$SelPolygon[id] && sum(PopParameters$SelPolygon[-id]) > 0){
             PopParameters$SelPolygon[id] <- FALSE
             PopParameters$colPolygon[id] <- "blue"
             PopParameters$alphaPolygon[id] <- 0.05
@@ -213,7 +217,8 @@ mod_pop_server <- function(input, output, session){
                  PopParameters$pHosp$vorPolyRegion@data$Region)
       
       if (length(id) > 0){
-        if (PopParameters$SelRegion[id]){
+        # we perform the change unless it's the last one 
+        if (PopParameters$SelRegion[id] && sum(PopParameters$SelRegion[-id]) > 0){
           PopParameters$SelRegion[id] <- FALSE
           PopParameters$colRegion[id] <- "blue"
           PopParameters$alphaRegion[id] <- 0.05
@@ -249,9 +254,15 @@ mod_pop_server <- function(input, output, session){
 
     ## Get selected regions
     selectedRegions = reactive({
-        x = input$Region
-        y = input$mapPolygon_shape_click$id
-        return(union(x,y))
+      if (PopParameters$SelectRegion){
+        zones = ListRegions[PopParameters$SelRegion]
+      } else {
+        zones = hospCovid[PopParameters$SelPolygon, FINESS_GEO]
+      }
+        # x = input$Region
+        # y = input$mapPolygon_shape_click$id
+        # return(union(x,y))
+      return(list(isRegion = PopParameters$SelectRegion, zones = zones))
     })
 
     return(selectedRegions)
