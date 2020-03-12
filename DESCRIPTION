@@ -26,7 +26,9 @@ Imports:
     sp,
     plotly,
     shinyWidgets,
-    shinyjs
+    shinyjs,
+    magrittr,
+    DT
 RoxygenNote: 7.0.2
 Depends: R (>= 3.0), data.table
 LinkingTo: Rcpp, RcppArmadillo

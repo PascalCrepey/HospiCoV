@@ -52,6 +52,10 @@ params = Parameters$new()
 \item{\code{susceptibility}}{A vector of size *nage* for susceptibility adjustment}
 
 \item{\code{R0}}{the basic reproduction number}
+
+\item{\code{duration}}{the duration fo the simulation i.e. c("Week", "Month", "Trimester", "Semester", "Year").}
+
+\item{\code{nbDays}}{the number of days of the simulation}
 }
 \if{html}{\out{</div>}}
 }
@@ -68,7 +72,7 @@ params = Parameters$new()
 \subsection{Method \code{new()}}{
 Create a new `Parameters` object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Parameters$new(R0 = 3)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Parameters$new(R0 = 2.2)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -85,10 +89,14 @@ A new `Parameters` object.
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getList"></a>}}
 \subsection{Method \code{getList()}}{
+Create a new list containing the required parameters for the model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Parameters$getList()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+A new list of parameters.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
