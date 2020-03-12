@@ -391,7 +391,6 @@ mod_model_server <- function(input, output, session, selectedRegions) {
                                            dom = 'Bfrtip', paging = FALSE, searching = FALSE, ordering=FALSE,
                                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>% 
         DT::formatRound(columns = 2:4, digits = 0)
-      
       output$outcomePlot  = plotly::renderPlotly({ out$plot })
       output$outcomeTable = DT::renderDT({ table })
        

@@ -153,43 +153,43 @@ outcome_render = function(outcome_table,
                                       Infected = plot_data[,sum(Infected)]))
     }
     else if (outcome == "bedhosp") {
-        plot_data = data[, .(AgeGroup,Number.hosp.beds = round(BedHosp,0))]
-        plot_data <- plot_data[order(AgeGroup)]
-        fig = plot_ly(plot_data,
-                      x = ~AgeGroup,
-                      y = ~Number.hosp.beds,
-                      type = 'bar',
-                      name = 'Number of hospital beds')
-        fig = fig %>% layout(yaxis = list(title = 'Count'))
-        plot_data <- rbind(plot_data,
-                           data.table(AgeGroup = "Total",
-                                      Number.hosp.beds = plot_data[,sum(Number.hosp.beds)]))
+      plot_data = data[, .(Number.hosp.beds = sum(round(BedHosp,0))), by = AgeGroup]
+      plot_data <- plot_data[order(AgeGroup)]
+      fig = plot_ly(plot_data,
+                    x = ~AgeGroup,
+                    y = ~Number.hosp.beds,
+                    type = 'bar',
+                    name = 'Number of hospital beds')
+      fig = fig %>% layout(yaxis = list(title = 'Count'))
+      plot_data <- rbind(plot_data,
+                         data.table(AgeGroup = "Total",
+                                    Number.hosp.beds = plot_data[,sum(Number.hosp.beds)]))
     }
     else if (outcome == "bedICU") {
-        plot_data = data[, .(AgeGroup, Number.ICU.beds = round(BedICU,0))]
-        plot_data <- plot_data[order(AgeGroup)]
-        fig = plot_ly(plot_data,
-                      x = ~AgeGroup,
-                      y = ~Number.ICU.beds,
-                      type = 'bar',
-                      name = 'Number of ICU beds')
-        fig = fig %>% layout(yaxis = list(title = 'Count'))
-        plot_data <- rbind(plot_data,
-                           data.table(AgeGroup = "Total",
-                                      Number.ICU.beds = plot_data[,sum(Number.ICU.beds)]))
+      plot_data = data[, .(Number.ICU.beds = sum(round(BedICU,0))), by = AgeGroup]
+      plot_data <- plot_data[order(AgeGroup)]
+      fig = plot_ly(plot_data,
+                    x = ~AgeGroup,
+                    y = ~Number.ICU.beds,
+                    type = 'bar',
+                    name = 'Number of ICU beds')
+      fig = fig %>% layout(yaxis = list(title = 'Count'))
+      plot_data <- rbind(plot_data,
+                         data.table(AgeGroup = "Total",
+                                    Number.ICU.beds = plot_data[,sum(Number.ICU.beds)]))
     }
     else if (outcome == "bedventil") {
-        plot_data = data[, .(AgeGroup, Number.invasive.ventil = round(Bedinvasive.ventil,0))]
-        plot_data <- plot_data[order(AgeGroup)]
-        fig = plot_ly(plot_data,
-                      x = ~AgeGroup,
-                      y = ~Number.invasive.ventil,
-                      type = 'bar',
-                      name = 'Number of invasive ventilations')
-        fig = fig %>% layout(yaxis = list(title = 'Count'))
-        plot_data <- rbind(plot_data,
-                           data.table(AgeGroup = "Total",
-                                      Number.invasive.ventil = plot_data[,sum(Number.invasive.ventil)]))
+      plot_data = data[, .(Number.invasive.ventil = sum(round(Bedinvasive.ventil,0))), by = AgeGroup]
+      plot_data <- plot_data[order(AgeGroup)]
+      fig = plot_ly(plot_data,
+                    x = ~AgeGroup,
+                    y = ~Number.invasive.ventil,
+                    type = 'bar',
+                    name = 'Number of invasive ventilations')
+      fig = fig %>% layout(yaxis = list(title = 'Count'))
+      plot_data <- rbind(plot_data,
+                         data.table(AgeGroup = "Total",
+                                    Number.invasive.ventil = plot_data[,sum(Number.invasive.ventil)]))
     }
     
     return(list(plot = fig,
