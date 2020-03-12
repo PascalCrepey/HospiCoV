@@ -300,8 +300,8 @@ mod_model_server <- function(input, output, session, selectedRegions) {
 
   ## ----- OUTCOMES -----------------------------------------------------
   output$dateRangeInput = renderUI({
-      min = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, min(Time)]
-      max = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, max(Time)]
+      min = simulation()[, min(Time)]
+      max = simulation()[, max(Time)]
 
       return(
       sliderInput(ns("dateRange"),
@@ -314,8 +314,8 @@ mod_model_server <- function(input, output, session, selectedRegions) {
   })
   
   output$dateHospInput = renderUI({
-    min = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, min(Time)]
-    max = simulation()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,][, max(Time)]
+    min = simulation()[, min(Time)]
+    max = simulation()[, max(Time)]
     
     if (SimulationParameters$currDateHosp < min) val = min
     else val = SimulationParameters$currDateHosp
