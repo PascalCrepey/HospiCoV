@@ -13,6 +13,8 @@
 #' @keywords internal
 #' @export 
 #' @importFrom shiny NS tagList 
+#' @importFrom DT DTOutput
+#' @importFrom plotly plotlyOutput
 mod_model_ui <- function(id){
     ns <- NS(id)
     

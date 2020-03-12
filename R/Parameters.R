@@ -87,7 +87,10 @@ Parameters <- R6::R6Class("Parameters",
       
       
     },
-    
+    #' @description
+    #' Create a new list containing the required parameters for the model
+    #' 
+    #' @return A new list of parameters.
     getList = function(){
       list(
         beta = self$beta,
@@ -159,6 +162,7 @@ Parameters <- R6::R6Class("Parameters",
         self$beta = private$.R0 * self$removal/max(Re(eig$values))
       }
     }, 
+    #' @field duration the duration fo the simulation i.e. c("Week", "Month", "Trimester", "Semester", "Year").
     duration = function(x){
       if (missing(x)) {
         private$.duration
@@ -174,6 +178,7 @@ Parameters <- R6::R6Class("Parameters",
         )
       }
     }, 
+    #' @field nbDays the number of days of the simulation
     nbDays = function(x){
       if (missing(x)) {
         private$.nbDays

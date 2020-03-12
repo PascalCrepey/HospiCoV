@@ -8,10 +8,9 @@
 #' @param output internal
 #' @param session internal
 #'
-#' @rdname mod_map
+#' @rdname mod_pop
 #'
 #' @import leaflet
-#'
 #' @keywords internal
 #' @export 
 #' @importFrom shiny NS tagList 
@@ -35,7 +34,6 @@ mod_pop_ui <- function(id){
 #' @importFrom shinyjs hidden show hide
 #' @export
 #' @keywords internal
-    
 mod_pop_server <- function(input, output, session){
     ns <- session$ns
     ListRegions = unique(hospCovid[, Region])[order(unique(hospCovid[, Region]))]
