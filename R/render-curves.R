@@ -39,6 +39,32 @@ renderCurves <- function(data, outcome, selectedAG, ShowCaseTimeSeries = FALSE,
             return(p)
         })
         secondPlot = NULL
+    } else if (outcome == "Deaths") {
+        mainPlot = renderPlotly({
+            if (selectedAG == "All") {
+                dataAgg = data[, .(deaths = sum(deaths)), by = c("Time","AgeGroup")]
+                p = ggplot(dataAgg, aes(x = Time, y = deaths, color = AgeGroup)) +
+                    theme_classic() +
+                    geom_line()
+                p = plotly::ggplotly(p)
+            } else if (selectedAG == "Aggregated") {
+                dataAgg = data[, sum(deaths), by = "Time"]
+                setnames(dataAgg, "V1", "deaths")
+                p = ggplot(dataAgg, aes(x = Time, y = deaths)) +
+                    theme_classic() +
+                    geom_line()
+                p = plotly::ggplotly(p)
+                }
+            else{
+                dataAgg = data[AgeGroup == selectedAG, .(deaths = sum(deaths)), by = c("Time","AgeGroup")]
+                p = ggplot(dataAgg, aes(x = Time, y = deaths, color = AgeGroup)) +
+                    theme_classic() +
+                    geom_line()
+                p = plotly::ggplotly(p)
+            }
+            return(p)
+        })
+        secondPlot = NULL
     } else if (outcome == "symptomatic") {
         #to be updated
         mainPlot = renderPlotly({

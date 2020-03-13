@@ -11,6 +11,7 @@ compute_outcomes <- function(modelOutput,
                              severity_risk,
                              ICU_risk,
                              ventil_risks,
+                             death_risk,
                              DaysHosp,
                              DaysICU,
                              DaysVentil) {
@@ -26,6 +27,10 @@ compute_outcomes <- function(modelOutput,
                           ICU_risk,
                           by = "AgeGroup")
     setnames(outcome_table, old = "risk", new = "ICU_risk")
+    outcome_table = merge(outcome_table,
+                          death_risk,
+                          by = "AgeGroup")
+    setnames(outcome_table, old = "risk", new = "death_risk")
 
     ## Compute cases
     outcome_table[, severe := Infected*severity_risk]
@@ -35,6 +40,7 @@ compute_outcomes <- function(modelOutput,
     outcome_table[, overall.ventil  := ICU * ventil_risks$overall]
     outcome_table[, invasive.ventil := ICU * ventil_risks$invasive]
     outcome_table[, non.invasive.ventil := overall.ventil - invasive.ventil]
+    outcome_table[, deaths := Infected * death_risk]
 
     ## Compute hospital-related information
     outcome_table[, BedHosp := sapply(Time, 
@@ -151,6 +157,21 @@ outcome_render = function(outcome_table,
         plot_data <- rbind(plot_data,
                            data.table(AgeGroup = "Total",
                                       Infected = plot_data[,sum(Infected)]))
+    }
+    else if (outcome == "Deaths") {
+      # browser()
+      plot_data = data[, sum(deaths), by = AgeGroup]
+      setnames(plot_data, old = "V1", new = "deaths")
+      plot_data[, deaths := round(deaths,0)] 
+      fig = plot_ly(plot_data,
+                    x = ~AgeGroup,
+                    y = ~deaths,
+                    type = 'bar',
+                    name = 'Deaths')
+      fig = fig %>% layout(yaxis = list(title = 'Count'))
+      plot_data <- rbind(plot_data,
+                         data.table(AgeGroup = "Total",
+                                    deaths = plot_data[,sum(deaths)]))
     }
     else if (outcome == "bedhosp") {
       plot_data = data[, .(Number.hosp.beds = sum(round(BedHosp,0))), by = AgeGroup]
