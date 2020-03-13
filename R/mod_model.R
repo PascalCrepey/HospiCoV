@@ -290,6 +290,7 @@ mod_model_server <- function(input, output, session, selectedRegions) {
       all_res = lapply(selectedRegions()$zones, function(region) {
           #create Parameter
           params = Parameters$new(SimulationParameters$R0)
+          #browser()
           if (selectedRegions()$isRegion) {
             params$preInfected = pre_infected[Region == region, preInfected]
             pop = SimulationParameters$pHosp$getPopRegion(region)

@@ -16,7 +16,7 @@ compute_outcomes <- function(modelOutput,
                              DaysICU,
                              DaysVentil) {
 
-    data = modelOutput[, .(Time, AgeGroup, Infected, Region, All)]
+    data = modelOutput[, .(Time, AgeGroup, Infected, cumInfected, Region, All)]
 
     ## Merge tables
     outcome_table = merge(data,

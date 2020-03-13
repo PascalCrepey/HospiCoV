@@ -15,9 +15,11 @@ renderCurves <- function(data, outcome, selectedAG, ShowCaseTimeSeries = FALSE,
                 dataAgg = data[, sum(Infected), by = "Time"]
                 setnames(dataAgg, "V1", "Infected")
                 if(ShowCaseTimeSeries){
-                    p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
+                    dataAgg = data[, .(cumInfected = sum(cumInfected)), by = "Time"]
+                    p = ggplot(dataAgg, aes(x = Time, y = cumInfected)) +
                         theme_classic() +
                         geom_line() +
+                        scale_y_continuous(name = "Cumulated") +
                         geom_point(data = TimeSeries[!is.na(Cases),], 
                                    aes(x = Date, y = Cases),
                                    col = "red")

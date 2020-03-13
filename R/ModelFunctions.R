@@ -7,7 +7,6 @@
 #' @export
 runMod <- function(params, sname, 
                    population, startDate = as.Date("2020-02-01")) {
-  
   #fix the starting date for cosmetic purposes
   dates = seq(startDate, startDate + params$nbDays, by = "day")
   
@@ -47,6 +46,10 @@ runMod <- function(params, sname,
                   variable.name = "AgeGroup", value.name = c("Infected", "N"))
   finalRes[, AgeGroup := factor(params$agegroupnames[AgeGroup], 
                                 levels = params$agegroupnames)]
+  
+  finalRes[, cumInfected := Infected]
+  finalRes[Time == startDate, cumInfected := initI[.GRP], by = "AgeGroup"]
+  finalRes[, cumInfected := cumsum(cumInfected), by = "AgeGroup"]
   
   return(finalRes)
 }
