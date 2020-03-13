@@ -6,4 +6,5 @@ CaseTimeSeries <- data.table(read.xlsx("./data-raw/EpiDataFrance.xlsx",
                                       detectDates = TRUE))
 names(CaseTimeSeries) <- gsub(names(CaseTimeSeries), pattern = "\\.", 
                              replacement = " ")
+colnames(CaseTimeSeries)[1] = "Date"
 usethis::use_data(CaseTimeSeries, overwrite = TRUE)

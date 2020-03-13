@@ -1,5 +1,5 @@
 ---
-title: "Forecasting COVID-19 epidemic in France, hospital needs, and impact of control measures: a modelling study by Dr. Pascal Crépey."
+title: "Forecasting COVID-19 epidemic in France, hospital needs, and impact of control measures: a modelling study by Dr. Pascal Crépey and his minions"
 author: "??"
 bibliography: "../doc/biblio/references.bib"
 csl: "../doc/biblio/the-lancet.csl"
