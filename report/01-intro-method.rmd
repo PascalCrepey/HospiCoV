@@ -14,9 +14,9 @@ The objective of this study was to develop a deterministic, compartmental model 
 
 We developed a deterministic, compartmental, Susceptible-Exposed-Infectious-Recovered (SEIR) model.
 
-We listed the 138 hospitals that are identified as referral centers for the treatment of COVID-19 cases [@REF]. Of those, 33 hospitals are listed as primary referral centers, and 98 as secondary referral centers [CA FAIT PAS 138!!]. We then divided metropolitan France into catchment areas around these referral hospitals using Voronoi polygons. Population structure was inferred for each catchment area from 2016 and 2017 census data provided by the French National Institute of Statistics and Economic Studies (Insee) [@REF]. We used the data on contact structure for the French population estimated by Prem and colleagues [@Prem2017], and applied it to the population structure of each catchment area.
+We listed the 138 hospitals that are identified as referral centers for the treatment of COVID-19 cases in France [@REF]. Of those, 33 hospitals are listed as primary referral centers, and 98 as secondary referral centers in metropolitan France and 7 were overseas hospitals (not included). We then divided metropolitan France into catchment areas around these referral hospitals using Voronoi polygons. Population structure was inferred for each catchment area from 2016 and 2017 census data provided by the French National Institute of Statistics and Economic Studies (Insee) [@REF]. We used the data on contact structure for the French population estimated by Prem and colleagues [@Prem2017], and applied it to the population structure of each catchment area.
 
-We applied an age-dependant susceptibility vector to fit the age distribution of infected cases to the distribution reported by Wu and colleagues on chinese data [@wu-lancet]. We standardized the chinese age distribution of cases to the French population to estimate the expected age distribution of cases for France. We then fitted the age dependant susceptibility vector using the R implementation of the subplex algorithm provided by the `nloptr` package.
+We applied an age-dependant susceptibility vector to fit the age distribution of infected cases to the distribution reported by Wu and colleagues on chinese data [@wu-lancet]. We standardized the Chinese age distribution of cases to the French population to estimate the expected age distribution of cases for France. We then fitted the age dependant susceptibility vector using the R implementation of the subplex algorithm provided by the `nloptr` package.
 
 ## Control measures
 
@@ -25,4 +25,5 @@ To mitigate the epidemic, the French government announced a series of nation-wid
 - on February 29: stopping gatherings of more than 5000 people in confined settings.
 - on March 8: stopping the gatherings of more than 1000 people which are not essential to the life of the Nation.
 - on March 12: closure of schools and universities and recommandations of voluntary household quarantine and social distancing of those over 70 years of age.
+- on March 13: stopping the gatherings of more than 100 people
 
