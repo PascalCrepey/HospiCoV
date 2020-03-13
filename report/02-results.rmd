@@ -1,1 +1,95 @@
 # Results
+
+
+```{r echo = F}
+knitr::opts_chunk$set(echo = F, cache = T, message = F, warnings = F)
+```
+```{r}
+# Document and load package (no need to build or install)
+devtools::document()
+```
+    
+```{r}
+## ------ RUN MODEL ----------------------------------------------------------
+simulation <- function(locations, SimulationParameters, regions = TRUE) {
+
+    all_res = lapply(locations, function(loc) {
+        ## create Parameter
+        params = Parameters$new(SimulationParameters$R0)
+        
+        if (regions) {
+            params$preInfected = pre_infected[Region == loc, preInfected]
+            pop = SimulationParameters$pHosp$getPopRegion(loc)
+        } else {
+            params$preInfected = 10
+            pop = SimulationParameters$pHosp$getPopFiness(loc)
+        }
+        
+        #set duration
+        params$duration = SimulationParameters$Duration
+
+        #run the simulation
+        finalRes = runMod(params = params$getList(), 
+                          sname = SimulationParameters$sname, 
+                          population = pop)
+        finalRes[, Region := loc]
+    })
+    out = rbindlist(all_res)
+    return(out)
+}
+
+```
+
+## Scenario 1
+
+```{r}
+regions = c("Bretagne")
+
+SimulationParameters = list(R0 = 3, 
+                            Duration = "Trimester", 
+                            Outcome = "Infected", 
+                            sname = "test",
+                            DaysHosp = 15,
+                            DaysICU = 15,
+                            DaysVentil = 15,
+                              #create Population
+                            pHosp = PolyHosp$new(),
+                            currDateHosp = as.Date("01/02/2020"),
+                            ShowCaseTimeSeries = FALSE
+                            )
+
+res = simulation(regions, SimulationParameters)
+```
+
+### Parameters
+```{r}
+## OUTPUTS
+
+parameters = t(as.data.frame(SimulationParameters[c("R0",
+                                                    "DaysHosp",
+                                                    "DaysICU",
+                                                    "DaysVentil")]))
+
+knitr::kable(parameters)
+```
+### Results
+
+```{r, cache = F, dev = 'svg'}
+## Case time series, all age groups
+data = res[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+    theme_classic() +
+    geom_line()
+
+p
+
+## Case time series, aggregated
+data = res[, .(Infected = sum(Infected)), by = c("Time")]
+
+p = ggplot(data, aes(x = Time, y = Infected)) +
+    theme_classic() +
+    geom_line()
+
+p
+```
