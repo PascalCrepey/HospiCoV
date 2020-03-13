@@ -43,7 +43,8 @@ mod_model_ui <- function(id){
                                                            #"Symptomatic cases" = "symptomatic",  
                                                            "Severity" = "severity", 
                                                            "ICU admissions" = "ICU", 
-                                                           "Ventilation in ICU" = "ventilation"), 
+                                                           "Ventilation in ICU" = "ventilation",
+                                                           "Deaths" = "Deaths"), 
                                                selected = "Infected")),
                          column(3, selectInput(inputId = ns("selectedDuration"),
                                                label = NULL,
@@ -323,6 +324,7 @@ mod_model_server <- function(input, output, session, selectedRegions) {
                      severity_risk,
                      ICU_risk,
                      ventil_risks,
+                     death_risk,
                      DaysHosp = SimulationParameters$DaysHosp,
                      DaysICU = SimulationParameters$DaysICU,
                      DaysVentil = SimulationParameters$DaysVentil)
