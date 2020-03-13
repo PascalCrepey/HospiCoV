@@ -12,6 +12,8 @@ usethis::use_data(CaseTimeSeries, overwrite = TRUE)
 longCTS = melt(CaseTimeSeries, id.vars = "Date", variable.name = "Region", value.name = "Cases")
 
 
-pre_infected = longCTS[Cases >= 1, .(Date = Date[1], preInfected = Cases[1]), by = "Region"]
+#pre_infected = longCTS[Cases >= 1, .(Date = Date[1], preInfected = Cases[1]), by = "Region"]
+
+pre_infected = longCTS[Date == as.Date("2020-03-10"), .(Date = Date[1], preInfected = Cases[1]), by = "Region"]
 
 usethis::use_data(pre_infected, overwrite = TRUE)

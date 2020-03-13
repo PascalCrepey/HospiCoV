@@ -292,9 +292,11 @@ mod_model_server <- function(input, output, session, selectedRegions) {
           if (selectedRegions()$isRegion) {
             params$preInfected = pre_infected[Region == region, preInfected]
             pop = SimulationParameters$pHosp$getPopRegion(region)
+            startDate = pre_infected[Region == region, Date]
           } else {
             params$preInfected = 10
             pop = SimulationParameters$pHosp$getPopFiness(region)
+            startDate = as.Date("2020-03-10")
           }
           
     
@@ -306,7 +308,8 @@ mod_model_server <- function(input, output, session, selectedRegions) {
 
           finalRes = runMod(params = params$getList(), 
                             sname = SimulationParameters$sname, 
-                            population = pop)
+                            population = pop,
+                            startDate = startDate)
           finalRes[, Region := region]
           finalRes[, All := "All"]
       })
