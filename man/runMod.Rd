@@ -4,7 +4,7 @@
 \alias{runMod}
 \title{Wrapper function running the C++ model}
 \usage{
-runMod(params, sname, population)
+runMod(params, sname, population, startDate = as.Date("2020-02-01"))
 }
 \arguments{
 \item{params}{parameter object}
@@ -12,6 +12,8 @@ runMod(params, sname, population)
 \item{sname}{name of the scenario}
 
 \item{population}{population vector containing in the first cell the localization of the population}
+
+\item{startDate}{the date of initial introduction of cases (Date object) (default: as.Date("2020-02-01"))}
 }
 \description{
 Wrapper function running the C++ model

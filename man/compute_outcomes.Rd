@@ -9,6 +9,7 @@ compute_outcomes(
   severity_risk,
   ICU_risk,
   ventil_risks,
+  death_risk,
   DaysHosp,
   DaysICU,
   DaysVentil
