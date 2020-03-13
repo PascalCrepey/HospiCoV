@@ -20,9 +20,11 @@ simulation <- function(locations, SimulationParameters, regions = TRUE) {
         if (regions) {
             params$preInfected = pre_infected[Region == loc, preInfected]
             pop = SimulationParameters$pHosp$getPopRegion(loc)
+            startDate = pre_infected[Region == loc, Date]
         } else {
             params$preInfected = 10
             pop = SimulationParameters$pHosp$getPopFiness(loc)
+            startDate = as.Date("2020-03-10")
         }
         
         #set duration
@@ -31,8 +33,10 @@ simulation <- function(locations, SimulationParameters, regions = TRUE) {
         #run the simulation
         finalRes = runMod(params = params$getList(), 
                           sname = SimulationParameters$sname, 
-                          population = pop)
+                          population = pop,
+                          startDate = startDate)
         finalRes[, Region := loc]
+        finalRes[, All := "All"]
     })
     out = rbindlist(all_res)
     return(out)
@@ -40,10 +44,11 @@ simulation <- function(locations, SimulationParameters, regions = TRUE) {
 
 ```
 
-## Scenario 1
+## Scenario 1: R0 at 3
 
 ```{r}
-regions = c("Bretagne")
+## All regions
+regions = pre_infected[!Region %in% c("France", "Metropole"), Region]
 
 SimulationParameters = list(R0 = 3, 
                             Duration = "Trimester", 
@@ -54,14 +59,23 @@ SimulationParameters = list(R0 = 3,
                             DaysVentil = 15,
                               #create Population
                             pHosp = PolyHosp$new(),
-                            currDateHosp = as.Date("01/02/2020"),
+                            currDateHosp = as.Date("10/03/2020"),
                             ShowCaseTimeSeries = FALSE
                             )
 
 res = simulation(regions, SimulationParameters)
+
+outcomes = compute_outcomes(res,
+                            severity_risk,
+                            ICU_risk,
+                            ventil_risks,
+                            death_risk,
+                            DaysHosp = SimulationParameters$DaysHosp,
+                            DaysICU = SimulationParameters$DaysICU,
+                            DaysVentil = SimulationParameters$DaysVentil)
+
 ```
 
-### Parameters
 ```{r}
 ## OUTPUTS
 
@@ -69,27 +83,148 @@ parameters = t(as.data.frame(SimulationParameters[c("R0",
                                                     "DaysHosp",
                                                     "DaysICU",
                                                     "DaysVentil")]))
+                
 
-knitr::kable(parameters)
+#knitr::kable(parameters)
 ```
-### Results
+
+
+```{r}
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+```
+
+```{r}
+get_outcomes_byreg <- function(data) {
+    ## Infected
+    inf = data[, sum(Infected), by = Region]
+    setnames(inf, old = "V1", new = "Infected")
+    inf = rbind(inf, data.table(Region = "All", Infected = sum(inf$Infected)))
+    
+    ## Severe cases
+    severe = data[, sum(severe), by = Region]
+    setnames(severe, old = "V1", new = "Severe cases")
+    severe = rbind(severe, data.table(Region = "All", "Severe cases" = sum(severe$`Severe cases`)))
+    
+    ## ICU hospit
+    icu = data[, sum(ICU), by = Region]
+    setnames(icu, old = "V1", new = "ICU")
+    icu = rbind(icu, data.table(Region = "All", ICU = sum(icu$ICU)))
+    
+    ## Ventilation
+    ventil = data[, sum(overall.ventil), by = Region]
+    setnames(ventil, old = "V1", new = "Ventilation")
+    ventil = rbind(ventil, data.table(Region = "All", Ventilation = sum(ventil$Ventilation)))
+    
+    ## Deaths
+    deaths = data[, sum(deaths), by = Region]
+    setnames(deaths, old = "V1", new = "Deaths")
+    deaths = rbind(deaths, data.table(Region = "All", Deaths = sum(deaths$Deaths)))
+    
+    ## Combine tables
+    outcomes_byreg = Reduce(merge, list(inf, severe, icu, ventil, deaths))
+
+    return(outcomes_byreg)
+}
+
+get_bedreq_byreg <- function(data) {
+    ## Hosp beds
+    hosp = data[, sum(BedHosp), by = Region]
+    setnames(hosp, old = "V1", new = "Hospital bed-days")
+    hosp = rbind(hosp, data.table(Region = "All", "Hospital bed-days" = sum(hosp$`Hospital bed-days`)))
+    ## ICU beds
+    icu = data[, sum(BedICU), by = Region]
+    setnames(icu, old = "V1", new = "ICU bed-days")
+    icu = rbind(icu, data.table(Region = "All", "ICU bed-days" = sum(icu$`ICU bed-days`)))
+    ## Invasive ventil invasive
+    ventil = data[, sum(Bedinvasive.ventil), by = Region]
+    setnames(ventil, old = "V1", new = "Invasive ventilation bed-days")
+    ventil = rbind(ventil, data.table(Region = "All", "Invasive ventilation bed-days" = sum(ventil$`Invasive ventilation bed-days`)))
+    
+    ## Combine tables
+    bedreq_byreg = Reduce(merge, list(hosp, icu, ventil))
+
+    return(bedreq_byreg)
+}
+
+```
+### First month: 10 March 2020 to 07 April 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data1)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data1)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+### Second month: 08 April 2020 to 06 May 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data2)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data2)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+
+### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
 
 ```{r, cache = F, dev = 'svg'}
 ## Case time series, all age groups
-data = res[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
 
 p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
     theme_classic() +
-    geom_line()
+    geom_line() +
+    ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
 
-## Case time series, aggregated
-data = res[, .(Infected = sum(Infected)), by = c("Time")]
+```
 
-p = ggplot(data, aes(x = Time, y = Infected)) +
+```{r, cache = F, dev = 'svg'}
+## Deaths time series, all age groups
+data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
     theme_classic() +
-    geom_line()
+    geom_line() +
+    ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
+
 ```
