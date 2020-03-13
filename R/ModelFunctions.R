@@ -2,16 +2,14 @@
 #' @param params parameter object
 #' @param sname name of the scenario
 #' @param population population vector containing in the first cell the localization of the population
+#' @param startDate the date of initial introduction of cases (Date object) (default: as.Date("2020-02-01"))
 #' @import data.table
 #' @export
 runMod <- function(params, sname, 
-                   population) {
+                   population, startDate = as.Date("2020-02-01")) {
   
   #fix the starting date for cosmetic purposes
-  startyear = 2020
-  month = 2
-  start.date <- as.Date(paste0(startyear, "-", month, "-01"))
-  dates = seq(start.date, start.date + params$nbDays, by = "day")
+  dates = seq(startDate, startDate + params$nbDays, by = "day")
   
   #fix the scenario name
   loc = population[[1]]
@@ -22,7 +20,7 @@ runMod <- function(params, sname,
   ## set the initial state
   if (params$preInfected > 1) preInf = params$preInfected / sum(pop)
   else preInf = params$preInfected
-  #set the vaccination coverage into the initial state
+  #set the initial seeds into the initial state
   initS = pop * (1 - params$preImmune - params$preExposed - preInf)
   initE = pop * params$preExposed
   initI = pop * preInf
