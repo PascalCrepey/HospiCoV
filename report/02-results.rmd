@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Results
 
     
@@ -153,9 +158,10 @@ range_table <- function(outcomes15, outcomes3) {
 
 ```
 
-## Scenario 1: R0 at 3
 
-```{r}
+## Identification of ICU capacity limits by Region
+
+```{r, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively)."}
 ## Run model
 outcomes = run_model(R0 = 3)
 
@@ -182,21 +188,31 @@ data1mR3.0 = outcomes[Time %in% t_range,
                       .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
 
 
+ThresholdCapacityDate = merge(data1mR3.0, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+setorder(ThresholdCapacityDate, V1)
+neworder = as.character(ThresholdCapacityDate$Region)
+data1mR1.5[, Region := factor(Region, levels = neworder)]
+# data1mR2.25[, Region := factor(Region, levels = neworder)]
+# data1mR3.0[, Region := factor(Region, levels = neworder)]
+reaMetCap = ReaCapacity[!Region %in% c("France", "Metropole")]
+#reaMetCap[, Region := factor(Region, levels = neworder)]
+
 p = ggplot() +
     geom_line(data = data1mR1.5, aes(x = Time, y = AllAgeBedICU)) +
     geom_line(data = data1mR2.25, aes(x = Time, y = AllAgeBedICU), linetype = "dotted") +
     geom_line(data = data1mR3.0, aes(x = Time, y = AllAgeBedICU)) +
-    geom_hline(data = ReaCapacity[!Region %in% c("France", "Metropole")], aes(yintercept = Capacity), color = "red") +
+    geom_hline(data = reaMetCap, aes(yintercept = Capacity), color = "red") +
     facet_wrap(~Region, nrow = 5 ) + 
     scale_x_date(name = NULL) +
-    scale_y_continuous(name = "ICU beds", trans = "log10", limits = c(10,1200)) +
+    scale_y_continuous(name = "ICU beds", trans = "log10", limits = c(1,1300)) +
     theme_classic() + 
     theme(axis.text.x = element_text(angle = 40, hjust = 1)) +
-    ggtitle("Predicted need of ICU beds by French Region (R0: 1.5, 2.25, 3)")
+    ggtitle("Predicted needs of ICU beds by French Region (R0: 1.5, 2.25, 3)")
 p
 
 ```
 
+## Scenario 1: R0 at 3
 ### First month: 10 March 2020 to 07 April 2020
 #### Outcomes by region
 
