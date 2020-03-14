@@ -104,7 +104,8 @@ Parameters <- R6::R6Class("Parameters",
         preExposed = self$preExposed, 
         susceptibility = private$.susceptibility,
         agegroupnames = self$agegroupnames, 
-        nbDays = private$.nbDays
+        nbDays = private$.nbDays,
+        R0 = private$.R0
       )
     }
   ), 

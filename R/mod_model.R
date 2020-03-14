@@ -197,7 +197,7 @@ mod_model_server <- function(input, output, session, selectedRegions) {
                   value = params$preImmune),
       sliderInput(ns("preExposed"),
                   label = "Proportion of pre-exposed",
-                  min = 0, max = 100, step = 0.01,
+                  min = 0, max = 100, step = 1,
                   value = params$preExposed),
       sliderInput(ns("preInfected"),
                   label = "Proportion of pre-infected",
@@ -259,6 +259,7 @@ mod_model_server <- function(input, output, session, selectedRegions) {
       }
       else {
         if(input$selectedRegionsUI == "All"){
+          
           SelectedTimeSeries <- CaseTimeSeries[, .SD,
                                                .SDcols = c("Date", selectedRegions()$zones)]
           SelectedTimeSeries[, Cases := rowSums(.SD),
@@ -286,6 +287,7 @@ mod_model_server <- function(input, output, session, selectedRegions) {
   ## ------ RUN MODEL ----------------------------------------------------------
   simulation = reactive({
       req(selectedRegions())
+    #req(input$preExposed)
     
       all_res = lapply(selectedRegions()$zones, function(region) {
           #create Parameter
@@ -304,6 +306,9 @@ mod_model_server <- function(input, output, session, selectedRegions) {
     
           #set duration
           params$duration = SimulationParameters$Duration
+          
+          #set preExposed
+          #params$preExposed = input$preExposed
 
           #run the simulation
           

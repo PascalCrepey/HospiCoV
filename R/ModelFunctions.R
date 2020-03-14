@@ -20,9 +20,9 @@ runMod <- function(params, sname,
   if (params$preInfected > 1) preInf = params$preInfected / sum(pop)
   else preInf = params$preInfected
   #set the initial seeds into the initial state
-  initS = pop * (1 - params$preImmune - params$preExposed - preInf)
-  initE = pop * params$preExposed
-  initI = pop * preInf
+  initS = pop * (1 - params$preImmune - (1 + params$R0) * preInf)
+  initE = pop * preInf * params$R0
+  initI = pop * preInf  
   initR = pop * params$preImmune
   init = matrix(c(S = initS, 
                   E = initE, 
