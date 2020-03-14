@@ -1,7 +1,7 @@
 # Results
 
     
-```{r}
+```{r functions}
 ## ------ RUN MODEL ----------------------------------------------------------
 simulation <- function(locations, SimulationParameters, regions = TRUE) {
 
@@ -34,63 +34,37 @@ simulation <- function(locations, SimulationParameters, regions = TRUE) {
     return(out)
 }
 
-```
+##------ Run model with specific R0 for all regions -----------------------------
+run_model <- function(R0) {
 
-## Scenario 1: R0 at 3
+    regions = pre_infected[!Region %in% c("France", "Metropole"), Region]
 
-```{r}
-## All regions
-regions = pre_infected[!Region %in% c("France", "Metropole"), Region]
+    SimulationParameters = list(R0 = R0,
+                                Duration = "Trimester", 
+                                Outcome = "Infected", 
+                                sname = "test",
+                                DaysHosp = 15,
+                                DaysICU = 15,
+                                DaysVentil = 15,
+                                        #create Population
+                                pHosp = PolyHosp$new(),
+                                currDateHosp = as.Date("10/03/2020"),
+                                ShowCaseTimeSeries = FALSE
+                                )
 
-SimulationParameters = list(R0 = 3, 
-                            Duration = "Trimester", 
-                            Outcome = "Infected", 
-                            sname = "test",
-                            DaysHosp = 15,
-                            DaysICU = 15,
-                            DaysVentil = 15,
-                              #create Population
-                            pHosp = PolyHosp$new(),
-                            currDateHosp = as.Date("10/03/2020"),
-                            ShowCaseTimeSeries = FALSE
-                            )
+    res = simulation(regions, SimulationParameters)
 
-res = simulation(regions, SimulationParameters)
+    outcomes = compute_outcomes(res,
+                                severity_risk,
+                                ICU_risk,
+                                ventil_risks,
+                                death_risk,
+                                DaysHosp = SimulationParameters$DaysHosp,
+                                DaysICU = SimulationParameters$DaysICU,
+                                DaysVentil = SimulationParameters$DaysVentil)
+    return(outcomes)
+}
 
-outcomes = compute_outcomes(res,
-                            severity_risk,
-                            ICU_risk,
-                            ventil_risks,
-                            death_risk,
-                            DaysHosp = SimulationParameters$DaysHosp,
-                            DaysICU = SimulationParameters$DaysICU,
-                            DaysVentil = SimulationParameters$DaysVentil)
-
-```
-
-```{r}
-## OUTPUTS
-
-parameters = t(as.data.frame(SimulationParameters[c("R0",
-                                                    "DaysHosp",
-                                                    "DaysICU",
-                                                    "DaysVentil")]))
-                
-
-#knitr::kable(parameters)
-```
-
-
-```{r}
-## At 1 month
-data1 = outcomes[Time < as.Date("2020-04-08"), ]
-## From month 1 to 2
-data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
-## Both months
-data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
-```
-
-```{r}
 get_outcomes_byreg <- function(data) {
     ## Infected
     inf = data[, sum(Infected), by = Region]
@@ -144,6 +118,293 @@ get_bedreq_byreg <- function(data) {
 }
 
 ```
+
+## Scenario 1: R0 at 3
+
+```{r}
+## Run model
+outcomes = run_model(R0 = 3)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+```
+
+### First month: 10 March 2020 to 07 April 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data1)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data1)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+### Second month: 08 April 2020 to 06 May 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data2)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data2)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+
+### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
+
+```{r, cache = F, dev = 'svg'}
+## Case time series, all age groups
+data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```
+
+```{r, cache = F, dev = 'svg'}
+## Deaths time series, all age groups
+data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```  
+
+
+## Scenario 2: R0 at 2.5
+
+```{r}
+## Run model
+outcomes = run_model(R0 = 2.5)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+```
+
+### First month: 10 March 2020 to 07 April 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data1)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data1)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+### Second month: 08 April 2020 to 06 May 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data2)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data2)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+
+### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
+
+```{r, cache = F, dev = 'svg'}
+## Case time series, all age groups
+data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```
+
+```{r, cache = F, dev = 'svg'}
+## Deaths time series, all age groups
+data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```
+
+
+## Scenario 2: R0 at 2
+
+```{r}
+## Run model
+outcomes = run_model(R0 = 2)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+```
+
+### First month: 10 March 2020 to 07 April 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data1)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data1)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 10 March 2020 to 07 April 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+### Second month: 08 April 2020 to 06 May 2020
+#### Outcomes by region
+
+```{r}
+outcomes_byreg = get_outcomes_byreg(data = data2)
+
+caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(outcomes_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+#### Hospital needs by region
+
+```{r}
+bedreq_byreg = get_bedreq_byreg(data = data2)
+
+caption = "Predicted number of needed hospital bed-days, ICU bed-days, and invasive ventilation bed-days, from 08 April 2020 to 06 May 2020, by region."
+knitr::kable(bedreq_byreg,
+             digits = 0,
+             caption = caption)
+```
+
+
+
+### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
+
+```{r, cache = F, dev = 'svg'}
+## Case time series, all age groups
+data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```
+
+```{r, cache = F, dev = 'svg'}
+## Deaths time series, all age groups
+data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+
+p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+    theme_classic() +
+    geom_line() +
+    ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
+
+p
+
+```
+
+
+## Scenario 2: R0 at 1.5
+
+```{r}
+## Run model
+outcomes = run_model(R0 = 1.5)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+```
+
 ### First month: 10 March 2020 to 07 April 2020
 #### Outcomes by region
 
