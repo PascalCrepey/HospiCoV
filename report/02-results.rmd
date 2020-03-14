@@ -1,13 +1,5 @@
 # Results
 
-
-```{r echo = F}
-knitr::opts_chunk$set(echo = F, cache = T, message = F, warnings = F)
-```
-```{r}
-# Document and load package (no need to build or install)
-devtools::document("..")
-```
     
 ```{r}
 ## ------ RUN MODEL ----------------------------------------------------------

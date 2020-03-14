@@ -13,4 +13,14 @@ output:
   bookdown::gitbook
 ---
 
+
+```{r echo = F}
+knitr::opts_chunk$set(echo = F, cache = T, message = F, warnings = F)
+```
+```{r cache = F}
+# Document and load package (no need to build or install)
+devtools::document()
+```
+
+
 # Abstract
