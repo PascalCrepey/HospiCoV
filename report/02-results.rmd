@@ -183,13 +183,16 @@ knitr::kable(bedreq_byreg,
 
 ### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
 
+
 ```{r, cache = F, dev = 'svg'}
 ## Case time series, all age groups
 data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+data[, CumInf := cumsum(Infected), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumInf, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -199,15 +202,18 @@ p
 ```{r, cache = F, dev = 'svg'}
 ## Deaths time series, all age groups
 data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+data[, CumDeaths := cumsum(Deaths), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumDeaths, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
 
-```  
+```
+
 
 
 ## Scenario 2: R0 at 2.5
@@ -274,13 +280,16 @@ knitr::kable(bedreq_byreg,
 
 ### Epidemic curves of infected cases and deaths, by age group, over both months (10 March 2020 to 06 May 2020)
 
+
 ```{r, cache = F, dev = 'svg'}
 ## Case time series, all age groups
 data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+data[, CumInf := cumsum(Infected), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumInf, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -290,10 +299,12 @@ p
 ```{r, cache = F, dev = 'svg'}
 ## Deaths time series, all age groups
 data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+data[, CumDeaths := cumsum(Deaths), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumDeaths, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -368,10 +379,12 @@ knitr::kable(bedreq_byreg,
 ```{r, cache = F, dev = 'svg'}
 ## Case time series, all age groups
 data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+data[, CumInf := cumsum(Infected), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumInf, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -381,10 +394,12 @@ p
 ```{r, cache = F, dev = 'svg'}
 ## Deaths time series, all age groups
 data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+data[, CumDeaths := cumsum(Deaths), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumDeaths, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -459,10 +474,12 @@ knitr::kable(bedreq_byreg,
 ```{r, cache = F, dev = 'svg'}
 ## Case time series, all age groups
 data = data1and2[, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
+data[, CumInf := cumsum(Infected), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Infected, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumInf, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of infected cases from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
@@ -472,10 +489,12 @@ p
 ```{r, cache = F, dev = 'svg'}
 ## Deaths time series, all age groups
 data = data1and2[, .(Deaths = sum(deaths)), by = c("Time","AgeGroup")]
+data[, CumDeaths := cumsum(Deaths), by = AgeGroup]
 
-p = ggplot(data, aes(x = Time, y = Deaths, color = AgeGroup)) +
+p = ggplot(data, aes(x = Time, y = CumDeaths, color = AgeGroup)) +
     theme_classic() +
     geom_line() +
+    scale_y_continuous("Cumulated") +
     ggtitle("Predicted number of deaths from 10 March 2020 to 06 May 2020, for all France, by age group.")
 
 p
