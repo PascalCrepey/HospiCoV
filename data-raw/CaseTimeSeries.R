@@ -4,10 +4,16 @@ library(data.table)
 CaseTimeSeries <- data.table(read.xlsx("./data-raw/EpiDataFrance.xlsx", 
                                       sheet = "TimeSeries Cases", 
                                       detectDates = TRUE))
+ReaCapacity = data.table(read.xlsx("./data-raw/EpiDataFrance.xlsx", 
+                                   sheet = "REA", rowNames = TRUE))
 names(CaseTimeSeries) <- gsub(names(CaseTimeSeries), pattern = "\\.", 
                              replacement = " ")
+names(ReaCapacity) <- gsub(names(ReaCapacity), pattern = "\\.", 
+                              replacement = " ")
+ReaCapacity = melt(ReaCapacity, variable.name = "Region", value.name = "Capacity", measure.vars = patterns(".*"))
 colnames(CaseTimeSeries)[1] = "Date"
 usethis::use_data(CaseTimeSeries, overwrite = TRUE)
+usethis::use_data(ReaCapacity, overwrite = TRUE)
 
 longCTS = melt(CaseTimeSeries, id.vars = "Date", variable.name = "Region", value.name = "Cases")
 

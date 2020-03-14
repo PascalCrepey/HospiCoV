@@ -6,7 +6,7 @@
 
 ## Objective
 
-The objective of this study was to develop a deterministic, compartmental model to forecast the COVID-19 propagation dynamics in metropolitan France. We estimated the number of infected cases in a worst-case scenario of absence, or non-efficacity of control measures, and absence of seasonality, and then in various scenarios of control measure strategies. We also sought to predict the impact of the epidemic on health care capicities, by estimating the number of required beds in intensive care units throughout the epidemic, for each region.
+The objective of this study was to estimate the number of infected cases, hospitalizations and deaths in Francein a worst-case scenario of absence, or non-efficacity of control measures, and absence of seasonality, and then in various scenarios where control strategies supposedly impact the epidemic reproduction number. We also sought to predict the impact of the epidemic on healthcare capicities, by estimating the number of required hospital beds in intensive care units throughout the epidemic, for each region.
 
 # Methods
 

@@ -5,7 +5,7 @@
 #' @param ICU_risk vector of dimension 17, corresponding to the risk (proportion) of being a severe case, for each age group
 #' @param DaysHosp single value, corresponding to the length of stay in hospital for severe cases
 #' @param DaysICU single value, corresponding to the length of stay in ICU for severe cases
-#'
+#' @export
 #' 
 compute_outcomes <- function(modelOutput,
                              severity_risk,

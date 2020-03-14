@@ -2,6 +2,7 @@
 
 export(Parameters)
 export(PolyHosp)
+export(compute_outcomes)
 export(engine_run)
 export(mod_map_server)
 export(mod_map_ui)

@@ -117,6 +117,40 @@ get_bedreq_byreg <- function(data) {
     return(bedreq_byreg)
 }
 
+range_table <- function(outcomes15, outcomes3) {
+
+    DT = merge(outcomes15, outcomes3, by = "Region")
+
+    DT[, Infected := paste0(round(Infected.x, digits = 0),
+                            '-',
+                            round(Infected.y, digits = 0)
+                            )]
+
+    DT[, `Severe cases` := paste0(round(`Severe cases.x`, digits = 0),
+                                  '-',
+                                  round(`Severe cases.y`, digits = 0)
+                                  )]
+
+    DT[, ICU := paste0(round(ICU.x, digits = 0),
+                       '-',
+                       round(ICU.y, digits = 0)
+                       )]
+    
+    DT[, Ventilation := paste0(round(Ventilation.x, digits = 0),
+                               '-',
+                               round(Ventilation.y, digits = 0)
+                               )]
+    
+    DT[, Deaths := paste0(round(Deaths.x, digits = 0),
+                          '-',
+                          round(Deaths.y, digits = 0)
+                          )]
+
+    return(DT[, .(Region, Infected, `Severe cases`, ICU, Ventilation, Deaths)])
+}
+
+
+
 ```
 
 ## Scenario 1: R0 at 3
@@ -124,12 +158,43 @@ get_bedreq_byreg <- function(data) {
 ```{r}
 ## Run model
 outcomes = run_model(R0 = 3)
+
+## within a week
+data1w = outcomes[Time < as.Date("2020-03-21"), ]
+## within two weeks
+data2w = outcomes[Time < as.Date("2020-03-28"), ]
 ## At 1 month
 data1 = outcomes[Time < as.Date("2020-04-08"), ]
 ## From month 1 to 2
 data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
 ## Both months
 data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+
+outcomesR1.5 = run_model(R0 = 1.5)
+outcomesR2.25 = run_model(R0 = 2.25)
+
+t_range = seq(as.Date("2020-03-14"), as.Date("2020-04-14"), by = "day")
+data1mR1.5 = outcomesR1.5[Time %in% t_range, 
+                          .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+data1mR2.25 = outcomesR2.25[Time %in% t_range,
+                            .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+data1mR3.0 = outcomes[Time %in% t_range, 
+                      .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+
+
+p = ggplot() +
+    geom_line(data = data1mR1.5, aes(x = Time, y = AllAgeBedICU)) +
+    geom_line(data = data1mR2.25, aes(x = Time, y = AllAgeBedICU), linetype = "dotted") +
+    geom_line(data = data1mR3.0, aes(x = Time, y = AllAgeBedICU)) +
+    geom_hline(data = ReaCapacity[!Region %in% c("France", "Metropole")], aes(yintercept = Capacity), color = "red") +
+    facet_wrap(~Region, nrow = 5 ) + 
+    scale_x_date(name = NULL) +
+    scale_y_continuous(name = "ICU beds", trans = "log10", limits = c(10,1200)) +
+    theme_classic() + 
+    theme(axis.text.x = element_text(angle = 40, hjust = 1)) +
+    ggtitle("Predicted need of ICU beds by French Region (R0: 1.5, 2.25, 3)")
+p
+
 ```
 
 ### First month: 10 March 2020 to 07 April 2020
@@ -529,37 +594,7 @@ data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
 outcomes3_byreg1 = get_outcomes_byreg(data = data1)
 outcomes3_byreg2 = get_outcomes_byreg(data = data2)
 
-range_table <- function(outcomes15, outcomes3) {
 
-    DT = merge(outcomes15, outcomes3, by = "Region")
-
-    DT[, Infected := paste0(round(Infected.x, digits = 0),
-                            '-',
-                            round(Infected.y, digits = 0)
-                            )]
-
-    DT[, `Severe cases` := paste0(round(`Severe cases.x`, digits = 0),
-                                  '-',
-                                  round(`Severe cases.y`, digits = 0)
-                                  )]
-
-    DT[, ICU := paste0(round(ICU.x, digits = 0),
-                       '-',
-                       round(ICU.y, digits = 0)
-                       )]
-    
-    DT[, Ventilation := paste0(round(Ventilation.x, digits = 0),
-                               '-',
-                               round(Ventilation.y, digits = 0)
-                               )]
-    
-    DT[, Deaths := paste0(round(Deaths.x, digits = 0),
-                          '-',
-                          round(Deaths.y, digits = 0)
-                          )]
-
-    return(DT[, .(Region, Infected, `Severe cases`, ICU, Ventilation, Deaths)])
-}
 
 ```
 
