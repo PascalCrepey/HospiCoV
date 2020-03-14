@@ -500,3 +500,87 @@ p = ggplot(data, aes(x = Time, y = CumDeaths, color = AgeGroup)) +
 p
 
 ```
+
+
+## Best and worst case scenarios: R0 at 1.5 and 3
+
+```{r}
+## Run model
+outcomes = run_model(R0 = 1.5)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+
+outcomes15_byreg1 = get_outcomes_byreg(data = data1)
+outcomes15_byreg2 = get_outcomes_byreg(data = data2)
+
+## Run model
+outcomes = run_model(R0 = 3)
+## At 1 month
+data1 = outcomes[Time < as.Date("2020-04-08"), ]
+## From month 1 to 2
+data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+## Both months
+data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
+
+outcomes3_byreg1 = get_outcomes_byreg(data = data1)
+outcomes3_byreg2 = get_outcomes_byreg(data = data2)
+
+range_table <- function(outcomes15, outcomes3) {
+
+    DT = merge(outcomes15, outcomes3, by = "Region")
+
+    DT[, Infected := paste0(round(Infected.x, digits = 0),
+                            '-',
+                            round(Infected.y, digits = 0)
+                            )]
+
+    DT[, `Severe cases` := paste0(round(`Severe cases.x`, digits = 0),
+                                  '-',
+                                  round(`Severe cases.y`, digits = 0)
+                                  )]
+
+    DT[, ICU := paste0(round(ICU.x, digits = 0),
+                       '-',
+                       round(ICU.y, digits = 0)
+                       )]
+    
+    DT[, Ventilation := paste0(round(Ventilation.x, digits = 0),
+                               '-',
+                               round(Ventilation.y, digits = 0)
+                               )]
+    
+    DT[, Deaths := paste0(round(Deaths.x, digits = 0),
+                          '-',
+                          round(Deaths.y, digits = 0)
+                          )]
+
+    return(DT[, .(Region, Infected, `Severe cases`, ICU, Ventilation, Deaths)])
+}
+
+```
+
+### First month
+
+```{r}
+table = range_table(outcomes15_byreg1, outcomes3_byreg1)
+caption = "Predicted range of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region, for a R0 of 1.5 to 3."
+knitr::kable(table,
+             digits = 0,
+             caption = caption)
+
+```
+
+### Second month
+
+```{r}
+table = range_table(outcomes15_byreg2, outcomes3_byreg2)
+caption = "Predicted range of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation (invasive or not), and deaths, from 08 April 2020 to 06 May 2020, by region, for a R0 of 1.5 to 3."
+knitr::kable(table,
+             digits = 0,
+             caption = caption)
+
+```
