@@ -34,10 +34,14 @@ data1mR2.25 = outcomesR2.25[Time %in% t_range,
 data1mR3.0 = outcomes[Time %in% t_range, 
                       .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
 
+ThresholdCapacityDateR1.5 = merge(data1mR1.5, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
 
-ThresholdCapacityDate = merge(data1mR3.0, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
-setorder(ThresholdCapacityDate, V1)
-neworder = as.character(ThresholdCapacityDate$Region)
+ThresholdCapacityDateR2.25 = merge(data1mR2.25, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+
+ThresholdCapacityDateR3 = merge(data1mR3.0, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+
+setorder(ThresholdCapacityDateR3, V1)
+neworder = as.character(ThresholdCapacityDateR3$Region)
 data1mR1.5[, Region := factor(Region, levels = neworder)]
 # data1mR2.25[, Region := factor(Region, levels = neworder)]
 # data1mR3.0[, Region := factor(Region, levels = neworder)]
@@ -56,6 +60,24 @@ p = ggplot() +
     theme(axis.text.x = element_text(angle = 40, hjust = 1)) #+
     #ggtitle("Predicted needs of ICU beds by French Region (R0: 1.5, 2.25, 3)")
 p
+
+```
+
+```{r, echo = FALSE}
+options(knitr.kable.NA = '')
+caption = "Estimated date of ICU capacity overrun in the 13 metropolitan French Regions, for $R_0$ 1.5, 2.25, and 3."
+mergedData = merge(ThresholdCapacityDateR1.5,ThresholdCapacityDateR2.25, 
+                   by = "Region", all = TRUE)
+mergedData = merge(mergedData, ThresholdCapacityDateR3,
+                   by = "Region", all = TRUE)
+setorderv(mergedData, cols = c("V1.x", "V1.y", "V1"), order = c(1,1,1), na.last = TRUE)
+setnames(mergedData, old = 2:4, new = c("$R_0$ 1.5", "$R_0$ 2.25", "$R_0$ 3"))
+
+knitr::kable(mergedData,
+             escape = FALSE,
+             digits = 0,
+             caption = caption,
+             format = "latex")
 
 ```
 
