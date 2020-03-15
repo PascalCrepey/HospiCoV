@@ -27,6 +27,6 @@ Opening
 * assess potential impact of seasonality 
 * improve long-term predictions through validation with more accurate hospitalization data
 
-Conclusion
+#Conclusion
 
-* we are in the caca !
+While preliminary, our analysis shows that, even in the best case scenario, the French healthcare system will very soon be overwhelmed. While drastic social distancing measures may temper our results, a massive reorganization leading to an expansion of French ICU capacities seems to be necessary to manage the coming wave of critically affected COVID-19 patients.
