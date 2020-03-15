@@ -1,26 +1,44 @@
 ---
-title: "Forecasting COVID-19 epidemic in France, hospital needs, and impact of control measures: a modelling study by Dr. Pascal Crépey and his minions"
-author: "??"
-#bibliography: "../doc/biblio/references.bib"
-#csl: "../doc/biblio/the-lancet.csl"
-link-citations: yes
-always_allow_html: yes
+title: "Forecasting COVID-19 epidemic short term hospital needs in France"
+author: 
+- name: Clément Massonnaud
+  institute: [EHESP, a]
+- name: Jonathan Roux
+  institute: [EHESP, a]
+- name: Pascal Crépey
+  institute: EHESP
+  email: pascal.crepey@ehesp.fr
+  correspondance: true
+institute: 
+  - EHESP: UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France
+a: "Both authors contributed equally."
+
+date: "`r Sys.Date()`"
+knit: "bookdown::render_book"
+csl: "../doc/biblio/the-lancet.csl"
 documentclass: article
+#documentclass: krantz
+link-citations: yes
+colorlinks: yes
+always_allow_html: true
 site: bookdown::bookdown_site
 fontsize: 11pt
 geometry: margin=0.8in
+rmd_files: ["index.rmd", "01-intro-method.rmd", "02-results.rmd", "03-discussion.rmd", "09-references.rmd"]
+toc: no
 output:
-  bookdown::gitbook
+  bookdown::pdf_book:
+bibliography: ../doc/biblio/references.bib
+
 ---
 
 
 ```{r echo = F}
 knitr::opts_chunk$set(echo = F, cache = T, message = F, warnings = F)
 ```
-```{r cache = F}
+```{r cache = F, echo=FALSE, message=FALSE}
 # Document and load package (no need to build or install)
 devtools::document()
 ```
 
 
-# Abstract

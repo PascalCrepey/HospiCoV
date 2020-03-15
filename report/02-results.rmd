@@ -1,8 +1,4 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+
 # Results
 
 ```{r, include = F, cache = F}
@@ -12,7 +8,7 @@ source("report-functions.R")
 
 ## Identification of ICU capacity limits by Region
 
-```{r, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively).", dev = "svg"}
+```{r, cache = F, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively).", dev = "png"}
 ## Run model
 outcomes = run_model(R0 = 3)
 
