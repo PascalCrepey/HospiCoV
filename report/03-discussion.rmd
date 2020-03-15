@@ -1,1 +1,29 @@
 # Discussion
+
+Recap
+
+* the main results in terms of total number of cases, severity, deaths
+* the Regions whose capacity will be over-run very soon : Corsica, Grand-Est, and Bourgogne-Franche-Comté. 
+
+Comparison with previous work
+
+* Danon 
+* Kucharski 
+* Chen
+
+Limits
+
+* spatial division of the territory does not reflect administrative boundaries of the French Region
+* not accounting for oversee region because they are at a lower epidemic stage for the moment
+* estimations limited to one month as to limit bias from external factors such as seasonality
+* theoretical ICU capacities do not reflect the number of currently available ICU beds
+
+Opening
+
+* improve accounting of control measures
+* assess potential impact of seasonality 
+* improve long-term predictions through validation with more accurate hospitalization data
+
+Conclusion
+
+* we are in the caca !
