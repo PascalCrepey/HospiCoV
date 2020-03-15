@@ -102,7 +102,7 @@ outcomes3 = get_outcomes_byreg(data = data)
 
 ```
 
-```{r tabCases}
+```{r tabCases, cache=FALSE}
 DTgen = merge(outcomes1, outcomes2, by = "Region")
 DTgen = merge(DTgen, outcomes3, by = "Region")
 
@@ -132,7 +132,7 @@ caption = "Predicted number of infected cases, severe cases, and deaths, from Ma
 
 ```
 
-We predict that the most affected French Region will be "Grand-Est", with up to 42~000 infections, 10~000 severe cases and almost 2~000 deaths between March 10 and April 14. Region "Ile-de-France" and "Auvergne-Rhones-Alpes" will be the second and third most affected with up to 1400 and almost 900 deaths, respectively, in the worst case scenario. In the middle range scenario ($R_0 = 2.25$), the morbidity and mortality burden will represent roughly 30% of those numbers.
+Our analysis predict that the most affected French Region would be "Grand-Est", with up to 42&nbsp;000 infections, 10&nbsp;000 severe cases and more than 2&nbsp;800 deaths between March 10 and April 14 in the worst case scenario. In the same scenario, Region "Ile-de-France" and "Auvergne-Rhones-Alpes" would be the second and third most affected with up to 2&nbsp;000 and  1&nbsp300 deaths, respectively. In the middle range scenario ($R_0 = 2.25$) and best case scenario, the morbidity and mortality burden would represent, respectively, roughly 30% and 10% of those numbers.
 
 
 ```{r tabBeds}
