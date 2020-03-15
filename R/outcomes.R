@@ -52,8 +52,12 @@ compute_outcomes <- function(modelOutput,
                                           sum(ICU[between(Time, parameter - DaysICU + 1, parameter)])),
                   by = c("AgeGroup", "Region")]
     outcome_table[, Bedinvasive.ventil := sapply(Time, 
+                                                 function(parameter) 
+                                                   sum(invasive.ventil[between(Time, parameter - DaysVentil + 1, parameter)])),
+                  by = c("AgeGroup","Region")]
+    outcome_table[, BedVentil := sapply(Time, 
                                      function(parameter) 
-                                         sum(invasive.ventil[between(Time, parameter - DaysVentil + 1, parameter)])),
+                                         sum(overall.ventil[between(Time, parameter - DaysVentil + 1, parameter)])),
                   by = c("AgeGroup","Region")]
     
     return(outcome_table)

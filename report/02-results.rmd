@@ -8,7 +8,10 @@ source("report-functions.R")
 
 ## Identification of ICU capacity limits by French Region
 
-```{r, cache = F, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively).", dev = "png"}
+Our first objective was to identify when ICU capacities in each French Region would likely be overrun by the COVID-19 epidemic. Figure \ref{FIGoverrun} shows the evolution of the number of required ICU beds to treat patients in critical conditions in each region, along with the theoretical ICU capacity limits. In the worst case scenario, all Region will be overrun before April 14th, 2020. As seen on Table \ref{TABoverrunDate}, Corsica is likely to be at full ICU capacity before the end of March 2020 (March 28 in the best case, March 18 in the worst case scenario). In the scenario with $R_0 = 2.25$, half of the French Region will run out of ICU capacities before mid-April. 
+
+
+```{r, cache = F, dpi = 150, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively). Panels for each French Region are ordered by time of overrun (left to right and top to bottom).\\label{FIGoverrun}", dev = "png"}
 ## Run model
 outcomes = run_model(R0 = 3)
 
@@ -17,9 +20,9 @@ data1w = outcomes[Time < as.Date("2020-03-21"), ]
 ## within two weeks
 data2w = outcomes[Time < as.Date("2020-03-28"), ]
 ## At 1 month
-data1 = outcomes[Time < as.Date("2020-04-08"), ]
+data1 = outcomes[Time < as.Date("2020-04-14"), ]
 ## From month 1 to 2
-data2 = outcomes[Time >= as.Date("2020-04-08") & Time < as.Date("2020-05-07"), ]
+data2 = outcomes[Time >= as.Date("2020-04-14") & Time < as.Date("2020-05-07"), ]
 ## Both months
 data1and2 = outcomes[Time < as.Date("2020-05-07"), ]
 
@@ -28,17 +31,17 @@ outcomesR2.25 = run_model(R0 = 2.25)
 
 t_range = seq(as.Date("2020-03-14"), as.Date("2020-04-14"), by = "day")
 data1mR1.5 = outcomesR1.5[Time %in% t_range, 
-                          .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+                          .(AllAgeBedICU = sum(BedICU), AllAgeBedVentil = sum(BedVentil)), by = c("Time", "Region")]
 data1mR2.25 = outcomesR2.25[Time %in% t_range,
-                            .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+                            .(AllAgeBedICU = sum(BedICU), AllAgeBedVentil = sum(BedVentil)), by = c("Time", "Region")]
 data1mR3.0 = outcomes[Time %in% t_range, 
-                      .(AllAgeBedICU = sum(BedICU)), by = c("Time", "Region")]
+                      .(AllAgeBedICU = sum(BedICU), AllAgeBedVentil = sum(BedVentil)), by = c("Time", "Region")]
 
-ThresholdCapacityDateR1.5 = merge(data1mR1.5, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+ThresholdCapacityDateR1.5 = merge(data1mR1.5[,-4], ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
 
-ThresholdCapacityDateR2.25 = merge(data1mR2.25, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+ThresholdCapacityDateR2.25 = merge(data1mR2.25[,-4], ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
 
-ThresholdCapacityDateR3 = merge(data1mR3.0, ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
+ThresholdCapacityDateR3 = merge(data1mR3.0[,-4], ReaCapacity, by = "Region")[AllAgeBedICU>Capacity, .SD[1, Time], by = "Region"]
 
 setorder(ThresholdCapacityDateR3, V1)
 neworder = as.character(ThresholdCapacityDateR3$Region)
@@ -63,9 +66,9 @@ p
 
 ```
 
-```{r, echo = FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 options(knitr.kable.NA = '')
-caption = "Estimated date of ICU capacity overrun in the 13 metropolitan French Regions, for $R_0$ 1.5, 2.25, and 3."
+caption = "Estimated date of ICU capacity overrun in the 13 metropolitan French Regions, for $R_0$ 1.5, 2.25, and 3. Simulations start on March 10, and end on April 14th, 2020. \\label{TABoverrunDate}"
 mergedData = merge(ThresholdCapacityDateR1.5,ThresholdCapacityDateR2.25, 
                    by = "Region", all = TRUE)
 mergedData = merge(mergedData, ThresholdCapacityDateR3,
@@ -75,11 +78,15 @@ setnames(mergedData, old = 2:4, new = c("$R_0$ 1.5", "$R_0$ 2.25", "$R_0$ 3"))
 
 knitr::kable(mergedData,
              escape = FALSE,
+             booktabs = T,
              digits = 0,
              caption = caption,
              format = "latex")
 
 ```
+
+
+
 
 ## Predicted outcomes by region
 
@@ -95,7 +102,7 @@ outcomes3 = get_outcomes_byreg(data = data)
 
 ```
 
-```{r}
+```{r tabCases}
 DTgen = merge(outcomes1, outcomes2, by = "Region")
 DTgen = merge(DTgen, outcomes3, by = "Region")
 
@@ -105,9 +112,11 @@ colnames(DT)[c(2,5,8)] = "$R_0$ 1.5"
 colnames(DT)[c(3,6,9)] = "$R_0$ 2.25"
 colnames(DT)[c(4,7,10)] = "$R_0$ 3"
 
-caption = "Predicted number of infected cases, severe cases, and deaths, from March 10 to April 7, 2020, by Region, for $R_0$ values of 1.5, 2.25, and 3."
+caption = "Predicted number of infected cases, severe cases, and deaths, from March 10 to April 7, 2020, by Region, for $R_0$ values of 1.5, 2.25, and 3.\\label{TABcases}"
 
-kableExtra::landscape(knitr::kable(DT,
+#kableExtra::landscape(
+    knitr::kable(DT,
+                 booktabs = T,
              escape = FALSE,
              digits = 0,
              caption = caption,
@@ -115,26 +124,42 @@ kableExtra::landscape(knitr::kable(DT,
     kableExtra::add_header_above(header = c(" " = 1,
                                             "Infected" = 3,
                                             "Severe cases" = 3,
-                                            "Deaths" = 3)) )
+                                            "Deaths" = 3)) %>%
+        kable_styling(latex_options = "scale_down")
+    #)
 #%>%
 #    kableExtra::scroll_box(width = "100%")
 
 ```
 
-```{r}
+We predict that the most affected French Region will be "Grand-Est", with up to 42 000 infections, 10 000 severe cases and almost 2000 deaths between March 10 and April 14. Region "Ile-de-France" and "Auvergne-Rhones-Alpes" will be the second and third most affected with up to 1400 and almost 900 deaths, respectively, in the worst case scenario. In the middle range scenario ($R_0 = 2.25$), the morbidity and mortality burden will represent roughly 30% of those numbers.
 
-DThosp = DTgen[, c(1,4,9,14,5,10,15)]
 
-colnames(DThosp)[c(2,5)] = "$R_0$ 1.5"
-colnames(DThosp)[c(3,6)] = "$R_0$ 2.25"
-colnames(DThosp)[c(4,7)] = "$R_0$ 3"
-caption = "Predicted cumulated number of cases admitted into intensive care units, cases requiring ventilation, from 10 March 2020 to 07 April 2020, by region, for $R_0$ values of 1.5, 2.25, and 3."
-knitr::kable(DThosp,
+```{r tabBeds}
+
+DTbeds = merge(data1mR1.5[Time == "2020-04-14", -1], 
+               data1mR2.25[Time == "2020-04-14", -1], by = "Region")
+DTbeds = merge(DTbeds, 
+               data1mR3.0[Time == "2020-04-14", -1], by = "Region")
+DTbeds = merge(DTbeds, ReaCapacity, by = "Region")
+
+DTbeds = DTbeds[, c(1,2,4,6, 3, 5, 7, 8)]
+
+colnames(DTbeds)[c(2,5)] = "$R_0$ 1.5"
+colnames(DTbeds)[c(3,6)] = "$R_0$ 2.25"
+colnames(DTbeds)[c(4,7)] = "$R_0$ 3"
+colnames(DTbeds)[8] = "Total ICU capacity"
+caption = "Predicted number of required intensive care units beds on April 14 2020, by region, for $R_0$ values of 1.5, 2.25, and 3. \\label{TABbedsICU}"
+knitr::kable(DTbeds,
              escape = FALSE,
+             booktabs = T,
              digits = 0,
              caption = caption,
              format = "latex") %>%
-    kableExtra::add_header_above(header = c(" " = 1,
-                                            "ICU" = 3,
-                                            "Ventilation" = 3))
+    kableExtra::add_header_above(header = c(" ",
+                                            "ICU beds" = 3,
+                                            "ICU beds with ventilation" = 3,
+                                            " ")) 
 ```
+Our analysis shows that in France between 2500 and 25000 patients may require an ICU stay, and between 1800 and 18000 may need to be ventilated. Table \ref{TABbedsICU} shows the estimated total number of ICU beds and ICU ventilated beds required per Region on April 14 under the three $R_0$ scenarios, as well as the total ICU capacity in the Region.
+We note very large variations between the two extreme scenarios (from 305 to 4260 ICU beds in Ile-de-France), and that the middle range scenario generally shows estimations very close or over the regional ICU capacity limit, which will restrain possible inter-regional cooperations or patient transfers.
