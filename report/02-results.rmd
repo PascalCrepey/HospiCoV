@@ -6,7 +6,7 @@ library(kableExtra)
 source("report-functions.R")
 ```
 
-## Identification of ICU capacity limits by Region
+## Identification of ICU capacity limits by French Region
 
 ```{r, cache = F, fig.cap = "Predicted needs of ICU beds in the 13 French Regions. The red line stands for the ICU capacity limit, the dotted line stands for the scenario with $R_0 = 2.25$, the black lines for the worst and best case scenarios ($R_0 = 3$ and $R_0 = 1.5$ respectively).", dev = "png"}
 ## Run model
@@ -53,8 +53,8 @@ p = ggplot() +
     scale_x_date(name = NULL) +
     scale_y_continuous(name = "ICU beds", trans = "log10", limits = c(1,1300)) +
     theme_classic() + 
-    theme(axis.text.x = element_text(angle = 40, hjust = 1)) +
-    ggtitle("Predicted needs of ICU beds by French Region (R0: 1.5, 2.25, 3)")
+    theme(axis.text.x = element_text(angle = 40, hjust = 1)) #+
+    #ggtitle("Predicted needs of ICU beds by French Region (R0: 1.5, 2.25, 3)")
 p
 
 ```
@@ -62,39 +62,57 @@ p
 ## Predicted outcomes by region
 
 ```{r}
-data = outcomesR1.5[Time < as.Date("2020-04-08"), ]
+data = outcomesR1.5[Time < as.Date("2020-04-14"), ]
 outcomes1 = get_outcomes_byreg(data = data)
 
-data = outcomesR2.25[Time < as.Date("2020-04-08"), ]
+data = outcomesR2.25[Time < as.Date("2020-04-14"), ]
 outcomes2 = get_outcomes_byreg(data = data)
 
-data = outcomes[Time < as.Date("2020-04-08"), ]
+data = outcomes[Time < as.Date("2020-04-14"), ]
 outcomes3 = get_outcomes_byreg(data = data)
 
 ```
 
 ```{r}
-DT = merge(outcomes1, outcomes2, by = "Region")
-DT = merge(DT, outcomes3, by = "Region")
+DTgen = merge(outcomes1, outcomes2, by = "Region")
+DTgen = merge(DTgen, outcomes3, by = "Region")
 
-DT = DT[, c(1,2,7,12,3,8,13,4,9,14,5,10,15,6,11,16)]
+DT = DTgen[, c(1,2,7,12,3,8,13,6,11,16)]
 
-colnames(DT)[c(2,5,8,11,14)] = "R0 1.5"
-colnames(DT)[c(3,6,9,12,15)] = "R0 2.25"
-colnames(DT)[c(4,7,10,13,16)] = "R0 3"
+colnames(DT)[c(2,5,8)] = "$R_0$ 1.5"
+colnames(DT)[c(3,6,9)] = "$R_0$ 2.25"
+colnames(DT)[c(4,7,10)] = "$R_0$ 3"
 
-caption = "Predicted number of infected cases, severe cases, cases admitted into intensive care units, cases requiring ventilation, and deaths, from 10 March 2020 to 07 April 2020, by region, for R0 values of 1.5, 2.25, and 3."
+caption = "Predicted number of infected cases, severe cases, and deaths, from March 10 to April 7, 2020, by Region, for $R_0$ values of 1.5, 2.25, and 3."
 
-knitr::kable(DT,
+kableExtra::landscape(knitr::kable(DT,
+             escape = FALSE,
              digits = 0,
              caption = caption,
-             format = "html") %>%
+             format = "latex") %>%
     kableExtra::add_header_above(header = c(" " = 1,
                                             "Infected" = 3,
                                             "Severe cases" = 3,
-                                            "ICU" = 3,
-                                            "Ventilation" = 3,
-                                            "Deaths" = 3)) %>%
-    kableExtra::scroll_box(width = "100%")
+                                            "Deaths" = 3)) )
+#%>%
+#    kableExtra::scroll_box(width = "100%")
 
+```
+
+```{r}
+
+DThosp = DTgen[, c(1,4,9,14,5,10,15)]
+
+colnames(DThosp)[c(2,5)] = "$R_0$ 1.5"
+colnames(DThosp)[c(3,6)] = "$R_0$ 2.25"
+colnames(DThosp)[c(4,7)] = "$R_0$ 3"
+caption = "Predicted cumulated number of cases admitted into intensive care units, cases requiring ventilation, from 10 March 2020 to 07 April 2020, by region, for $R_0$ values of 1.5, 2.25, and 3."
+knitr::kable(DThosp,
+             escape = FALSE,
+             digits = 0,
+             caption = caption,
+             format = "latex") %>%
+    kableExtra::add_header_above(header = c(" " = 1,
+                                            "ICU" = 3,
+                                            "Ventilation" = 3))
 ```

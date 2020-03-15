@@ -2,16 +2,15 @@
 title: "Forecasting COVID-19 epidemic short term hospital needs in France"
 author: 
 - name: Clément Massonnaud
-  institute: [EHESP, a]
+  affiliation: EHESP
 - name: Jonathan Roux
-  institute: [EHESP, a]
+  affiliation: EHESP
 - name: Pascal Crépey
-  institute: EHESP
-  email: pascal.crepey@ehesp.fr
-  correspondance: true
-institute: 
-  - EHESP: UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France
-a: "Both authors contributed equally."
+  affiliation: EHESP
+  corresponding: pascal.crepey@ehesp.fr
+address: 
+- code: EHESP
+  address: UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France
 
 date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
@@ -25,11 +24,12 @@ site: bookdown::bookdown_site
 fontsize: 11pt
 geometry: margin=0.8in
 rmd_files: ["index.rmd", "01-intro-method.rmd", "02-results.rmd", "03-discussion.rmd", "09-references.rmd"]
-toc: no
 output:
   bookdown::pdf_book:
+    toc: false
 bibliography: ../doc/biblio/references.bib
-
+#output: rticles::plos_article
+#csl: plos.csl
 ---
 
 
@@ -38,7 +38,9 @@ knitr::opts_chunk$set(echo = F, cache = T, message = F, warnings = F)
 ```
 ```{r cache = F, echo=FALSE, message=FALSE}
 # Document and load package (no need to build or install)
-devtools::document()
+#devtools::document()
+library(HospiCov)
+library(ggplot2)
 ```
 
 
