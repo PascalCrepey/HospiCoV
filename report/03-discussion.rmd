@@ -13,12 +13,14 @@ Comparison with previous work
 
 Limits
 
-* spatial division of the territory does not reflect administrative boundaries of the French Region
-* not accounting for oversee region because they are at a lower epidemic stage for the moment
-* estimations limited to one month as to limit bias from external factors such as seasonality
-* theoretical ICU capacities do not reflect the number of currently available ICU beds
+Besides limits inherent to every transmission model, this work has several specific limitations. First, long term predictions are likely to be unreliable considering the assumptions made in this model, which is why we are only presenting forecasts at one month. The critical factor that remains unknow to this date, in the potential impact of seasonality to the transmission dynamic of COVID-19. Danon and colleagues modeled seasonal transmission by introducing a time-varying transmission rate. [@danon-medrxiv] They estimated that a 50% reduction in transmission during summer months woudl result in a smaller epidemic before the summer, followed by a resurgence in cases in the following winter. However, whether SARS-CoV-2 transmission will be affected by seasonal variations remains unclear. Although many infectious diseases have seasonal patterns, like influenza or other coronaviruses, newly introduced viruses can behave differently. Several experts suggest that the impact of seasonality on COVID-19 transmission might be very modest. [@Lipsitch;@Cohen] 
 
-Besides limits inherent to every transmission model, this work has several specific limitations. First, long term predictions are likely to be unreliable considering the assumptions made in this model, which is why we are only presenting forecasts at one month. The critical factor that remains unknow to this date, in the potential impact of seasonality to the transmission dynamic of COVID-19. Danon and colleagues modeled seasonal transmission by introducing a time-varying transmission rate. [@danon-medrxiv] They estimated that a 50% reduction in transmission during summer months woudl result in a smaller epidemic before the summer, followed by a resurgence in cases in the following winter. However, whether SARS-CoV-2 transmission will be affected by seasonal variations remains unclear. Although many infectious diseases have seasonal patterns, like influenza or other coronaviruses, newly introduced viruses can behave differently. Several experts suggest that the impact of seasonality on COVID-19 transmission might be very modest. [@Lipsitch;@Cohen]
+Second, regarding the prediction of ICU needs, the ICU capacities used in this study are theoretical and based on annual data, [@DREES] and do not reflect exactly current ICU capacities. However, the potential discrepancies are likely to be modest and should not impact the interpretation of the results.
+
+[POURQUOI C'EST DANS LES LIMITES ÇA??] Third, spatial division of the territory does not reflect administrative boundaries of the French Region. The division was based on Voronoi polygons which represent referral centers catchment areas. However, division by catchment areas might help to better estimate the pressure on the referral centers, as people are more likely to be referred to hospitals based on geographical distance rather than administrative boundaries.
+
+Finally, we restricted our model to metropolitan France, as oversee regions are at a lower epidemic stage at the moment, and the transmission dynamics are likely to differ from metropolitan France.
+
 
 
 Opening
