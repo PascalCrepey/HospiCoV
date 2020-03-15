@@ -46,6 +46,8 @@ The basic reproductive number (R0) was estimated in various studies [@Liu2020;@w
 |WHO China mission[@WHOmission]|16-24 Feb|China|-|5-6 (range 1-14)|-
 |Zhou et al[@Zhou2020]|- 19 Feb|China|range: 1.46 - 2.99 (controlled)|5.33 +- 3.36|4.27 +- 3.44
 
+Several models have already been developped to forecast propagation dynamics of COVID-19 epidemics in various settings. However, models in European context are lacking. Danon and colleagues explored disease transmission in England and Wales by adapting an existing stochastic, metapopulation model. [@danon-medrxiv] Pinotti and colleagues modeled international importation of COVID-19 cases to assess rapidity of isolation, effect of intervention, and undetection rates. [@Pinotti2020] To this date, no models have been developed to analyse COVID-19 propagation dynamics in France.
+
 # Objective
 
 The objective of this study was to estimate the number of infected cases, hospitalizations and deaths in France in a worst-case scenario of absence, or non-efficacity of control measures, and absence of seasonality. As a sensitivity analysis and to assess the potential impact of large scale control measures, we varied the $R_0$ of the epidemic from 3 to 1.5. We also sought to predict the impact of the epidemic on healthcare resources, by estimating the number of required hospital beds in intensive care units throughout the epidemic, for each region.
@@ -65,11 +67,8 @@ We developed a deterministic, age-structed, compartmental, Susceptible-Exposed-I
 knitr::include_graphics("ModelDiagram.png")
 ```
 
+We considered an incubation period of 5 days and a contagious period of 11 days [@Zhou2020]. We assumed an average length of stay in hospital and in ICU wards of 15 days for all patients, of all ages. We estimated the age-dependant susceptibility of the population based on the age distribution of infected cases reported by Wu and colleagues in China [@wu-lancet]. We standardized the Chinese age distribution of cases to the French population to estimate the expected age distribution of cases for France. We then fitted the age dependant susceptibility vector using the R implementation of the subplex algorithm provided by the `nloptr` package.
 
-We considered an incubation period of 5 days and a contagious period of 11 days [@Zhou2020].
-We estimated the age-dependant susceptibility of the population based on the age distribution of infected cases reported by Wu and colleagues in China [@wu-lancet]. We standardized the Chinese age distribution of cases to the French population to estimate the expected age distribution of cases for France. We then fitted the age dependant susceptibility vector using the R implementation of the subplex algorithm provided by the `nloptr` package.
-
-We assumed an average length of stay in hospital and in ICU wards of 15 days for all patients whatever their age. 
 
 
 
