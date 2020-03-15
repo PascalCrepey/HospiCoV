@@ -18,6 +18,9 @@ Limits
 * estimations limited to one month as to limit bias from external factors such as seasonality
 * theoretical ICU capacities do not reflect the number of currently available ICU beds
 
+Besides limits inherent to every transmission model, this work has several specific limitations. First, long term predictions are likely to be unreliable considering the assumptions made in this model, which is why we are only presenting forecasts at one month. The critical factor that remains unknow to this date, in the potential impact of seasonality to the transmission dynamic of COVID-19. Danon and colleagues modeled seasonal transmission by introducing a time-varying transmission rate. [@danon-medrxiv] They estimated that a 50% reduction in transmission during summer months woudl result in a smaller epidemic before the summer, followed by a resurgence in cases in the following winter. However, whether SARS-CoV-2 transmission will be affected by seasonal variations remains unclear. Although many infectious diseases have seasonal patterns, like influenza or other coronaviruses, newly introduced viruses can behave differently. Several experts suggest that the impact of seasonality on COVID-19 transmission might be very modest. [@Lipsitch;@Cohen]
+
+
 Opening
 
 * improve accounting of control measures
