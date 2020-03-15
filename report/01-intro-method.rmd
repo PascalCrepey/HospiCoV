@@ -1,3 +1,48 @@
+# Introduction
+
+On December 31, 2019, Chinese authorities informed WHO of grouped pneumoniae cases. The majority of these cases were linked the Huanan South China Seafood Market, in the city of Wuhan, Hubei province, China. A novel coronavirus, SARS-Cov-2, was identified on January 7, 2020, as the cause of this outbreak. On January 13, the first case outside of China was confirmed in Thailand. The first cases on the European continent were confirmed in France on January 24 [@EurosurvSPF]. The World Health Organization (WHO), declared the outbreak a Public Health Emergency of International Concern on 30 January 2020, and announced a name for the disease on February 11: COVID-19.
+
+
+As of March 5, 91,315 COVID-19 cases were confirmed in 81 countries, and 3,282 deaths were reported (3.4%) [ECDC]. In Europe, 38 countries reported cases, Italy accounting for the majority of them, with 3,089 cases out of 4,290 (72%), and 107 deaths out of 113 (94.7%). France was ranked second with 423 cases and 5 deaths (1.2%) [[SPF]](doc/biblio/COVID19_PE_20200305.pdf).
+On March 11, WHO declared a pandemic, as 106 countries reported 118,628 confirmed cases and 4,292 deaths (3.6%) [ECDC]. In Europe, the number of countries affected increased to 47, Italy still accounting for the majority of cases. 
+
+Figure \@ref(fig:cases) shows the number of cases in metropolitan France (source Santé Publique France). As of March 10, midnight, 2,030 cases were confirmed, leading to 44 deaths (2.2%) [SPF]. The two regions the most impacted were Grand Est and Ile-de-France, with 489, and 468 cases, respectively. People aged over 75 years accounted for 19% of the cases but around 75% of the deaths [SPF]. As of March 10, 102 cases had been hospitalized into Intensive Care Units (ICU), 38% of them aged 65 years or less. The doubling time is approximately 72h, as the number of cases increased from 1,126 to 2,2269 between March 8 and March 11, and from 2,269 to 4,469 from March 11 to March 14. It must be noted that it is likely that the number of confirmed cases is underestimating the true number of cases as all cases are not necessarily identified due to logistical issues in some regions [SPF].
+
+
+```{r}
+data <- data.table(openxlsx::read.xlsx("../data-raw/EpiDataFrance.xlsx", 
+                                      sheet = "TimeSeries Cases", 
+                                      detectDates = TRUE))
+data[!is.na(Metropole), France := Metropole]
+data = data[, .(`Country/Region`, France)]
+setnames(data, old = "Country/Region", new = "Date")
+data[, Date := as.Date(Date, origin = "1899-12-30")]
+```
+
+```{r cases}
+plotly::plot_ly(data, x= ~Date, y = ~France, type = "bar") %>%
+    layout(title = "Number of confirmed COVID-19 cases in France from January 22 to March 14")
+
+```
+
+SARS-CoV-2 is a zoonotic virus, and bats are believed to be its reservoir. However, human-to-human transmission has been largely reported [[WHO]](oc/biblio/who-china-joint-mission-on-covid-19-final-report.pdf). Transmission occurs mostly via droplets and fomites during close unprotected contact. Information about the main transmission parameters is still relatively scarce, and can vary according to the settings, the data, and the methods used.
+
+The basic reproductive number (R0) was estimated in various studies [REFS] starting at 1.4, up to 7.23. Most countries have now implemented control strategies involving contact tracing, quarantaine, and isolation measures, which are likely to significantly reduce the R0. [Li et al.](doc/biblio/li-preprint-01.03.pdf) used individually documented case descriptions from China to estimate a reproductie number in the context of control measures (Rc). It was estimated to be 1.54. Zhou and colleagues [@Zhou2020] estimated a controlloed reproduction number between 1.46 and 2.99. They also estimated mean incubation and contagious periods of 5 and 11 days, respectively.
+
+
+|study|time|country|reproduction number|incubation time (days)|generation time (days)
+|-|-|-|-|-|-
+|[Liu et al]()|- 23 Jan|China|2.90 (95%CI: 2.32-3.63) to 2.92 (95%CI: 2.28-3.67)|4.8 ±2.6|-
+|[Wu et al](doc/biblio/Wu-Lancet.pdf)|31 Dec - 28 Jan|China|2·68 (95% CI 2·47–2·86)|-|-
+|[Read et al](doc/biblio/riou-eurosurv-25-4-2.pdf)|1-22 January|China|3.11 (95%CI, 2.39–4.13)|-|-
+|Baker et al|20-28 January|China|-|6.4 (95% CI, 5.6 – 7.7)|-
+|Li et al|-22 January|China|2.2 (95% CI, 1.4 to 3.9)|5.2 (95% CI, 4.1 to 7.0)|7.5 (95% CI, 5.3 to 19)
+|Zhao et al|10-24 January|China|from 2.24 (95%CI: 1.96–2.55) to 3.58 (95%CI: 2.89–4.39)|-|-
+|[Riou et al](doc/biblio/riou-eurosurv-25-4-2.pdf)|-18 January|China|2.2 (90% CI: 1.4–3.8)|-|-
+|[Li et al.](doc/biblio/li-preprint-01.03.pdf)|?|China|1.54|7.2 (6.8,7.6)|3.3 (2.3, 4.3)
+|[Guan et al.](doc/biblio/guan-nejmoa2002032.pdf)|- 20 Jan|China|-|4 (IQR 2-7)|-
+|[WHO China mission](doc/biblio/who-china-joint-mission-on-covid-19-final-report.pdf)|16-24 Feb|China|-|5-6 (range 1-14)|-
+|Zhou et al[@Zhou2020]|- 19 Feb|China|range: 1.46 - 2.99 (controlled)|5.33 +- 3.36|4.27 +- 3.44
 
 # Objective
 
