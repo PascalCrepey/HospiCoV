@@ -48,7 +48,7 @@ The basic reproductive number (R0) was estimated in various studies [REFS] start
 
 # Objective
 
-The objective of this study was to estimate the number of infected cases, hospitalizations and deaths in France in a worst-case scenario of absence, or non-efficacity of control measures, and absence of seasonality. As a sensitivity analysis and to assess the potential impact of large scale control measures, we varied the $R_0$ of the epidemic from 3 to 1.5. We also sought to predict the impact of the epidemic on healthcare capicities, by estimating the number of required hospital beds in intensive care units throughout the epidemic, for each region.
+The objective of this study was to estimate the number of infected cases, hospitalizations and deaths in France in a worst-case scenario of absence, or non-efficacity of control measures, and absence of seasonality. As a sensitivity analysis and to assess the potential impact of large scale control measures, we varied the $R_0$ of the epidemic from 3 to 1.5. We also sought to predict the impact of the epidemic on healthcare resources, by estimating the number of required hospital beds in intensive care units throughout the epidemic, for each region.
 
 # Methods
 
