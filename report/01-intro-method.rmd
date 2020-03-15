@@ -13,15 +13,17 @@ Figure \@ref(fig:cases) shows the number of cases in metropolitan France (source
 data <- data.table(openxlsx::read.xlsx("../data-raw/EpiDataFrance.xlsx", 
                                       sheet = "TimeSeries Cases", 
                                       detectDates = TRUE))
-data[!is.na(Metropole), France := Metropole]
+data[, Metropole := as.numeric(Metropole)]
+data[!is.na(Metropole), France := as.numeric(Metropole)]
 data = data[, .(`Country/Region`, France)]
 setnames(data, old = "Country/Region", new = "Date")
 data[, Date := as.Date(Date, origin = "1899-12-30")]
 ```
 
-```{r cases}
-plotly::plot_ly(data, x= ~Date, y = ~France, type = "bar") %>%
-    layout(title = "Number of confirmed COVID-19 cases in France from January 22 to March 14")
+```{r cases, fig.cap="Number of confirmed COVID-19 cases in France from January 22 to March 14"}
+ggplot2::ggplot(data, aes(x= Date, y = France)) +
+  theme_classic(16) + 
+  geom_col()
 
 ```
 
