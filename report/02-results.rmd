@@ -68,7 +68,7 @@ p
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 options(knitr.kable.NA = '')
-caption = "Estimated date of ICU capacity overrun in the 13 metropolitan French Regions, for $R_0$ 1.5, 2.25, and 3. Simulations start on March 10, and end on April 14th, 2020. \\label{TABoverrunDate}"
+caption = "Estimated date of ICU capacity overrun in the 13 metropolitan French Regions, for $R_0$ 1.5, 2.25, and 3. Simulations start on March 10, and end on April 14, 2020. \\label{TABoverrunDate}"
 mergedData = merge(ThresholdCapacityDateR1.5,ThresholdCapacityDateR2.25, 
                    by = "Region", all = TRUE)
 mergedData = merge(mergedData, ThresholdCapacityDateR3,
@@ -112,7 +112,7 @@ colnames(DT)[c(2,5,8)] = "$R_0$ 1.5"
 colnames(DT)[c(3,6,9)] = "$R_0$ 2.25"
 colnames(DT)[c(4,7,10)] = "$R_0$ 3"
 
-caption = "Predicted number of infected cases, severe cases, and deaths, from March 10 to April 7, 2020, by Region, for $R_0$ values of 1.5, 2.25, and 3.\\label{TABcases}"
+caption = "Predicted number of infected cases, severe cases, and deaths, from March 10 to April 14, 2020, by Region, for $R_0$ values of 1.5, 2.25, and 3.\\label{TABcases}"
 
 #kableExtra::landscape(
     knitr::kable(DT,
@@ -132,7 +132,7 @@ caption = "Predicted number of infected cases, severe cases, and deaths, from Ma
 
 ```
 
-We predict that the most affected French Region will be "Grand-Est", with up to 42 000 infections, 10 000 severe cases and almost 2000 deaths between March 10 and April 14. Region "Ile-de-France" and "Auvergne-Rhones-Alpes" will be the second and third most affected with up to 1400 and almost 900 deaths, respectively, in the worst case scenario. In the middle range scenario ($R_0 = 2.25$), the morbidity and mortality burden will represent roughly 30% of those numbers.
+We predict that the most affected French Region will be "Grand-Est", with up to 42~000 infections, 10~000 severe cases and almost 2~000 deaths between March 10 and April 14. Region "Ile-de-France" and "Auvergne-Rhones-Alpes" will be the second and third most affected with up to 1400 and almost 900 deaths, respectively, in the worst case scenario. In the middle range scenario ($R_0 = 2.25$), the morbidity and mortality burden will represent roughly 30% of those numbers.
 
 
 ```{r tabBeds}
