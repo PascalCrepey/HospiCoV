@@ -19,7 +19,7 @@ setnames(data, old = "Country/Region", new = "Date")
 data[, Date := as.Date(Date, origin = "1899-12-30")]
 ```
 
-```{r cases, dpi = 150, fig.cap="Number of confirmed COVID-19 cases in France from January 22 to March 14"}
+```{r cases, dpi = 150, out.width="80%", fig.align='center', fig.cap="Number of confirmed COVID-19 cases in France from January 22 to March 14"}
 ggplot2::ggplot(data, aes(x= Date, y = France)) +
   theme_classic(12) + 
   theme(axis.title.y = element_blank(), axis.title.x = element_blank()) +
