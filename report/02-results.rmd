@@ -162,4 +162,4 @@ knitr::kable(DTbeds,
                                             " ")) 
 ```
 Our analysis shows that in France between 2,500 and 25,000 patients may require an ICU stay, and between 1,800 and 18,000 may need to be ventilated. Table \ref{TABbedsICU} shows the estimated total number of ICU beds and ICU ventilated beds required per Region on April 14 under the three $R_0$ scenarios, as well as the total ICU capacity in the Region, considering an average length of stay of 15 days.
-We note very large variations between the two extreme scenarios (from 305 to 4,260 ICU beds in Ile-de-France), and that the middle range scenario generally shows estimations very close or over the regional ICU capacity limit, which will restrain possible inter-regional cooperations or patient transfers.
+We note very large variations between the two extreme scenarios (from 305 to 4,260 ICU beds in Ile-de-France), and that the middle range scenario generally shows estimations very close or over the regional ICU capacity limit, which will restrain possible inter-regional cooperation or patient transfers.
