@@ -75,7 +75,7 @@ caption = "Parameters used to compute the main outcomes. \\label{TABParameters}"
 mergedData = merge(severity_risk, ICU_risk, 
                    by = "AgeGroup", all = TRUE)
 setnames(mergedData, old = 2:3, new = c("Severity risk","ICU risk"))
-mergedData = merge(mergedData, death_risk[, risk := round(risk, 2)],
+mergedData = merge(mergedData, death_risk[, risk := round(risk, 3)],
                    by = "AgeGroup", all = TRUE)
 mergedData[AgeGroup == "0-4", AgeGroup := "00-04"]
 mergedData[AgeGroup == "5-9", AgeGroup := "05-09"]
