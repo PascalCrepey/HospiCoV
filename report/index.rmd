@@ -1,7 +1,7 @@
 ---
 title: "Forecasting COVID-19 epidemic short term hospital needs in France"
 author: Clément Massonnaud^1^^,2^\footnote{Both authors contributed equally.}, Jonathan Roux^1^$^\ast$, Pascal Crépey^1^\footnote{corresponding author - pascal.crepey@ehesp.fr}
-include-before: ^1^ UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France. ^2^ Rouen University Hospital, Department of Biostatistics, F 76031 Rouen, France.
+include-before: ^1^ Univ Rennes, EHESP, REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EA 7449, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France. ^2^ Rouen University Hospital, Department of Biostatistics, 76031 Rouen, France.
 date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
 csl: "../doc/biblio/the-lancet.csl"
@@ -36,17 +36,7 @@ library(ggplot2)
 
 # Abstract
 
-## Introduction
-
-Since December 31, 2019, a novel coronavirus, SARS-CoV-2, is causing large disease outbreaks worldwide. On March 11, WHO declared that the situation could be characterized as a pandemic. Although the disease started in China, Europe is now considered the epicenter of the pandemic. France is the second country the most impacted after Italy, and there is increasing concern regarding the capacity of health care system to sustain the outbreak. However, there is few reliable data and estimations of health care needs over the next few weeks.
-
-## Objective
-
-The objective of this study was to estimate the number of COVID-19 cases, hospitalizations and deaths in France, and to assess the impact of the epidemic on healthcare resources, by estimating the number of required hospital beds in ICU throughout the epidemic, for each region, under various scenarios.
-
-## Methods
-
-We developed a deterministic, age-structured, compartmental, susceptible-Exposed-Infectious-Recovered (SEIR) model. We constructed catchment areas for each of 138 referral centers in metropolitan France, and then aggregated these areas by administrative region. The population of each area was divided into 17 age groups, based on 2016 and 2017 census data. We then used inter-individual contact matrices to simulate age-dependent mixing. We assumed an incubation period of 5 days and a contagious period of 11 days. We inferred different outcomes...
+Europe is now considered as the epicenter of the SARS-CoV-2 pandemic, France being one of the most impacted country. In France, there is an increasing concern regarding the capacity of the healthcare system to sustain the outbreak, especially regarding intensive care units (ICU); however, data is lacking. The aim of this study was to estimate the dynamics of the epidemic in France, and to assess its impact on healthcare resources for each French metropolitan Region. We developed a deterministic, age-structured, Susceptible-Exposed-Infectious-Removed (SEIR) model based on catchment areas of each COVID-19 referral hospitals and parametrized with available epidemic information. We estimated until April 14, 2020 in three different scenarios ($R_0=1.5$, $R_0=2.25$, $R_0=3$) the daily number of COVID-19 cases, hospitalizations and deaths, the needs in ICU beds per Region and the reaching date of ICU capacity limits. At the national level, the total number of infected cases is expected to range from 22,872 in the best case ($R_0=1.5$) to 161,832 in the worst case ($R_0=3$). Regarding the total number of deaths, it is expected to vary from 1,021 to 11,032, respectively. At the regional level, all ICU capacities may be overrun in the worst scenario. Only seven Regions may lack ICU beds in the mid scenario ($R_0=2.25$) and only one in the best case. In the three scenarios, Corse may be the first Region to see its ICU capacities overrun. The two other Regions, whose capacity will be overrun shortly after are Grand-Est and Bourgogne-Franche-Comté. While preliminary, our analysis shows that, even in the best case scenario, the French healthcare system will very soon be overwhelmed. While drastic social distancing measures may temper our results, a massive reorganization leading to an expansion of French ICU capacities seems to be necessary to manage the coming wave of critically affected COVID-19 patients.
 
 
 
