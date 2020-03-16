@@ -1,5 +1,5 @@
 ---
-title: "Forecasting COVID-19 epidemic short term hospital needs in France"
+title: "COVID-19: Forecasting short term hospital needs in France"
 author: Clément Massonnaud^1^^,2^\footnote{Both authors contributed equally.}, Jonathan Roux^1^$^\ast$, Pascal Crépey^1^\footnote{corresponding author - pascal.crepey@ehesp.fr}
 include-before: ^1^ Univ Rennes, EHESP, REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EA 7449, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France. ^2^ Rouen University Hospital, Department of Biostatistics, 76031 Rouen, France.
 date: "`r Sys.Date()`"
