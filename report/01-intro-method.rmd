@@ -59,7 +59,7 @@ We listed the 138 hospitals that are identified as referral centers for the trea
 knitr::include_graphics("FrenchMapsVor.png")
 ```
 
-We developed a deterministic, age-structured, compartmental, Susceptible-Exposed-Infectious-Recovered (SEIR) model, as a set of differential equations (Figure \ref{diagram}). The population was divided into 17 age-groups (5 years age-band), and can be either susceptible (S), exposed to the virus but not infectious (E), infected and infectious (I), or removed from the chains of infection (R). We used an inter-individual contacts matrix for the French population estimated by Prem and colleagues [@Prem2017] to simulate age-dependent mixing.
+We developed a deterministic, age-structured, compartmental, Susceptible-Exposed-Infectious-Removed (SEIR) model, as a set of differential equations (Figure \ref{diagram}). The population was divided into 17 age-groups (5 years age-band), and can be either susceptible (S), exposed to the virus but not infectious (E), infected and infectious (I), or removed from the chains of infection (R). We used an inter-individual contacts matrix for the French population estimated by Prem and colleagues [@Prem2017] to simulate age-dependent mixing.
 
 ```{r , echo=FALSE, fig.cap="Diagram of the age-structured SEIR model. \\label{diagram}", out.width = '100%'}
 knitr::include_graphics("ModelDiagram.png")
