@@ -16,3 +16,7 @@ To mitigate the epidemic, the French government announced a series of nation-wid
 # Conclusion
 
 While preliminary, our analysis shows that, even in the best case scenario, the French healthcare system will very soon be overwhelmed. While drastic social distancing measures may temper our results, a massive reorganization leading to an expansion of French ICU capacities seems to be necessary to manage the coming wave of critically affected COVID-19 patients.
+
+# Acknowledgments
+
+The authors wish to thank Laura Temime for the useful suggestions on the manuscript.a
