@@ -89,7 +89,7 @@ setnames(mergedData, old = c("AgeGroup", "risk"),
 knitr::kable(mergedData,
              escape = FALSE,
              booktabs = T,
-             digits = 2,
+             digits = 3,
              caption = caption,
              format = "latex")
 
