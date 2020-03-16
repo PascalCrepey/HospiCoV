@@ -67,6 +67,32 @@ knitr::include_graphics("ModelDiagram.png")
 
 We considered an incubation period of 5 days and a contagious period of 11 days [@Zhou2020]. We assumed an average length of stay in hospitals and in ICU wards of 15 days for all patients, of all ages. We estimated the age-dependent susceptibility of the population based on the age distribution of infected cases reported by Wu and colleagues in China [@wu-lancet]. We standardized the Chinese age distribution of cases to the French population to estimate the expected age distribution of cases for France. We then fitted the age dependent susceptibility vector using the R implementation of the subplex algorithm provided by the `nloptr` package.
 
-Based on the estimated number of new cases per day, we inferred different outcomes. First, we computed the number of severe cases, defined according to Guan and colleagues [@GuanNEJM]. We used their estimations of age-dependent severity risks across four age groups, which were dispatched across our 17 age groups. We also estimated the number of cases which will require hospitalization to ICU using age-dependent risks from Guan and colleagues [@GuanNEJM]. We also estimated the number of cases which will require mechanical ventilation using data from Yang and colleagues [@Yang-lancet] (not age-dependent). The number of deaths was estimated using age-dependent deaths risks (10 age groups) provided by the Italian National Institute of Health (Istituto Superiore di Sanità) [@death].
+Based on the estimated number of new cases per day, we inferred different outcomes. First, we computed the number of severe cases, defined according to Guan and colleagues [@GuanNEJM]. We used their estimations of age-dependent severity risks across four age groups, which were dispatched across our 17 age groups \ref{TABParameters}. We also estimated the number of cases which will require hospitalization to ICU using age-dependent risks from Guan and colleagues [@GuanNEJM] \ref{TABParameters}. Using data from Yang and colleagues [@Yang-lancet], we set the proportion of cases which will require mechanical ventilation to 0.711 (not age-dependent). The number of deaths was estimated using age-dependent deaths risks (10 age groups) provided by the Italian National Institute of Health (Istituto Superiore di Sanità) \ref{TABParameters} [@death].
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+options(knitr.kable.NA = '')
+caption = "Parameters used to compute the main outcomes. \\label{TABParameters}"
+mergedData = merge(severity_risk, ICU_risk, 
+                   by = "AgeGroup", all = TRUE)
+setnames(mergedData, old = 2:3, new = c("Severity risk","ICU risk"))
+mergedData = merge(mergedData, death_risk[, risk := round(risk, 2)],
+                   by = "AgeGroup", all = TRUE)
+mergedData[AgeGroup == "0-4", AgeGroup := "00-04"]
+mergedData[AgeGroup == "5-9", AgeGroup := "05-09"]
+setorder(mergedData, AgeGroup)
+mergedData[AgeGroup == "00-04", AgeGroup := "0-4"]
+mergedData[AgeGroup == "05-09", AgeGroup := "5-9"]
+mergedData[AgeGroup == "80P", AgeGroup := "80 and older"]
+setnames(mergedData, old = c("AgeGroup", "risk"),
+         new = c("Age group", "Death risk"))
+
+knitr::kable(mergedData,
+             escape = FALSE,
+             booktabs = T,
+             digits = 2,
+             caption = caption,
+             format = "latex")
+
+```
 
 The transmission model was implemented in `C++`. Data collection, data management, model runs, and results analysis and reporting were performed using R. All data and source code were bundled into an R package and a Shiny application was developed to run the model with different parameters, and to explore the various results (available upon request).
