@@ -1,7 +1,7 @@
 ---
 title: "Forecasting COVID-19 epidemic short term hospital needs in France"
-author: Clément Massonnaud^1^\footnote{Both authors contributed equally.}, Jonathan Roux^1^$^\ast$, Pascal Crépey^1^\footnote{corresponding author - pascal.crepey@ehesp.fr}
-include-before: ^1^ UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France
+author: Clément Massonnaud^1^^,2^\footnote{Both authors contributed equally.}, Jonathan Roux^1^$^\ast$, Pascal Crépey^1^\footnote{corresponding author - pascal.crepey@ehesp.fr}
+include-before: ^1^ UPRES-EA 7449 REPERES « Recherche en Pharmaco-Epidémiologie et Recours aux Soins » – EHESP – Université de Rennes, 15 avenue du Professeur-Léon-Bernard, CS 74312, 35043 Rennes, France. ^2^ Rouen University Hospital, Department of Biostatistics, F 76031 Rouen, France.
 date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
 csl: "../doc/biblio/the-lancet.csl"
