@@ -34,3 +34,19 @@ library(ggplot2)
 ```
 
 
+# Abstract
+
+## Introduction
+
+Since December 31, 2019, a novel coronavirus, SARS-CoV-2, is causing large disease outbreaks worldwide. On March 11, WHO declared that the situation could be characterized as a pandemic. Although the disease started in China, Europe is now considered the epicenter of the pandemic. France is the second country the most impacted after Italy, and there is increasing concern regarding the capacity of health care system to sustain the outbreak. However, there is few reliable data and estimations of health care needs over the next few weeks.
+
+## Objective
+
+The objective of this study was to estimate the number of COVID-19 cases, hospitalizations and deaths in France, and to assess the impact of the epidemic on healthcare resources, by estimating the number of required hospital beds in ICU throughout the epidemic, for each region, under various scenarios.
+
+## Methods
+
+We developed a deterministic, age-structured, compartmental, susceptible-Exposed-Infectious-Recovered (SEIR) model. We constructed catchment areas for each of 138 referral centers in metropolitan France, and then aggregated these areas by administrative region. The population of each area was divided into 17 age groups, based on 2016 and 2017 census data. We then used inter-individual contact matrices to simulate age-dependent mixing. We assumed an incubation period of 5 days and a contagious period of 11 days. We inferred different outcomes...
+
+
+
