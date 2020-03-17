@@ -146,8 +146,11 @@ mod_model_ui <- function(id){
 #' @importFrom DT formatRound datatable
 #' @export
 #' @keywords internal
-mod_model_server <- function(input, output, session, selectedRegions) {
-  ns <- session$ns
+mod_model_server <- function(input, output, session, selectedRegions, data) {
+    ns <- session$ns
+
+        
+    
   params = Parameters$new()
   SimulationParameters = reactiveValues(
     R0 = 3, 

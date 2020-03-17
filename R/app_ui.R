@@ -4,18 +4,20 @@ app_ui <- function() {
     # adding external resources
    golem_add_external_resources(),
     # List the first level UI elements here 
-      navbarPage("HospiCov", inverse = T,
-         tabPanel("Population",
-                  mod_pop_ui("pop_ui_1")
-         ),
-         tabPanel("Model",
-                  mod_model_ui("model_ui_1")
-         ),
-         tabPanel("Map",
-                  mod_map_ui("map_ui_1")
-         )
-         
-      )
+   navbarPage("HospiCov", inverse = T,
+              tabPanel("Inputs",
+                       mod_inputs_ui("inputs_ui_1")),
+              tabPanel("Population",
+                       mod_pop_ui("pop_ui_1")
+                       ),
+              tabPanel("Model",
+                       mod_model_ui("model_ui_1")
+                       ),
+              tabPanel("Map",
+                       mod_map_ui("map_ui_1")
+                       )
+              
+              )
   )
 }
 
