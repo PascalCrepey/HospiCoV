@@ -51,6 +51,12 @@ mod_inputs_ui <- function(id){
                                    ),
                           tabPanel("Population table",
                                    DT::DTOutput(ns("popDT"))
+                                   ),
+                          tabPanel("Example of pre-infected table",
+                                   verbatimTextOutput(ns("exPreInfDT"))
+                                   ),
+                          tabPanel("Example of population table",
+                                   verbatimTextOutput(ns("exPopDT"))
                                    )
                       )
                   )
@@ -80,6 +86,13 @@ ACCEPTED_FILES  = c(FILE_EXTENSIONS,
 mod_inputs_server <- function(input, output, session){
     ns <- session$ns
 
+    ## --- EXAMPLE TABLES ----------------------------------------------------------
+    output$exPreInfDT = renderPrint(pre_infected[!Region %in% c("France", "Metropole"),])
+    output$exPopDT = renderPrint(france_popbyreg)
+                                     
+    ## -----------------------------------------------------------------------------
+
+    
     output$selectCountry = renderUI({
         selectInput(ns("country"),
                     label = "Please select your country to use the corresponding matrix",
