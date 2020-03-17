@@ -6,3 +6,6 @@ dev_history.R
 $run_dev.*
 ^report\.ipynb$
 ^doc$
+^LICENSE\.md$
+^\.travis\.yml$
+^appveyor\.yml$
