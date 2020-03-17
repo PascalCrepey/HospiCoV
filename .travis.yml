@@ -11,9 +11,7 @@ r_binary_packages:
   - covr
   - data.table
   - shiny
-  - golem 
   - Rcpp 
-  - ggvoronoi 
   - openxlsx 
   - stringr 
   - leaflet 
@@ -90,7 +88,6 @@ r_binary_packages:
   - tidyselect
   - plogr
   - config
-  - dockerfiler
   - here
   - roxygen2
   - usethis
