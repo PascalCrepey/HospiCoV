@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HospiCov • HospiCov</title>
+<title>HospiCoV • hospicov</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="HospiCov">
-<meta property="og:description" content="COVID-19 French national metapopulation model.">
+<script src="pkgdown.js"></script><meta property="og:title" content="HospiCoV">
+<meta property="og:description" content="COVID-19 metapopulation model.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -30,7 +30,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">HospiCov</a>
+        <a class="navbar-link" href="index.html">hospicov</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -59,15 +59,200 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-COVID-19 French national metapopulation model.
+
+
+<!-- badges: end -->
+<div id="covid-19-epidemic-impact-on-healthcare-resources" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#covid-19-epidemic-impact-on-healthcare-resources" class="anchor"></a>COVID-19 epidemic impact on healthcare resources</h1></div>
+<p>This R package contains functions to help interested researchers to estimate hospital resources required to treat patients infected by SARS-CoV-2.</p>
+<p>The aim of the project is to provide a common framework to build and analyze hospital networks.</p>
+<p>This project is partly supported by the SPHINx project, funded by French National Research Agency.</p>
+<div id="step-0-installing-the-package" class="section level3">
+<h3 class="hasAnchor">
+<a href="#step-0-installing-the-package" class="anchor"></a>Step 0: Installing the package:</h3>
+<ul>
+<li>To install packages from GitHub, the package “devtools” needs to be installed first</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(“devtools”)</span></code></pre></div>
+<ul>
+<li>Then install the package from GitHub. Update or install all the required packages.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">install_github</span>(<span class="st">"PascalCrepey/HospiCov@*release"</span>)</span></code></pre></div>
+<p>This command will install the latest “released” version of the package.</p>
+</div>
+<div id="step-1-preparing-the-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#step-1-preparing-the-data" class="anchor"></a>Step 1: Preparing the data</h3>
+<p>To use run the model for a specific country, you must provide the following inputs:</p>
+<ul>
+<li>
+<strong>Pre-infected table</strong>: a table with a number of infected cases by location (it can be a unique location)</li>
+<li>
+<strong>Population table</strong>: a table of the age-stratified population for each location. The population must be stratified into the same 17 age groups as the contact matrix.</li>
+</ul>
+<p>Age-specific <strong>contact matrices</strong> are made available for 152 countries by Prem et al.</p>
+<p>The tables must follow a specific format for the model to run:</p>
+<ul>
+<li>
+<strong>Pre-infected table</strong> must have three columns (case sensitive):
+<ol>
+<li>“Region”: a name of region, or location</li>
+<li>“Date”: must be identical for all rows, and in ISO-8601 format: “YYYY-MM-DD” (e.g. 2020-03-10)</li>
+<li>“preInfected”: an integer, the number of infected cases.</li>
+</ol>
+</li>
+</ul>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Region</th>
+<th align="left">Date</th>
+<th align="right">preInfected</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Auvergne-Rhone-Alpes</td>
+<td align="left">2020-03-10</td>
+<td align="right">211</td>
+</tr>
+<tr class="even">
+<td align="left">Bourgogne-Franche-Comte</td>
+<td align="left">2020-03-10</td>
+<td align="right">146</td>
+</tr>
+<tr class="odd">
+<td align="left">Bretagne</td>
+<td align="left">2020-03-10</td>
+<td align="right">81</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<strong>Population table</strong> must have 18 columns:
+<ol>
+<li>one column “Region”, which matches the column “Region” of the Pre-infected table</li>
+<li>17 columns corresponding to the 17 age groups below, with the corresponding population for each region</li>
+</ol>
+</li>
+</ul>
+<p>Age groups: 0-4, 5-9, 10-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, 75-79, 80P</p>
+<table class="table">
+<colgroup>
+<col width="12%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="4%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+<col width="5%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Region</th>
+<th align="right">0-4</th>
+<th align="right">5-9</th>
+<th align="right">10-14</th>
+<th align="right">15-19</th>
+<th align="right">20-24</th>
+<th align="right">25-29</th>
+<th align="right">30-34</th>
+<th align="right">35-39</th>
+<th align="right">40-44</th>
+<th align="right">45-49</th>
+<th align="right">50-54</th>
+<th align="right">55-59</th>
+<th align="right">60-64</th>
+<th align="right">65-69</th>
+<th align="right">70-74</th>
+<th align="right">75-79</th>
+<th align="right">80P</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Auvergne-Rhone-Alpes</td>
+<td align="right">457173.55</td>
+<td align="right">479982.02</td>
+<td align="right">473564.70</td>
+<td align="right">446192.66</td>
+<td align="right">451363.51</td>
+<td align="right">479052.66</td>
+<td align="right">480439.02</td>
+<td align="right">514600.38</td>
+<td align="right">527126.18</td>
+<td align="right">514953.9</td>
+<td align="right">480081.26</td>
+<td align="right">484827.77</td>
+<td align="right">459145.57</td>
+<td align="right">438335.49</td>
+<td align="right">316475.54</td>
+<td align="right">255891.89</td>
+<td align="right">463162.94</td>
+</tr>
+<tr class="even">
+<td align="left">Bourgogne-Franche-Comte</td>
+<td align="right">170161.14</td>
+<td align="right">193332.63</td>
+<td align="right">186968.52</td>
+<td align="right">157957.75</td>
+<td align="right">165824.19</td>
+<td align="right">178446.31</td>
+<td align="right">180879.02</td>
+<td align="right">200356.16</td>
+<td align="right">212177.87</td>
+<td align="right">213846.9</td>
+<td align="right">210669.37</td>
+<td align="right">188609.66</td>
+<td align="right">210515.08</td>
+<td align="right">201724.68</td>
+<td align="right">139177.96</td>
+<td align="right">117005.82</td>
+<td align="right">215064.96</td>
+</tr>
+<tr class="odd">
+<td align="left">Bretagne</td>
+<td align="right">182318.23</td>
+<td align="right">211639.94</td>
+<td align="right">208746.84</td>
+<td align="right">177964.79</td>
+<td align="right">172585.84</td>
+<td align="right">188743.31</td>
+<td align="right">198296.36</td>
+<td align="right">221251.36</td>
+<td align="right">226498.73</td>
+<td align="right">225150.0</td>
+<td align="right">222865.06</td>
+<td align="right">204764.17</td>
+<td align="right">222899.55</td>
+<td align="right">217450.95</td>
+<td align="right">145081.51</td>
+<td align="right">126929.06</td>
+<td align="right">227832.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li>file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small>CCBY-4.0</small></li>
 </ul>
 </div>
 <div class="developers">
@@ -79,7 +264,15 @@ COVID-19 French national metapopulation model.
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.com/PascalCrepey/HospiCov"><img src="https://travis-ci.com/PascalCrepey/HospiCov.svg?branch=master" alt="travis build status"></a></li>
+<li><a href="https://ci.appveyor.com/project/PascalCrepey/HospiCov"><img src="https://ci.appveyor.com/api/projects/status/github/PascalCrepey/HospiCov?branch=master&amp;svg=true" alt="AppVeyor build status"></a></li>
+<li><a href="https://codecov.io/gh/PascalCrepey/HospiCov"><img src="https://codecov.io/gh/PascalCrepey/HospiCov/branch/master/graphs/badge.svg" alt="codecov"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 

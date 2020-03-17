@@ -1,12 +1,12 @@
-Package: HospiCov
-Title: HospiCov
+Package: hospicov
+Title: HospiCoV
 Version: 0.1.0
 Authors@R: c(
   person("Pascal", "Crépey", email = "pascal.crepey@ehesp.fr", role = c("aut", "cre")),
   person('Clément', 'Massonnaud', email = 'clement.massonnaud@gmail.com', role = c('aut')),
   person("Jonathan", "Roux", email = "jonathan.roux@ehesp.fr", role = c("aut"))
   )
-Description: COVID-19 French national metapopulation model.
+Description: COVID-19 metapopulation model.
 License: CCBY-4.0
 Encoding: UTF-8
 LazyData: true

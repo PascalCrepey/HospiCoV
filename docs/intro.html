@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Launch the shiny application — shiny_app • hospicov</title>
+<title>NA • hospicov</title>
 
 
 <!-- jquery -->
@@ -29,15 +29,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script>
+<link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Launch the shiny application — shiny_app" />
-<meta property="og:description" content="Launch the shiny application" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="NA" />
 
 
 
@@ -56,7 +54,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-title-body">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -68,7 +66,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">hospicov</a>
+        <a class="navbar-link" href="index.html">hospicov</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -76,13 +74,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="index.html">
     <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="reference/index.html">Reference</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -98,29 +96,45 @@
       </header>
 
 <div class="row">
-  <div class="col-md-9 contents">
+  <div class="contents col-md-9">
     <div class="page-header">
-    <h1>Launch the shiny application</h1>
-    
-    <div class="hidden name"><code>shiny_app.Rd</code></div>
+      <h1>NA</h1>
     </div>
 
-    <div class="ref-description">
-    <p>Launch the shiny application</p>
-    </div>
 
-    <pre class="usage"><span class='fu'>shiny_app</span>()</pre>
-
+<p>To use run the model for a specific country, you must provide the following inputs:</p>
+<ul>
+<li>
+<strong>Pre-infected table</strong>: a table with a number of infected cases by location (it can be a unique location)</li>
+<li>
+<strong>Population table</strong>: a table of the age-stratified population for each location. The population must be stratified into the same 17 age groups as the contact matrix.</li>
+</ul>
+<p>Age-specific <strong>contact matrices</strong> are made available for 152 countries by Prem et al.</p>
+<p>The tables must follow a specific format for the model to run:</p>
+<ul>
+<li>
+<strong>Pre-infected table</strong> must have three columns (case sensitive):
+<ol>
+<li>“Region”: a name of region, or location</li>
+<li>“Date”: must be identical for all rows, and in ISO-8601 format: “YYYY-MM-DD” (e.g. 2020-03-10)</li>
+<li>“preInfected”: an integer, the number of infected cases.</li>
+</ol>
+</li>
+<li>
+<strong>Population table</strong> must have 18 columns:
+<ol>
+<li>one column “Region”, which matches the column “Region” of the Pre-infected table</li>
+<li>17 columns corresponding to the 17 age groups below, with the corresponding population for each region</li>
+</ol>
+</li>
+</ul>
+<p>Age groups: 0-4, 5-9, 10-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, 75-79, 80P</p>
 
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-    </ul>
 
-  </div>
 </div>
+
 
 
       <footer>
