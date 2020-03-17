@@ -136,7 +136,7 @@ mod_inputs_server <- function(input, output, session){
         } else if (input$fileFormat == ".xlsx") {
             preInf(setDT(openxlsx::read.xlsx(input$fileInput$datapath)))
         }
-        
+        preInf()[, Date := as.Date(Date)]
         output$fileFormat = NULL
         output$importOptions = NULL
         output$fileLoaded = renderText({ "File loaded" })
@@ -197,8 +197,11 @@ mod_inputs_server <- function(input, output, session){
                                                   options = list(scrollX = T,
                                                                  pageLength = 17))
     })
-    
-    return(list(matrix, preInf, pop))
+
+    modelInputs = reactiveValues(matrix = matrix,
+                                 preInf = preInf,
+                                 pop = pop)
+    return(modelInputs)
 
 }
     

@@ -146,7 +146,7 @@ mod_model_ui <- function(id){
 #' @importFrom DT formatRound datatable
 #' @export
 #' @keywords internal
-mod_model_server <- function(input, output, session, selectedRegions, data) {
+mod_model_server <- function(input, output, session, selectedRegions, modelInputs) {
     ns <- session$ns
 
         
@@ -288,21 +288,23 @@ mod_model_server <- function(input, output, session, selectedRegions, data) {
   
   
   ## ------ RUN MODEL ----------------------------------------------------------
-  simulation = reactive({
-      req(selectedRegions())
-    #req(input$preExposed)
-    
+    simulation = reactive({
+        req(selectedRegions())
+        req(modelInputs$preInf())
+        req(modelInputs$pop())
+                                        #req(input$preExposed)
+ 
       all_res = lapply(selectedRegions()$zones, function(region) {
           #create Parameter
           params = Parameters$new(SimulationParameters$R0)
           #browser()
           if (selectedRegions()$isRegion) {
-            params$preInfected = pre_infected[Region == region, preInfected]
-            pop = SimulationParameters$pHosp$getPopRegion(region)
-            startDate = pre_infected[Region == region, Date]
+            params$preInfected = modelInputs$preInf()[Region == region, preInfected]
+            pop = modelInputs$pop()[Region == region]
+            startDate = modelInputs$preInf()[Region == region, Date]
           } else {
             params$preInfected = 10
-            pop = SimulationParameters$pHosp$getPopFiness(region)
+            pop = modelInputs$pop()[Region == region]
             startDate = as.Date("2020-03-10")
           }
           
