@@ -106,7 +106,8 @@ mod_inputs_server <- function(input, output, session){
 
     output$matrixDT = DT::renderDT( DT::datatable(matrix(),
                                                   options = list(scrollX = T,
-                                                                 pageLength = 17)))
+                                                                 pageLength = 17)) %>% 
+      DT::formatRound(columns = 1:17, digits = 3))
     
     ## --- UPLOAD PRE INF TABLE ---------------------------------------------------------
         
