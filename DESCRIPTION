@@ -7,7 +7,7 @@ Authors@R: c(
   person("Jonathan", "Roux", email = "jonathan.roux@ehesp.fr", role = c("aut"))
   )
 Description: COVID-19 French national metapopulation model.
-License: file LICENSE
+License: CCBY-4.0
 Encoding: UTF-8
 LazyData: true
 Imports: 
