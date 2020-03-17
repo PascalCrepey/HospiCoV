@@ -17,7 +17,6 @@ r_binary_packages:
   - leaflet 
   - maptools 
   - RcppGSL 
-  - ggplot2 
   - sp
   - plotly 
   - shinyWidgets
