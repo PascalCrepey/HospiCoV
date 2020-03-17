@@ -4,9 +4,108 @@ dist: trusty
 language: R
 sudo: false
 cache: packages
-  
-r_packages:
+
+apt_packages:
+  - libgsl0-dev
+r_binary_packages:
   - covr
+  - data.table
+  - shiny
+  - golem 
+  - Rcpp 
+  - ggvoronoi 
+  - openxlsx 
+  - stringr 
+  - leaflet 
+  - maptools 
+  - RcppGSL 
+  - ggplot2 
+  - sp
+  - plotly 
+  - shinyWidgets
+  - shinyjs
+  - DT
+  - RcppArmadillo
+  - promises
+  - later
+  - BH
+  - rlang
+  - assertthat
+  - glue
+  - fansi
+  - rprojroot
+  - backports
+  - attempt
+  - desc
+  - pkgbuild
+  - rstudioapi
+  - callr
+  - cli
+  - prettyunits
+  - processx
+  - ps
+  - brew
+  - commonmark
+  - knitr
+  - pkgload
+  - purrr
+  - stringi
+  - xml2
+  - evaluate
+  - highr
+  - markdown
+  - xfun
+  - httpuv
+  - xtable
+  - htmltools
+  - sourcetools
+  - fastmap
+  - ellipsis 
+  - praise
+  - clipr
+  - clisymbols
+  - fs
+  - gh
+  - git2r
+  - whisker
+  - ini
+  - gtable
+  - isoband
+  - scales
+  - tibble
+  - testthat
+  - farver
+  - labeling
+  - munsell
+  - RColorBrewer
+  - viridisLite
+  - lifecycle
+  - pillar
+  - pkgconfig
+  - colorspace
+  - utf8
+  - vctrs 
+  - gridExtra
+  - dplyr
+  - tidyselect
+  - plogr
+  - config
+  - dockerfiler
+  - here
+  - roxygen2
+  - usethis
+  - deldir
+  - rgeos 
+  - raster
+  - zip
+  - base64enc
+  - crosstalk
+  - htmlwidgets
+  - png
+  - viridis
+  - leaflet.providers 
+  - tidyr
+  - hexbin
   
 cache: 
   # Main R library
