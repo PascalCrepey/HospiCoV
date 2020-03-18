@@ -22,7 +22,7 @@ mod_model_ui <- function(id){
     tagList(
         sidebarLayout(
             sidebarPanel(
-              uiOutput(ns("regionsSimulated")),
+                h4("Model parameters"),
                 tabsetPanel(
                     tabPanel("Epidemic params.", 
                              uiOutput(ns("paramsEpiUI"))),
@@ -32,27 +32,29 @@ mod_model_ui <- function(id){
             ),
             mainPanel(
                 fluidRow(
-                         column(3, selectInput(inputId = ns("selectedAG"), label = NULL,
-                                               choices = c("All", "Aggregated", 
-                                                           agenames), selected = "All")),
-                         column(3, selectInput(inputId = ns("selectedOutcome"), 
-                                               label = NULL,
-                                               choices = c("Infected" = "Infected", 
-                                                           #"Symptomatic cases" = "symptomatic",  
-                                                           "Severity" = "severity", 
-                                                           "ICU admissions" = "ICU", 
-                                                           "Ventilation in ICU" = "ventilation",
-                                                           "Deaths" = "Deaths"), 
-                                               selected = "Infected")),
-                         column(3, selectInput(inputId = ns("selectedDuration"),
-                                               label = NULL,
-                                               choices = c("Week", "Month", "Trimester", 
-                                                           "Semester", "Year"),
-                                               selected = "Trimester"))
-                         ),
+                    column(3, uiOutput(ns("regionsSimulated"))),
+                    column(3, selectInput(inputId = ns("selectedAG"), label = "Age groups",
+                                          choices = c("All", "Aggregated", 
+                                                      agenames), selected = "All")),
+                    column(3, selectInput(inputId = ns("selectedOutcome"), 
+                                          label = "Outcome",
+                                          choices = c("Infected" = "Infected", 
+                                        #"Symptomatic cases" = "symptomatic",  
+                                                      "Severity" = "severity", 
+                                                      "ICU admissions" = "ICU", 
+                                                      "Ventilation in ICU" = "ventilation",
+                                                      "Deaths" = "Deaths"), 
+                                          selected = "Infected")),
+                    column(3, selectInput(inputId = ns("selectedDuration"),
+                                          label = "Period",
+                                          choices = c("Week", "Month", "Trimester", 
+                                                      "Semester", "Year"),
+                                          selected = "Trimester"))
+                ),
                 tabsetPanel(
                   tabPanel(
-                    title = "Hosp. requirements",
+                      title = "Hosp. requirements",
+                      strong("The outputs correspond to the number of beds that will be required at the selected date."),
                     fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
                                                    label = NULL,
                                                    choices = c("Number hospital beds" = "bedhosp",
@@ -215,7 +217,7 @@ mod_model_server <- function(input, output, session, modelInputs) {
 
   output$regionsSimulated = renderUI({
     selectInput(ns("selectedRegionsUI"),
-                label = NULL,
+                label = "Region",
                 choices = c("All", selectedRegions()))
   })
   
