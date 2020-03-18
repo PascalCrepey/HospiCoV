@@ -146,9 +146,13 @@ mod_model_ui <- function(id){
 #' @importFrom DT formatRound datatable
 #' @export
 #' @keywords internal
-mod_model_server <- function(input, output, session, selectedRegions, modelInputs) {
+mod_model_server <- function(input, output, session, modelInputs) {
     ns <- session$ns
 
+    selectedRegions = reactive({
+        req(modelInputs$preInf())
+        modelInputs$preInf()$Region
+    })
         
     
   params = Parameters$new()
@@ -228,16 +232,16 @@ mod_model_server <- function(input, output, session, selectedRegions, modelInput
   output$regionsSimulated = renderUI({
     selectInput(ns("selectedRegionsUI"),
                 label = NULL,
-                choices = c("All", selectedRegions()$zones))
+                choices = c("All", selectedRegions()))
   })
   
   output$CaseTimeSeriesUI = renderUI({
-    if(selectedRegions()$isRegion & 
-       input$selectedAG == "Aggregated" & 
-       input$selectedOutcome == "Infected")
-      checkboxInput(ns("ShowCaseTimeSeries"),
-                    label = "Show observed values ",
-                    value = FALSE)
+      if(input$selectedAG == "Aggregated" & input$selectedOutcome == "Infected") {
+          
+          checkboxInput(ns("ShowCaseTimeSeries"),
+                        label = "Show observed values ",
+                        value = FALSE)
+      }
   })
                   
     
@@ -255,7 +259,7 @@ mod_model_server <- function(input, output, session, selectedRegions, modelInput
           # curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], input$selectedOutcome, input$selectedAG)
       # }
       # browser()
-      if(!(SimulationParameters$ShowCaseTimeSeries & selectedRegions()$isRegion)){
+      if(!(SimulationParameters$ShowCaseTimeSeries)){
         curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], 
                               input$selectedOutcome, 
                               input$selectedAG)
@@ -264,7 +268,7 @@ mod_model_server <- function(input, output, session, selectedRegions, modelInput
         if(input$selectedRegionsUI == "All"){
           
           SelectedTimeSeries <- CaseTimeSeries[, .SD,
-                                               .SDcols = c("Date", selectedRegions()$zones)]
+                                               .SDcols = c("Date", selectedRegions())]
           SelectedTimeSeries[, Cases := rowSums(.SD),
                              .SDcols = 2:length(names(SelectedTimeSeries))[1]]
         }
@@ -294,19 +298,19 @@ mod_model_server <- function(input, output, session, selectedRegions, modelInput
         req(modelInputs$pop())
                                         #req(input$preExposed)
  
-      all_res = lapply(selectedRegions()$zones, function(region) {
+      all_res = lapply(selectedRegions(), function(region) {
           #create Parameter
           params = Parameters$new(SimulationParameters$R0)
           #browser()
-          if (selectedRegions()$isRegion) {
+##          if (selectedRegions()$isRegion) {
             params$preInfected = modelInputs$preInf()[Region == region, preInfected]
             pop = modelInputs$pop()[Region == region]
             startDate = modelInputs$preInf()[Region == region, Date]
-          } else {
-            params$preInfected = 10
-            pop = modelInputs$pop()[Region == region]
-            startDate = as.Date("2020-03-10")
-          }
+          ## } else {
+          ##   params$preInfected = 10
+          ##   pop = modelInputs$pop()[Region == region]
+          ##   startDate = as.Date("2020-03-10")
+          ## }
           
     
           #set duration
