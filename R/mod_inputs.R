@@ -149,6 +149,8 @@ mod_inputs_server <- function(input, output, session){
             preInf(fread(input$fileInput$datapath))
         } else if (input$fileFormat == ".xlsx") {
             preInf(setDT(openxlsx::read.xlsx(input$fileInput$datapath)))
+        } else if (input$fileFormat == ".xls") {
+            preInf(setDT(readxl::read_xls(input$fileInput$datapath)))
         }
         preInf()[, Date := as.Date(Date)]
         output$fileFormat = NULL
@@ -195,8 +197,9 @@ mod_inputs_server <- function(input, output, session){
             pop(fread(input$fileInput2$datapath))
         } else if (input$fileFormat2 == ".xlsx") {
             pop(setDT(openxlsx::read.xlsx(input$fileInput2$datapath)))
+        } else if (input$fileFormat2 == ".xls") {
+            pop(setDT(readxl::read_xls(input$fileInput2$datapath)))
         }
-        
         output$fileFormat2 = NULL
         output$importOptions2 = NULL
         output$fileLoaded2 = renderText({ "File loaded" })

@@ -22,39 +22,39 @@ mod_model_ui <- function(id){
     tagList(
         sidebarLayout(
             sidebarPanel(
-              uiOutput(ns("regionsSimulated")),
+                h4("Model parameters"),
                 tabsetPanel(
                     tabPanel("Epidemic params.", 
                              uiOutput(ns("paramsEpiUI"))),
-                    tabPanel("Population params.",
-                             uiOutput(ns("paramsPopUI"))),
                     tabPanel("Hospital params.",
                              uiOutput(ns("paramsHospUI")))
                 )
             ),
             mainPanel(
                 fluidRow(
-                         column(3, selectInput(inputId = ns("selectedAG"), label = NULL,
-                                               choices = c("All", "Aggregated", 
-                                                           agenames), selected = "All")),
-                         column(3, selectInput(inputId = ns("selectedOutcome"), 
-                                               label = NULL,
-                                               choices = c("Infected" = "Infected", 
-                                                           #"Symptomatic cases" = "symptomatic",  
-                                                           "Severity" = "severity", 
-                                                           "ICU admissions" = "ICU", 
-                                                           "Ventilation in ICU" = "ventilation",
-                                                           "Deaths" = "Deaths"), 
-                                               selected = "Infected")),
-                         column(3, selectInput(inputId = ns("selectedDuration"),
-                                               label = NULL,
-                                               choices = c("Week", "Month", "Trimester", 
-                                                           "Semester", "Year"),
-                                               selected = "Trimester"))
-                         ),
+                    column(3, uiOutput(ns("regionsSimulated"))),
+                    column(3, selectInput(inputId = ns("selectedAG"), label = "Age groups",
+                                          choices = c("All", "Aggregated", 
+                                                      agenames), selected = "All")),
+                    column(3, selectInput(inputId = ns("selectedOutcome"), 
+                                          label = "Outcome",
+                                          choices = c("Infected" = "Infected", 
+                                        #"Symptomatic cases" = "symptomatic",  
+                                                      "Severity" = "severity", 
+                                                      "ICU admissions" = "ICU", 
+                                                      "Ventilation in ICU" = "ventilation",
+                                                      "Deaths" = "Deaths"), 
+                                          selected = "Infected")),
+                    column(3, selectInput(inputId = ns("selectedDuration"),
+                                          label = "Period",
+                                          choices = c("Week", "Month", "Trimester", 
+                                                      "Semester", "Year"),
+                                          selected = "Trimester"))
+                ),
                 tabsetPanel(
                   tabPanel(
-                    title = "Hosp. requirements",
+                      title = "Hosp. requirements",
+                      strong("The outputs correspond to the number of beds that will be required at the selected date."),
                     fluidRow(column(4, selectInput(inputId = ns("selectedHospOutcome"), 
                                                    label = NULL,
                                                    choices = c("Number hospital beds" = "bedhosp",
@@ -196,22 +196,8 @@ mod_model_server <- function(input, output, session, modelInputs) {
                   value = round(1/params$removal, 1))
     )
   })
-  output$paramsPopUI = renderUI({
-    tagList(
-      sliderInput(ns("preImmune"),
-                  label = "Proportion of pre-immune",
-                  min = 0, max = 100, step = 0.01,
-                  value = params$preImmune),
-      sliderInput(ns("preExposed"),
-                  label = "Proportion of pre-exposed",
-                  min = 0, max = 100, step = 1,
-                  value = params$preExposed),
-      sliderInput(ns("preInfected"),
-                  label = "Proportion of pre-infected",
-                  min = 0, max = 100, step = 0.01,
-                  value = params$preInfected)
-    )
-  })
+
+
   output$paramsHospUI = renderUI({
     tagList(
       sliderInput(ns("DaysHosp"),
@@ -231,7 +217,7 @@ mod_model_server <- function(input, output, session, modelInputs) {
 
   output$regionsSimulated = renderUI({
     selectInput(ns("selectedRegionsUI"),
-                label = NULL,
+                label = "Region",
                 choices = c("All", selectedRegions()))
   })
   
@@ -296,32 +282,16 @@ mod_model_server <- function(input, output, session, modelInputs) {
         req(selectedRegions())
         req(modelInputs$preInf())
         req(modelInputs$pop())
-                                        #req(input$preExposed)
  
       all_res = lapply(selectedRegions(), function(region) {
           #create Parameter
           params = Parameters$new(SimulationParameters$R0)
-          #browser()
-##          if (selectedRegions()$isRegion) {
-            params$preInfected = modelInputs$preInf()[Region == region, preInfected]
-            pop = modelInputs$pop()[Region == region]
-            startDate = modelInputs$preInf()[Region == region, Date]
-          ## } else {
-          ##   params$preInfected = 10
-          ##   pop = modelInputs$pop()[Region == region]
-          ##   startDate = as.Date("2020-03-10")
-          ## }
-          
-    
+          params$preInfected = modelInputs$preInf()[Region == region, preInfected]
+          pop = modelInputs$pop()[Region == region]
+          startDate = modelInputs$preInf()[Region == region, Date]
           #set duration
           params$duration = SimulationParameters$Duration
-          
-          #set preExposed
-          #params$preExposed = input$preExposed
-
           #run the simulation
-          
-
           finalRes = runMod(params = params$getList(), 
                             sname = SimulationParameters$sname, 
                             population = pop,
@@ -351,7 +321,6 @@ mod_model_server <- function(input, output, session, modelInputs) {
   })
   observeEvent(input$selectedDuration, {
     SimulationParameters$Duration = input$selectedDuration
-    #print(SimulationParameters$Duration)
   })
   observeEvent(input$ShowCaseTimeSeries, {
     SimulationParameters$ShowCaseTimeSeries = input$ShowCaseTimeSeries
@@ -473,7 +442,6 @@ mod_model_server <- function(input, output, session, modelInputs) {
     req(input$selectedHospOutcome)
     req(input$dateHosp)
     req(input$selectedRegionsUI)
-    #browser()
     outCurve = outcome_render_instant_curve(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
                                        instant_time = input$dateHosp, outcome = input$selectedHospOutcome)
     outAge = outcome_render(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,],
