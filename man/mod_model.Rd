@@ -7,7 +7,7 @@
 \usage{
 mod_model_ui(id)
 
-mod_model_server(input, output, session, selectedRegions)
+mod_model_server(input, output, session, selectedRegions, modelInputs)
 }
 \arguments{
 \item{id}{shiny id}

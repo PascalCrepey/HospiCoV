@@ -8,6 +8,6 @@
 #' @return a matrix of the result
 #' @export
 engine_run <- function(params, init) {
-    .Call(`_HospiCov_engine_run`, params, init)
+    .Call(`_hospicov_engine_run`, params, init)
 }
 

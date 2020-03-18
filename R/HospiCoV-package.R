@@ -1,4 +1,4 @@
-#' @useDynLib HospiCov, .registration = TRUE
+#' @useDynLib hospicov, .registration = TRUE
 ## usethis namespace: end
 NULL
 

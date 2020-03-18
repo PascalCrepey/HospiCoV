@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // engine_run
 arma::mat engine_run(List params, arma::mat init);
-RcppExport SEXP _HospiCov_engine_run(SEXP paramsSEXP, SEXP initSEXP) {
+RcppExport SEXP _hospicov_engine_run(SEXP paramsSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,11 +20,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_HospiCov_engine_run", (DL_FUNC) &_HospiCov_engine_run, 2},
+    {"_hospicov_engine_run", (DL_FUNC) &_hospicov_engine_run, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_HospiCov(DllInfo *dll) {
+RcppExport void R_init_hospicov(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
