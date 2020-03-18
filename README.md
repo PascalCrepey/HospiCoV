@@ -8,8 +8,6 @@
 
 This R package contains functions to help interested researchers to estimate hospital resources required to treat patients infected by SARS-CoV-2. 
 
-The aim of the project is to provide a common framework to build and analyze hospital networks.
-
 This project is partly supported by the SPHINx project, funded by French National Research Agency.
 
 ### Step 0: Installing the package:
