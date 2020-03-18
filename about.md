@@ -16,7 +16,8 @@ Biostatistics, infectious disease epidemiology and modeling.
 
 ### Jonathan Roux, PhD
 
-Post-doctorant de Pascal Crépey, j'adore les giraphes et les fiat panda.  
+Post-doctoral researcher at EHESP.
+Biostatistics, epidemiology and modeling.
 
 <a href="https://www.ehesp.fr/annuaire/enseignement-recherche/jonathan-roux/" target="_blank">EHESP</a>
 <a href="https://github.com/JonathanRoux85" target="_blank">Github</a>
