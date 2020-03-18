@@ -160,11 +160,13 @@ mod_model_server <- function(input, output, session, modelInputs) {
     R0 = 3, 
     Duration = "Trimester", 
     Outcome = "Infected", 
-#    Region = selectedRegions(),
+    #Region = selectedRegions(),
     sname = "test",
     DaysHosp = 15,
     DaysICU = 15,
     DaysVentil = 15,
+    removal = 1/params$removal,
+    progression = 1/params$progression,
     #create Population
     pHosp = PolyHosp$new(),
     currDateHosp = as.Date("01/02/2020"),
@@ -291,6 +293,10 @@ mod_model_server <- function(input, output, session, modelInputs) {
           startDate = modelInputs$preInf()[Region == region, Date]
           #set duration
           params$duration = SimulationParameters$Duration
+          #set removal
+          params$removal = 1/SimulationParameters$removal
+          #set progression 
+          params$progression = 1/SimulationParameters$progression
           #run the simulation
           finalRes = runMod(params = params$getList(), 
                             sname = SimulationParameters$sname, 
@@ -324,6 +330,12 @@ mod_model_server <- function(input, output, session, modelInputs) {
   })
   observeEvent(input$ShowCaseTimeSeries, {
     SimulationParameters$ShowCaseTimeSeries = input$ShowCaseTimeSeries
+  })
+  observeEvent(input$removal, {
+    SimulationParameters$removal = input$removal
+  })
+  observeEvent(input$progression, {
+    SimulationParameters$progression = input$progression
   })
 
 

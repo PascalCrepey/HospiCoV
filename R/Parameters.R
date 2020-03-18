@@ -28,8 +28,6 @@ Parameters <- R6::R6Class("Parameters",
     symptomatic = NULL,
     #' @field progression the rate of transfer from E to I
     progression = NULL,
-    #' @field removal the rate of transfer from I to R
-    removal = NULL,
     #' @field beta the transmission probability upon contact with an infected (retro computed from R0)
     beta = NULL,
     #' @field contact the contact matrix
@@ -53,7 +51,7 @@ Parameters <- R6::R6Class("Parameters",
       #from E to I -> 5 days
       self$progression = 1/5.33
       #from I to R -> 11 days
-      self$removal = 1/10.9
+      private$.removal = 1/10.9
       
       private$.R0 = R0
       
@@ -84,8 +82,6 @@ Parameters <- R6::R6Class("Parameters",
       #retro compute the beta
       self$beta = R0 * self$removal/max(Re(eig$values))
       
-      
-      
     },
     #' @description
     #' Create a new list containing the required parameters for the model
@@ -96,7 +92,7 @@ Parameters <- R6::R6Class("Parameters",
         beta = self$beta,
         nage = self$nage,
         contact = self$contact,
-        removal = self$removal,
+        removal = private$.removal,
         progression = self$progression,
         preInfected = self$preInfected,
         symptomatic = self$symptomatic,
@@ -134,7 +130,7 @@ Parameters <- R6::R6Class("Parameters",
         
         #update beta
         eig = eigen(private$.susceptibility * self$contact)
-        self$beta = private$R0 * self$removal/max(Re(eig$values))
+        self$beta = private$.R0 * private$.removal/max(Re(eig$values))
       }
     },
     #' @field R0 the basic reproduction number
@@ -160,9 +156,23 @@ Parameters <- R6::R6Class("Parameters",
                                     x[9])
         #retro compute the beta
         eig = eigen(private$.susceptibility * self$contact)
-        self$beta = private$.R0 * self$removal/max(Re(eig$values))
+        self$beta = private$.R0 * private$.removal/max(Re(eig$values))
       }
     }, 
+    #' @field removal the rate of transfer from I to R
+    removal = function(x) {
+      if (missing(x)) {
+        private$.removal
+      }else{
+        stopifnot(x < 1)
+        #update removal rate
+        private$.removal = x
+        
+        #update beta
+        eig = eigen(private$.susceptibility * self$contact)
+        self$beta = private$.R0 * private$.removal/max(Re(eig$values))
+      }
+    },
     #' @field duration the duration fo the simulation i.e. c("Week", "Month", "Trimester", "Semester", "Year").
     duration = function(x){
       if (missing(x)) {
@@ -201,7 +211,8 @@ Parameters <- R6::R6Class("Parameters",
     .susceptibility = NULL,
     .R0 = NULL, 
     .duration = "Trimester",
-    .nbDays = 90
+    .nbDays = 90,
+    .removal = NULL
   )
 )
 
