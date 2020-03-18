@@ -4,9 +4,7 @@
 \name{Parameters}
 \alias{Parameters}
 \title{R6 Class representing a set of Parameters}
-\format{
-\code{\link{R6Class}} object.
-}
+\format{\code{\link{R6Class}} object.}
 \value{
 Object of \code{\link{R6Class}} with all the parameters related to the population and the epidemic.
 }
@@ -71,7 +69,6 @@ params = Parameters$new()
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new `Parameters` object.
 \subsection{Usage}{
@@ -91,7 +88,6 @@ A new `Parameters` object.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getList"></a>}}
-\if{latex}{\out{\hypertarget{method-getList}{}}}
 \subsection{Method \code{getList()}}{
 Create a new list containing the required parameters for the model
 \subsection{Usage}{
@@ -104,7 +100,6 @@ A new list of parameters.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
