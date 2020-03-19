@@ -11,16 +11,14 @@ This R package contains functions to help interested researchers to estimate hos
 This project is partly supported by the SPHINx project, funded by French National Research Agency.
 
 ### Step 0: Installing the package:
-- To install packages from GitHub, the package “devtools” needs to be installed first
+- To install packages from GitHub, the package “devtools” needs to be installed first. Then install the package from GitHub. Update or install all the required packages.
+
 ```R
 install.packages("devtools")
-library(“devtools”)
+devtools::install_github("PascalCrepey/HospiCoV@*release")
 ```
-- Then install the package from GitHub. Update or install all the required packages.
-```R
-install_github("PascalCrepey/HospiCoV")
-```
-This command will install the latest "released" version of the package.
+
+This will install the latest "released" version of the package.
 
 
 ### Step 1: Preparing the data
