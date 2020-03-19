@@ -64,3 +64,8 @@ Age groups: 0-4, 5-9, 10-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44,  45-49, 5
 library(hospicov)
 shiny_app()
 ```
+
+## Publication
+
+Massonnaud C, Roux J, Crépey P. COVID-19: Forecasting short term hospital needs in France.
+2020. <a href="https://www.ea-reperes.com/wp-content/uploads/2020/03/PredictedFrenchHospitNeeds-EHESP-20200316.pdf." target="_blank">PredictedFrenchHospitNeeds-EHESP-20200316.pdf.</a>
