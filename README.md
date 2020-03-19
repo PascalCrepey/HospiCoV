@@ -24,7 +24,7 @@ This will install the latest "released" version of the package.
 
 #### For Windows users
 
-Download [windows binary package](https://github.com/PascalCrepey/HospiCoV/releases/download/v0.2.1/hospicov_windows_binary_0.2.1.zip). 
+Download [windows binary package](https://github.com/PascalCrepey/HospiCoV/releases/download/v0.2.1/hospicov_0.2.1.zip). 
 Ensure that the zip package is in your working directory, then: 
 
 ```R
