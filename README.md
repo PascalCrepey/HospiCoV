@@ -28,7 +28,7 @@ Download [windows binary package](https://github.com/PascalCrepey/HospiCoV/relea
 Ensure that the zip package is in your working directory, then: 
 
 ```R
-install.packages("hospicov_0.2.0.zip", repos = NULL, type = "win.binary")
+install.packages("hospicov_0.2.1.zip", repos = NULL, type = "win.binary")
 
 ``` 
 
