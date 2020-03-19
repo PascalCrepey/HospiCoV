@@ -24,6 +24,9 @@ golem_add_external_resources <- function(){
   ## addResourcePath(
   ##   'www', system.file('app/www', package = 'hospicov')
   ## )
+  addResourcePath(
+    'MD', system.file('MD', package = 'hospicov')
+  )
 
   tags$head(
     shinyjs::useShinyjs(),
