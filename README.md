@@ -18,7 +18,7 @@ library(“devtools”)
 ```
 - Then install the package from GitHub. Update or install all the required packages.
 ```R
-install_github("PascalCrepey/HospiCov@*release")
+install_github("PascalCrepey/HospiCoV@*release")
 ```
 This command will install the latest "released" version of the package.
 
