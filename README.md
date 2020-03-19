@@ -11,16 +11,14 @@ This R package contains functions to help interested researchers to estimate hos
 This project is partly supported by the SPHINx project, funded by French National Research Agency.
 
 ### Step 0: Installing the package:
-- To install packages from GitHub, the package “devtools” needs to be installed first
+- To install packages from GitHub, the package “devtools” needs to be installed first. Then install the package from GitHub. Update or install all the required packages.
+
 ```R
 install.packages("devtools")
-library(“devtools”)
+devtools::install_github("PascalCrepey/HospiCoV@*release")
 ```
-- Then install the package from GitHub. Update or install all the required packages.
-```R
-install_github("PascalCrepey/HospiCoV@*release")
-```
-This command will install the latest "released" version of the package.
+
+This will install the latest "released" version of the package.
 
 
 ### Step 1: Preparing the data
@@ -64,3 +62,8 @@ Age groups: 0-4, 5-9, 10-14, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44,  45-49, 5
 library(hospicov)
 shiny_app()
 ```
+
+## Publication
+
+Massonnaud C, Roux J, Crépey P. COVID-19: Forecasting short term hospital needs in France.
+2020. <a href="https://www.ea-reperes.com/wp-content/uploads/2020/03/PredictedFrenchHospitNeeds-EHESP-20200316.pdf." target="_blank">PredictedFrenchHospitNeeds-EHESP-20200316.pdf.</a>
