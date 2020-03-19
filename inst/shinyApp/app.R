@@ -1,3 +1,3 @@
-library(HospiCov)
+library(hospicov)
 
-HospiCov::shiny_app()
+hospicov::shiny_app()
