@@ -38,7 +38,7 @@ mod_inputs_ui <- function(id){
           ),
           mainPanel(
               h2("Model inputs"),
-              includeMarkdown("intro.md"),
+              includeMarkdown("MD/intro.md"),
               fluidRow(
                   column(
                       12,

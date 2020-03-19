@@ -16,7 +16,7 @@
 mod_about_ui <- function(id){
   ns <- NS(id)
   tagList(
-      includeMarkdown("about.md")      
+      includeMarkdown("MD/about.md")      
   )
 }
     
