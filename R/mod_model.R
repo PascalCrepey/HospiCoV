@@ -82,7 +82,6 @@ mod_model_ui <- function(id){
                         title = "Time series",
                         fluidRow(column(12,
                                         plotly::plotlyOutput(ns("mainPlot")),
-                                        uiOutput(ns("CaseTimeSeriesUI")),
                                         plotly::plotlyOutput(ns("secondPlot"))
                                         )
                                  )
@@ -167,10 +166,7 @@ mod_model_server <- function(input, output, session, modelInputs) {
     DaysVentil = 15,
     removal = 1/params$removal,
     progression = 1/params$progression,
-    #create Population
-    pHosp = PolyHosp$new(),
-    currDateHosp = as.Date("01/02/2020"),
-    ShowCaseTimeSeries = FALSE
+    currDateHosp = as.Date("01/02/2020")
   )
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
@@ -223,14 +219,6 @@ mod_model_server <- function(input, output, session, modelInputs) {
                 choices = c("All", selectedRegions()))
   })
   
-  output$CaseTimeSeriesUI = renderUI({
-      if(input$selectedAG == "Aggregated" & input$selectedOutcome == "Infected") {
-          
-          checkboxInput(ns("ShowCaseTimeSeries"),
-                        label = "Show observed values ",
-                        value = FALSE)
-      }
-  })
                   
     
     ## END RENDER UI PARAMETERS -----------------------------------------------------
@@ -247,31 +235,11 @@ mod_model_server <- function(input, output, session, modelInputs) {
           # curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], input$selectedOutcome, input$selectedAG)
       # }
       # browser()
-      if(!(SimulationParameters$ShowCaseTimeSeries)){
+
         curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], 
                               input$selectedOutcome, 
                               input$selectedAG)
-      }
-      else {
-        if(input$selectedRegionsUI == "All"){
-          
-          SelectedTimeSeries <- CaseTimeSeries[, .SD,
-                                               .SDcols = c("Date", selectedRegions())]
-          SelectedTimeSeries[, Cases := rowSums(.SD),
-                             .SDcols = 2:length(names(SelectedTimeSeries))[1]]
-        }
-        else{
-          SelectedTimeSeries <- CaseTimeSeries[, .SD,
-                                               .SDcols = c("Date", input$selectedRegionsUI)]
-          setnames(SelectedTimeSeries, input$selectedRegionsUI, "Cases")
-        }
-        curves = renderCurves(outcome_table()[Region %in% input$selectedRegionsUI | All == input$selectedRegionsUI,], 
-                              input$selectedOutcome, 
-                              input$selectedAG,
-                              ShowCaseTimeSeries = input$ShowCaseTimeSeries,
-                              TimeSeries = SelectedTimeSeries[, .(Date, Cases)])
-      }
-
+      
       output$mainPlot   = curves$mainPlot
       output$secondPlot = curves$secondPlot
 
@@ -327,9 +295,6 @@ mod_model_server <- function(input, output, session, modelInputs) {
   })
   observeEvent(input$selectedDuration, {
     SimulationParameters$Duration = input$selectedDuration
-  })
-  observeEvent(input$ShowCaseTimeSeries, {
-    SimulationParameters$ShowCaseTimeSeries = input$ShowCaseTimeSeries
   })
   observeEvent(input$removal, {
     SimulationParameters$removal = input$removal
