@@ -158,7 +158,7 @@ mod_model_server <- function(input, output, session, modelInputs) {
   params = Parameters$new()
   SimulationParameters = reactiveValues(
       R0 = 3,
-      matrix = modelInputs$matrix(),
+      matrix = modelInputs$matrix,
       Duration = "Trimester", 
       Outcome = "Infected", 
     #Region = selectedRegions(),
@@ -293,7 +293,7 @@ mod_model_server <- function(input, output, session, modelInputs) {
           pop = modelInputs$pop()[Region == region]
           startDate = modelInputs$preInf()[Region == region, Date]
           #set matrix
-          params$matrix = SimulationParameters$matrix
+          params$matrix = SimulationParameters$matrix()
           #set duration
           params$duration = SimulationParameters$Duration
           #set removal
