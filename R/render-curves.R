@@ -1,6 +1,5 @@
 
-renderCurves <- function(data, outcome, selectedAG, ShowCaseTimeSeries = FALSE, 
-                         TimeSeries = CaseTimeSeries) {
+renderCurves <- function(data, outcome, selectedAG) {
     ## --- INFECTED CURVES -------------------------------------------------------
     if (outcome == "Infected") {
     
@@ -14,23 +13,10 @@ renderCurves <- function(data, outcome, selectedAG, ShowCaseTimeSeries = FALSE,
             } else if (selectedAG == "Aggregated") {
                 dataAgg = data[, sum(Infected), by = "Time"]
                 setnames(dataAgg, "V1", "Infected")
-                if(ShowCaseTimeSeries){
-                    dataAgg = data[, .(cumInfected = sum(cumInfected)), by = "Time"]
-                    p = ggplot(dataAgg, aes(x = Time, y = cumInfected)) +
-                        theme_classic() +
-                        geom_line() +
-                        scale_y_continuous(name = "Cumulated") +
-                        geom_point(data = TimeSeries[!is.na(Cases),], 
-                                   aes(x = Date, y = Cases),
-                                   col = "red")
+                p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
+                    theme_classic() +
+                    geom_line()
                     p = plotly::ggplotly(p)
-                }
-                else {
-                    p = ggplot(dataAgg, aes(x = Time, y = Infected)) +
-                        theme_classic() +
-                        geom_line()
-                    p = plotly::ggplotly(p)
-                }
             } else{
                 dataAgg = data[AgeGroup == selectedAG, .(Infected = sum(Infected)), by = c("Time","AgeGroup")]
                 p = ggplot(dataAgg, aes(x = Time, y = Infected, color = AgeGroup)) +
