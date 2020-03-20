@@ -1,6 +1,6 @@
 Package: hospicov
 Title: HospiCoV
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c(
   person("Pascal", "Crépey", email = "pascal.crepey@ehesp.fr", role = c("aut", "cre")),
   person('Clément', 'Massonnaud', email = 'clement.massonnaud@gmail.com', role = c('aut')),
