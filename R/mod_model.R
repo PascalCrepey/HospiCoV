@@ -157,20 +157,21 @@ mod_model_server <- function(input, output, session, modelInputs) {
     
   params = Parameters$new()
   SimulationParameters = reactiveValues(
-    R0 = 3, 
-    Duration = "Trimester", 
-    Outcome = "Infected", 
+      R0 = 3,
+      matrix = modelInputs$matrix(),
+      Duration = "Trimester", 
+      Outcome = "Infected", 
     #Region = selectedRegions(),
-    sname = "test",
-    DaysHosp = 15,
-    DaysICU = 15,
-    DaysVentil = 15,
-    removal = 1/params$removal,
-    progression = 1/params$progression,
+      sname = "test",
+      DaysHosp = 15,
+      DaysICU = 15,
+      DaysVentil = 15,
+      removal = 1/params$removal,
+      progression = 1/params$progression,
     #create Population
-    pHosp = PolyHosp$new(),
-    currDateHosp = as.Date("01/02/2020"),
-    ShowCaseTimeSeries = FALSE
+      pHosp = PolyHosp$new(),
+      currDateHosp = as.Date("01/02/2020"),
+      ShowCaseTimeSeries = FALSE
   )
 
     ## --- RENDER UI PARAMETERS -----------------------------------------------------
@@ -291,6 +292,8 @@ mod_model_server <- function(input, output, session, modelInputs) {
           params$preInfected = modelInputs$preInf()[Region == region, preInfected]
           pop = modelInputs$pop()[Region == region]
           startDate = modelInputs$preInf()[Region == region, Date]
+          #set matrix
+          params$matrix = SimulationParameters$matrix
           #set duration
           params$duration = SimulationParameters$Duration
           #set removal
