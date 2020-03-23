@@ -30,21 +30,16 @@ Parameters <- R6::R6Class("Parameters",
     progression = NULL,
     #' @field beta the transmission probability upon contact with an infected (retro computed from R0)
     beta = NULL,
-    #' @field school the school contact matrix
-    school = NULL,
-    #' @field home the home contact matrix
-    home = NULL,
-    #' @field work the work contact matrix
-    work = NULL,
-    #' @field other the other locations contact matrix
-    other = NULL,
+    #' @field contact the contact matrix
+    contact = NULL,
     #' @field agegroupnames the name of the agegroups
     agegroupnames = NULL,
     #' @description
     #' Create a new `Parameters` object.
     #' @param R0 R0 (=3)
     #' @return A new `Parameters` object.
-    initialize = function(R0 = 2.2){
+    initialize = function(R0 = 2.2,
+                          contact = matrices$France){
       self$preImmune = 0
       self$preExposed = 0
       #if preInfected >1 then it's the number of infected individuals (seeds)
@@ -77,21 +72,17 @@ Parameters <- R6::R6Class("Parameters",
                                   x[9])
       
       #to be updated with true values
-      self$school = school_matrix
-      self$work   = work_matrix
-      self$home   = home_matrix
-      self$other  = other_matrix
+      self$contact = contact
       
       #number of age-groups
-      self$nage = nrow(school_matrix)
-      self$agegroupnames = colnames(school_matrix)
+      self$nage = nrow(contact)
+      self$agegroupnames = colnames(contact)
 
-      ### ======= TODO =============================================
       eig = eigen(private$.susceptibility * self$contact)
       
       #retro compute the beta
       self$beta = R0 * self$removal/max(Re(eig$values))
-      ### ==========================================================
+
     },
     #' @description
     #' Create a new list containing the required parameters for the model
@@ -101,10 +92,7 @@ Parameters <- R6::R6Class("Parameters",
       list(
         beta = self$beta,
         nage = self$nage,
-        school = self$school,
-        work = self$work,
-        home = self$home,
-        other = self$other,
+        contact = self$contact,
         removal = private$.removal,
         progression = self$progression,
         preInfected = self$preInfected,
@@ -141,11 +129,9 @@ Parameters <- R6::R6Class("Parameters",
           private$.susceptibility = x
         }
 
-        ### ============= TODO ================================================
         #update beta
         eig = eigen(private$.susceptibility * self$contact)
         self$beta = private$.R0 * private$.removal/max(Re(eig$values))
-        ### =====================================================================
       }
     },
     #' @field R0 the basic reproduction number
@@ -169,11 +155,9 @@ Parameters <- R6::R6Class("Parameters",
                                     x[7],x[7],
                                     x[8],x[8],
                                     x[9])
-        ### ============= TODO ================================================
         #retro compute the beta
         eig = eigen(private$.susceptibility * self$contact)
         self$beta = private$.R0 * private$.removal/max(Re(eig$values))
-        ### ==================================================================        
       }
     }, 
     #' @field removal the rate of transfer from I to R
@@ -184,11 +168,10 @@ Parameters <- R6::R6Class("Parameters",
         stopifnot(x < 1)
         #update removal rate
         private$.removal = x
-        ## ============= TODO ================================================  
         #update beta
         eig = eigen(private$.susceptibility * self$contact)
         self$beta = private$.R0 * private$.removal/max(Re(eig$values))
-        ## ============= TODO ================================================
+
       }
     },
     #' @field duration the duration fo the simulation i.e. c("Week", "Month", "Trimester", "Semester", "Year").

@@ -4,7 +4,9 @@
 \name{PolyHosp}
 \alias{PolyHosp}
 \title{R6 Class representing a set of Parameters}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \value{
 Object of \code{\link{R6Class}} with all the population data.
 }
@@ -49,6 +51,7 @@ pop = PolyHosp$new()
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new `PolyHosp` object.
 \subsection{Usage}{
@@ -68,6 +71,7 @@ A new `PolyHosp` object.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getMap"></a>}}
+\if{latex}{\out{\hypertarget{method-getMap}{}}}
 \subsection{Method \code{getMap()}}{
 get the leaflet map
 \subsection{Usage}{
@@ -80,6 +84,7 @@ a leaflet map with the polygons
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getPopFiness"></a>}}
+\if{latex}{\out{\hypertarget{method-getPopFiness}{}}}
 \subsection{Method \code{getPopFiness()}}{
 get the population from a specific polygon by Finess
 \subsection{Usage}{
@@ -96,6 +101,7 @@ get the population from a specific polygon by Finess
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getPopRegion"></a>}}
+\if{latex}{\out{\hypertarget{method-getPopRegion}{}}}
 \subsection{Method \code{getPopRegion()}}{
 get the population from a specific Region by name
 \subsection{Usage}{
@@ -112,6 +118,7 @@ get the population from a specific Region by name
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
